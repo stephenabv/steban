@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       "*.less": {
+        condition: { not: { path: /\.module\.less$/ } },
         loaders: [
           {
             loader: "less-loader",
