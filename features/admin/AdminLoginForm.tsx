@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import styles from "./AdminLoginForm.module.less";
 
 export function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +29,9 @@ export function AdminLoginForm() {
         setError(data.error ?? "Invalid credentials.");
         return;
       }
-      router.push("/admin");
+      const raw = searchParams.get("callbackUrl") ?? "";
+      const destination = raw.startsWith("/admin") ? raw : "/admin";
+      router.push(destination);
       router.refresh();
     } catch {
       setError("Network error. Please try again.");
