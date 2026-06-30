@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { connection } from "next/server";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
 import { FirebaseAnalytics } from "@/components/layout/FirebaseAnalytics";
@@ -36,7 +37,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Forces dynamic rendering so Next.js applies the per-request nonce
+  // (set by proxy.ts) to all inline scripts it generates — required for nonce-based CSP.
+  await connection();
+
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>

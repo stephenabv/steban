@@ -6,7 +6,10 @@ export function buildCsp(nonce: string): string {
     "script-src": [
       "'self'",
       `'nonce-${nonce}'`,
+      "'strict-dynamic'",
       ...(isDev ? ["'unsafe-eval'"] : []),
+      // Allow Vercel preview feedback widget (not injected in production)
+      ...(process.env.VERCEL_ENV !== "production" ? ["https://vercel.live"] : []),
     ],
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", "https:"],
@@ -17,6 +20,10 @@ export function buildCsp(nonce: string): string {
       "https://analytics.google.com",
       "https://firebase.googleapis.com",
       "https://firebaseinstallations.googleapis.com",
+      // Vercel live feedback (preview only)
+      ...(process.env.VERCEL_ENV !== "production"
+        ? ["https://vercel.live", "wss://ws-us3.pusher.com"]
+        : []),
     ],
     "frame-ancestors": ["'none'"],
     "form-action": ["'self'"],
