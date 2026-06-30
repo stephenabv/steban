@@ -1,0 +1,206 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.section {
+  padding: @space-24 0;
+}
+
+.header {
+  .container();
+  margin-bottom: @space-12;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: @space-4;
+}
+
+.eyebrow {
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  color: @color-accent;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: @space-3;
+}
+
+.heading {
+  font-size: clamp(@fs-3xl, 4vw, @fs-5xl);
+  font-weight: @fw-extrabold;
+  letter-spacing: -0.03em;
+}
+
+.viewAll {
+  font-size: @fs-sm;
+  font-weight: @fw-semibold;
+  color: @color-accent;
+  display: flex;
+  align-items: center;
+  gap: @space-1;
+  transition: gap @transition-fast;
+  .focus-ring();
+
+  &:hover {
+    gap: @space-3;
+  }
+}
+
+.track {
+  display: flex;
+  gap: @space-6;
+  overflow: hidden;
+}
+
+.slide {
+  min-width: 0;
+  flex: 0 0 100%;
+}
+
+.controls {
+  .container();
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: @space-6;
+  margin-top: @space-10;
+}
+
+.dots {
+  display: flex;
+  gap: @space-2;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: @radius-full;
+  background: @color-border;
+  border: none;
+  cursor: pointer;
+  transition: all @transition-normal;
+  .focus-ring();
+
+  &.active {
+    width: 24px;
+    background: @color-accent;
+  }
+}
+
+.arrowBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: @radius-full;
+  background: @color-bg-card;
+  border: 1px solid @color-border;
+  color: @color-text-secondary;
+  cursor: pointer;
+  .flex-center();
+  transition: all @transition-fast;
+  .focus-ring();
+
+  &:hover:not(:disabled) {
+    border-color: @color-accent;
+    color: @color-accent;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Project Card ─────────────────────────────────────────────────────────────
+.card {
+  .card();
+  display: grid;
+  overflow: hidden;
+
+  @media (min-width: @bp-lg) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.cardImage {
+  aspect-ratio: 16 / 10;
+  position: relative;
+  background: @color-bg-elevated;
+  overflow: hidden;
+
+  @media (min-width: @bp-lg) {
+    aspect-ratio: auto;
+    min-height: 400px;
+  }
+}
+
+.cardImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, @color-bg-elevated 0%, @color-bg-card 100%);
+  .flex-center();
+
+  svg {
+    width: 60px;
+    height: 60px;
+    color: @color-border;
+  }
+}
+
+.cardBody {
+  padding: @space-8 @space-10;
+  display: flex;
+  flex-direction: column;
+  gap: @space-5;
+  justify-content: center;
+}
+
+.cardLabel {
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  color: @color-accent;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.cardTitle {
+  font-size: clamp(@fs-2xl, 3vw, @fs-4xl);
+  font-weight: @fw-bold;
+  letter-spacing: -0.02em;
+}
+
+.cardSummary {
+  font-size: @fs-base;
+  color: @color-text-secondary;
+  line-height: @lh-relaxed;
+}
+
+.techList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: @space-2;
+}
+
+.techBadge {
+  padding: @space-1 @space-3;
+  background: @color-bg-elevated;
+  border: 1px solid @color-border;
+  border-radius: @radius-full;
+  font-size: @fs-xs;
+  font-weight: @fw-medium;
+  color: @color-text-secondary;
+}
+
+.cardLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: @space-3;
+  margin-top: @space-2;
+}
+
+.cardLinkPrimary {
+  .btn-primary();
+}
+
+.cardLinkOutline {
+  .btn-outline();
+  font-size: @fs-sm;
+}

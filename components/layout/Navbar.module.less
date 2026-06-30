@@ -1,0 +1,147 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: @nav-height;
+  display: flex;
+  align-items: center;
+  transition: background @transition-normal, box-shadow @transition-normal;
+
+  &.scrolled {
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 1px 0 @color-border;
+  }
+}
+
+.inner {
+  .container();
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: @fs-lg;
+  font-weight: @fw-bold;
+  color: @color-text-primary;
+  letter-spacing: -0.02em;
+  .focus-ring();
+
+  span {
+    color: @color-accent;
+  }
+}
+
+.desktopLinks {
+  display: none;
+  align-items: center;
+  gap: @space-8;
+
+  @media (min-width: @bp-md) {
+    display: flex;
+  }
+}
+
+.link {
+  font-size: @fs-sm;
+  font-weight: @fw-medium;
+  color: @color-text-secondary;
+  padding: @space-2 0;
+  position: relative;
+  transition: color @transition-fast;
+  .focus-ring();
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: @color-accent;
+    transform: scaleX(0);
+    transition: transform @transition-normal;
+  }
+
+  &:hover,
+  &.active {
+    color: @color-text-primary;
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.menuBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: @space-2;
+  background: none;
+  border: none;
+  cursor: pointer;
+  .focus-ring();
+
+  @media (min-width: @bp-md) {
+    display: none;
+  }
+
+  span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: @color-text-primary;
+    border-radius: 2px;
+    transition: all @transition-normal;
+  }
+
+  &[aria-expanded="true"] {
+    span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    span:nth-child(2) {
+      opacity: 0;
+    }
+    span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+  }
+}
+
+.mobileMenu {
+  position: fixed;
+  inset: @nav-height 0 0 0;
+  background: rgba(10, 10, 15, 0.97);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: @space-8;
+  z-index: 99;
+
+  @media (min-width: @bp-md) {
+    display: none;
+  }
+}
+
+.mobileLink {
+  font-size: @fs-3xl;
+  font-weight: @fw-bold;
+  color: @color-text-secondary;
+  transition: color @transition-fast;
+  .focus-ring();
+
+  &:hover,
+  &.active {
+    color: @color-text-primary;
+  }
+}

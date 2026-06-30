@@ -1,0 +1,75 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.footer {
+  border-top: 1px solid @color-border;
+  padding: @space-12 0;
+  margin-top: @space-24;
+}
+
+.inner {
+  .container();
+  display: flex;
+  flex-direction: column;
+  gap: @space-8;
+
+  @media (min-width: @bp-md) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: @space-2;
+}
+
+.name {
+  font-size: @fs-base;
+  font-weight: @fw-semibold;
+  color: @color-text-primary;
+
+  span {
+    color: @color-accent;
+  }
+}
+
+.copyright {
+  font-size: @fs-sm;
+  color: @color-text-muted;
+}
+
+.social {
+  display: flex;
+  align-items: center;
+  gap: @space-4;
+}
+
+.socialLink {
+  color: @color-text-muted;
+  transition: color @transition-fast;
+  .focus-ring();
+
+  &:hover {
+    color: @color-text-primary;
+  }
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: @space-4;
+
+  a {
+    font-size: @fs-xs;
+    color: @color-text-muted;
+    transition: color @transition-fast;
+    .focus-ring();
+
+    &:hover {
+      color: @color-text-secondary;
+    }
+  }
+}
