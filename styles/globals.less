@@ -21,9 +21,15 @@ body {
   font-family: @font-sans;
   line-height: @lh-normal;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#main-content {
+  flex: 1;
 }
 
 a {

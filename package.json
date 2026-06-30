@@ -13,6 +13,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "firebase": "^12.15.0",
     "framer-motion": "^12.42.0",
     "iron-session": "^8.0.4",
     "next": "16.2.9",

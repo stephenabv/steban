@@ -6,8 +6,6 @@ export function buildCsp(nonce: string): string {
     "script-src": [
       "'self'",
       `'nonce-${nonce}'`,
-      "https://www.googletagmanager.com",
-      "https://www.google-analytics.com",
       ...(isDev ? ["'unsafe-eval'"] : []),
     ],
     "style-src": ["'self'", "'unsafe-inline'"],
@@ -17,6 +15,8 @@ export function buildCsp(nonce: string): string {
       "'self'",
       "https://www.google-analytics.com",
       "https://analytics.google.com",
+      "https://firebase.googleapis.com",
+      "https://firebaseinstallations.googleapis.com",
     ],
     "frame-ancestors": ["'none'"],
     "form-action": ["'self'"],

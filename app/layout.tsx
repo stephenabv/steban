@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { headers } from "next/headers";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
-import { GoogleAnalytics } from "@/components/layout/GoogleAnalytics";
+import { FirebaseAnalytics } from "@/components/layout/FirebaseAnalytics";
 import { analyticsConfig } from "@/config/analytics";
 import "@/styles/globals.less";
 
@@ -37,10 +36,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const headerList = await headers();
-  const nonce = headerList.get("x-nonce") ?? "";
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
@@ -48,12 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to main content
         </a>
         {children}
-        {analyticsConfig.googleAnalytics.enabled && (
-          <GoogleAnalytics
-            measurementId={analyticsConfig.googleAnalytics.measurementId}
-            nonce={nonce}
-          />
-        )}
+        {analyticsConfig.firebase.enabled && <FirebaseAnalytics />}
       </body>
     </html>
   );

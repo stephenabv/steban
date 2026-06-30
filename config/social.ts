@@ -1,7 +1,7 @@
 export const socialLinks = {
   github: {
     label: "GitHub",
-    url: "https://github.com/stephenabueva",
+    url: "https://github.com/stephenabv",
     icon: "github",
   },
   linkedin: {
@@ -11,7 +11,7 @@ export const socialLinks = {
   },
   facebook: {
     label: "Facebook",
-    url: "https://facebook.com/stephenabueva",
+    url: "https://facebook.com/ssastephen",
     icon: "facebook",
   },
   email: {

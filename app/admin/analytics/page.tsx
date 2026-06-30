@@ -5,34 +5,36 @@ import styles from "@/features/admin/AdminPage.module.less";
 export const metadata: Metadata = { title: "Analytics" };
 
 export default function AdminAnalyticsPage() {
-  const gaId = analyticsConfig.googleAnalytics.measurementId;
+  const { measurementId, enabled } = analyticsConfig.firebase;
 
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Analytics</h1>
-        <p className={styles.subtitle}>Google Analytics 4 integration status and configuration.</p>
+        <p className={styles.subtitle}>Firebase Analytics integration status and configuration.</p>
       </div>
 
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>Google Analytics 4</h2>
+        <h2 className={styles.cardTitle}>Firebase Analytics (GA4)</h2>
         <div className={styles.form}>
           <div className={styles.field}>
             <p className={styles.label}>Measurement ID</p>
-            <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.875rem", color: gaId ? "#6366f1" : "#606075" }}>
-              {gaId || "Not configured — set NEXT_PUBLIC_GA_MEASUREMENT_ID in environment variables."}
+            <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.875rem", color: "#6366f1" }}>
+              {measurementId}
             </code>
           </div>
           <div className={styles.field}>
             <p className={styles.label}>Status</p>
-            <span className={`${styles.tableBadge} ${analyticsConfig.googleAnalytics.enabled ? styles.active : styles.inactive}`}>
-              {analyticsConfig.googleAnalytics.enabled ? "Active (production)" : "Inactive (dev mode or not configured)"}
+            <span className={`${styles.tableBadge} ${enabled ? styles.active : styles.inactive}`}>
+              {enabled ? "Active (production)" : "Inactive (dev mode)"}
             </span>
           </div>
           <div className={styles.field}>
-            <p className={styles.label}>How to configure</p>
+            <p className={styles.label}>Provider</p>
             <p className={styles.hint}>
-              Set the <code>NEXT_PUBLIC_GA_MEASUREMENT_ID</code> environment variable in your Vercel project settings to your GA4 Measurement ID (e.g.&nbsp;<code>G-XXXXXXXXXX</code>). Analytics fires automatically in production.
+              Analytics is powered by the Firebase SDK (firebase/analytics) using project{" "}
+              <code>steban-5889b</code>. Page view events are tracked automatically on each
+              client-side navigation.
             </p>
           </div>
         </div>

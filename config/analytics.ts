@@ -1,9 +1,7 @@
 export const analyticsConfig = {
-  googleAnalytics: {
-    measurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "",
-    enabled:
-      process.env.NODE_ENV === "production" &&
-      Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID),
+  firebase: {
+    measurementId: "G-NWG7VMMQ87",
+    enabled: process.env.NODE_ENV === "production",
   },
 } as const;
 
