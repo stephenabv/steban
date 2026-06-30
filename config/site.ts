@@ -3,7 +3,7 @@ export const siteConfig = {
   title: "Stephen Abueva — Senior Software Engineer",
   description:
     "Senior Software Engineer specializing in full-stack web development, cloud architecture, and scalable systems.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://stephenabueva.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://steban.vercel.app",
   locale: "en_US",
   author: {
     name: "Stephen Abueva",
