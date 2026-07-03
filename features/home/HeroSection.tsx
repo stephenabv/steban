@@ -56,7 +56,7 @@ export function HeroSection({ hero }: Props) {
             variants={fadeUpVariants(2)}
             className={styles.title}
           >
-            {hero?.title ?? "Senior Software Engineer"}
+            {hero?.title ?? "Computer Engineer"}
           </motion.p>
 
           <motion.p

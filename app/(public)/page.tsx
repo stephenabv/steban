@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { HeroSection } from "@/features/home/HeroSection";
 import { FeaturedCarousel } from "@/features/home/FeaturedCarousel";
 import { siteConfig } from "@/config/site";
 import { personSchema, websiteSchema } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
-  title: siteConfig.title,
+  title: { absolute: siteConfig.title },
   alternates: { canonical: siteConfig.url },
 };
 
@@ -17,13 +16,13 @@ const mockFeatured: never[] = [];
 export default function HomePage() {
   return (
     <>
-      <Script
-        id="schema-person"
+      {/* Plain <script> (not next/script) so JSON-LD is in the initial server HTML
+          where non-JS crawlers can read it. Data blocks are exempt from CSP script-src. */}
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema()) }}
       />
-      <Script
-        id="schema-website"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema()) }}
       />

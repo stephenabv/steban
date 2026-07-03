@@ -41,7 +41,7 @@ export default function AdminHeroPage() {
             </div>
             <div className={styles.field}>
               <label className={styles.label} htmlFor="h-title">Professional Title</label>
-              <input id="h-title" type="text" className={styles.input} value={title} onChange={e => setTitle(e.target.value)} placeholder="Senior Software Engineer" />
+              <input id="h-title" type="text" className={styles.input} value={title} onChange={e => setTitle(e.target.value)} placeholder="Computer Engineer" />
             </div>
           </div>
           <div className={styles.fieldFull}>

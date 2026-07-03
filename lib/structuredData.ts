@@ -7,8 +7,15 @@ export function personSchema() {
     "@type": "Person",
     name: siteConfig.name,
     url: siteConfig.url,
-    jobTitle: "Senior Software Engineer",
+    jobTitle: "Computer Engineer",
     email: `mailto:${siteConfig.author.email}`,
+    image: `${siteConfig.url}/opengraph-image`,
+    knowsAbout: [
+      "Computer Engineering",
+      "Full-Stack Web Development",
+      "Cloud Architecture",
+      "Scalable Systems",
+    ],
     sameAs: [
       socialLinks.github.url,
       socialLinks.linkedin.url,

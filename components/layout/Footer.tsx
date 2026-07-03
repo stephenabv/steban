@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { socialLinks } from "@/config/social";
+import { Logo } from "./Logo";
 import styles from "./Footer.module.less";
 
 export function Footer() {
@@ -12,6 +13,7 @@ export function Footer() {
       <div className={styles.inner}>
         <div className={styles.brand}>
           <p className={styles.name}>
+            <Logo size={22} />
             {first} <span>{last}</span>
           </p>
           <p className={styles.copyright}>

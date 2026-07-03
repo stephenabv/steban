@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { siteConfig } from "@/config/site";
+import { Logo } from "./Logo";
 import styles from "./Navbar.module.less";
 
 const NAV_LINKS = [
@@ -50,6 +51,7 @@ export function Navbar() {
       >
         <div className={styles.inner}>
           <Link href="/" className={styles.logo} aria-label={`${siteConfig.name} — home`}>
+            <Logo size={28} />
             {first} <span>{last}</span>
           </Link>
 

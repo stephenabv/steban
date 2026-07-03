@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { Logo } from "@/components/layout/Logo";
 import styles from "./AdminLoginForm.module.less";
 
 export function AdminLoginForm({ basePath }: { basePath: string }) {
@@ -24,7 +25,15 @@ export function AdminLoginForm({ basePath }: { basePath: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      // A 500 (e.g. missing server env vars) returns an HTML error page, not JSON —
+      // parse defensively so we can surface the real status instead of a bogus network error.
+      let data: { ok?: boolean; error?: string } = {};
+      try {
+        data = (await res.json()) as { ok?: boolean; error?: string };
+      } catch {
+        setError(`Server error (${res.status}). Check that SESSION_SECRET, ADMIN_USERNAME, and ADMIN_PASSWORD_HASH are set.`);
+        return;
+      }
       if (!res.ok || !data.ok) {
         setError(data.error ?? "Invalid credentials.");
         return;
@@ -46,6 +55,9 @@ export function AdminLoginForm({ basePath }: { basePath: string }) {
     <div className={styles.page}>
       <div className={styles.card}>
         <div className={styles.header}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
+            <Logo size={48} />
+          </div>
           <p className={styles.logo}>
             {first} <span>{last}</span>
           </p>

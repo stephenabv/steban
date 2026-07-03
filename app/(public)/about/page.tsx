@@ -18,7 +18,7 @@ export default function AboutPage() {
       <div className={styles.pageHeader}>
         <h1 className={styles.heading}>About Me</h1>
         <p className={styles.subheading}>
-          Senior Software Engineer with a passion for building scalable, secure, and beautiful
+          Computer Engineer with a passion for building scalable, secure, and beautiful
           digital experiences.
         </p>
       </div>

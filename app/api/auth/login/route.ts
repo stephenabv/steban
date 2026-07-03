@@ -46,6 +46,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
   }
 
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+    return NextResponse.json(
+      { error: "Server misconfigured: SESSION_SECRET must be at least 32 characters." },
+      { status: 500 }
+    );
+  }
+
   const session = await getSession();
   session.isAdmin = true;
   session.adminId = "admin";

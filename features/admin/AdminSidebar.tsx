@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
+import { Logo } from "@/components/layout/Logo";
 import styles from "./AdminSidebar.module.less";
 
 function buildNav(basePath: string) {
@@ -119,6 +120,7 @@ export function AdminSidebar({ basePath }: { basePath: string }) {
   return (
     <aside className={styles.sidebar} aria-label="Admin navigation">
       <div className={styles.logo}>
+        <Logo size={24} />
         <span>
           {first} <em>{last}</em>
         </span>
