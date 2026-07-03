@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminLoginForm } from "@/features/admin/AdminLoginForm";
+import { getAdminBasePath } from "@/lib/adminRoute";
 
 export const metadata: Metadata = {
   title: "Admin Login",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLoginPage() {
-  return <AdminLoginForm />;
+  return <AdminLoginForm basePath={getAdminBasePath()} />;
 }

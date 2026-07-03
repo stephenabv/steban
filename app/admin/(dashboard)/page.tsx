@@ -2,19 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "./admin.module.less";
 import pageStyles from "@/features/admin/AdminPage.module.less";
+import { getAdminBasePath } from "@/lib/adminRoute";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-const QUICK_LINKS = [
-  { href: "/admin/hero", title: "Hero", desc: "Edit name, title, photo, and intro" },
-  { href: "/admin/about", title: "About", desc: "Biography, skills, experience" },
-  { href: "/admin/projects", title: "Projects", desc: "Add and manage projects" },
-  { href: "/admin/featured", title: "Featured", desc: "Choose featured project carousel" },
-  { href: "/admin/seo", title: "SEO", desc: "Page metadata, OG, structured data" },
-  { href: "/admin/messages", title: "Messages", desc: "View contact form submissions" },
-];
-
 export default function AdminDashboardPage() {
+  const basePath = getAdminBasePath();
+  const QUICK_LINKS = [
+    { href: `${basePath}/hero`, title: "Hero", desc: "Edit name, title, photo, and intro" },
+    { href: `${basePath}/about`, title: "About", desc: "Biography, skills, experience" },
+    { href: `${basePath}/projects`, title: "Projects", desc: "Add and manage projects" },
+    { href: `${basePath}/featured`, title: "Featured", desc: "Choose featured project carousel" },
+    { href: `${basePath}/seo`, title: "SEO", desc: "Page metadata, OG, structured data" },
+    { href: `${basePath}/messages`, title: "Messages", desc: "View contact form submissions" },
+  ];
+
   return (
     <div className={pageStyles.page}>
       <div className={pageStyles.header}>

@@ -5,34 +5,36 @@ import { usePathname, useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import styles from "./AdminSidebar.module.less";
 
-const NAV = [
-  {
-    label: "Content",
-    items: [
-      { href: "/admin", label: "Dashboard", icon: "grid" },
-      { href: "/admin/hero", label: "Hero", icon: "user" },
-      { href: "/admin/about", label: "About", icon: "file-text" },
-      { href: "/admin/projects", label: "Projects", icon: "layers" },
-      { href: "/admin/featured", label: "Featured", icon: "star" },
-      { href: "/admin/contact-info", label: "Contact Info", icon: "mail" },
-    ],
-  },
-  {
-    label: "Site",
-    items: [
-      { href: "/admin/seo", label: "SEO Metadata", icon: "search" },
-      { href: "/admin/analytics", label: "Analytics", icon: "bar-chart" },
-      { href: "/admin/social", label: "Social Links", icon: "share-2" },
-      { href: "/admin/footer", label: "Footer", icon: "layout" },
-    ],
-  },
-  {
-    label: "Inbox",
-    items: [
-      { href: "/admin/messages", label: "Messages", icon: "message-square" },
-    ],
-  },
-];
+function buildNav(basePath: string) {
+  return [
+    {
+      label: "Content",
+      items: [
+        { href: basePath, label: "Dashboard", icon: "grid" },
+        { href: `${basePath}/hero`, label: "Hero", icon: "user" },
+        { href: `${basePath}/about`, label: "About", icon: "file-text" },
+        { href: `${basePath}/projects`, label: "Projects", icon: "layers" },
+        { href: `${basePath}/featured`, label: "Featured", icon: "star" },
+        { href: `${basePath}/contact-info`, label: "Contact Info", icon: "mail" },
+      ],
+    },
+    {
+      label: "Site",
+      items: [
+        { href: `${basePath}/seo`, label: "SEO Metadata", icon: "search" },
+        { href: `${basePath}/analytics`, label: "Analytics", icon: "bar-chart" },
+        { href: `${basePath}/social`, label: "Social Links", icon: "share-2" },
+        { href: `${basePath}/footer`, label: "Footer", icon: "layout" },
+      ],
+    },
+    {
+      label: "Inbox",
+      items: [
+        { href: `${basePath}/messages`, label: "Messages", icon: "message-square" },
+      ],
+    },
+  ];
+}
 
 const ICONS: Record<string, React.ReactNode> = {
   grid: (
@@ -101,13 +103,14 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-export function AdminSidebar() {
+export function AdminSidebar({ basePath }: { basePath: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const nav = buildNav(basePath);
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/admin/login");
+    router.push(`${basePath}/login`);
     router.refresh();
   }
 
@@ -123,7 +126,7 @@ export function AdminSidebar() {
       </div>
 
       <nav className={styles.nav}>
-        {NAV.map(({ label, items }) => (
+        {nav.map(({ label, items }) => (
           <div key={label} className={styles.navSection}>
             <p className={styles.navLabel}>{label}</p>
             {items.map(({ href, label: itemLabel, icon }) => (

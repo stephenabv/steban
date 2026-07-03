@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "@/features/admin/AdminPage.module.less";
+import { getAdminBasePath } from "@/lib/adminRoute";
 
 export const metadata: Metadata = { title: "Projects" };
 
@@ -8,6 +9,8 @@ export const metadata: Metadata = { title: "Projects" };
 const projects: { id: string; title: string; slug: string; featured: boolean; publishedAt: Date }[] = [];
 
 export default function AdminProjectsPage() {
+  const basePath = getAdminBasePath();
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -18,7 +21,7 @@ export default function AdminProjectsPage() {
       <div className={styles.card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
           <h2 className={styles.cardTitle} style={{ margin: 0, borderBottom: "none", paddingBottom: 0 }}>All Projects</h2>
-          <Link href="/admin/projects/new" className={styles.btnSave} style={{ textDecoration: "none" }}>
+          <Link href={`${basePath}/projects/new`} className={styles.btnSave} style={{ textDecoration: "none" }}>
             + New Project
           </Link>
         </div>
@@ -53,7 +56,7 @@ export default function AdminProjectsPage() {
                   </td>
                   <td className={styles.td}>
                     <div className={styles.tableActions}>
-                      <Link href={`/admin/projects/${p.id}`} className={styles.tableActionBtn}>
+                      <Link href={`${basePath}/projects/${p.id}`} className={styles.tableActionBtn}>
                         Edit
                       </Link>
                       <button className={`${styles.tableActionBtn} ${styles.danger}`} type="button">

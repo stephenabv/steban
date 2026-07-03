@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
+import { getAdminBasePath } from "@/lib/adminRoute";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -7,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin/", "/api/"],
+        disallow: [`${getAdminBasePath()}/`, "/api/"],
       },
     ],
     sitemap: `${siteConfig.url}/sitemap.xml`,

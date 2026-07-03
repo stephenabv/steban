@@ -6,7 +6,7 @@ import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import styles from "./AdminLoginForm.module.less";
 
-export function AdminLoginForm() {
+export function AdminLoginForm({ basePath }: { basePath: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [username, setUsername] = useState("");
@@ -30,7 +30,7 @@ export function AdminLoginForm() {
         return;
       }
       const raw = searchParams.get("callbackUrl") ?? "";
-      const destination = raw.startsWith("/admin") ? raw : "/admin";
+      const destination = raw.startsWith(basePath) ? raw : basePath;
       router.push(destination);
       router.refresh();
     } catch {

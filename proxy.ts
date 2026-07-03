@@ -2,37 +2,62 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { buildCsp, securityHeaders } from "@/server/security/csp";
 import { randomBytes } from "crypto";
+import { getAdminBasePath } from "@/lib/adminRoute";
+
+const ADMIN_INTERNAL_BASE = "/admin";
 
 export async function proxy(request: NextRequest) {
   const nonce = randomBytes(16).toString("base64");
   const csp = buildCsp(nonce);
+  const pathname = request.nextUrl.pathname;
+  const adminBasePath = getAdminBasePath();
 
-  const response = NextResponse.next({
-    request: {
-      headers: new Headers({
-        ...Object.fromEntries(request.headers),
-        "x-nonce": nonce,
-      }),
-    },
+  const requestHeaders = new Headers({
+    ...Object.fromEntries(request.headers),
+    "x-nonce": nonce,
   });
 
-  response.headers.set("Content-Security-Policy", csp);
-
-  for (const { key, value } of securityHeaders) {
-    response.headers.set(key, value);
+  function applySecurityHeaders(res: NextResponse) {
+    res.headers.set("Content-Security-Policy", csp);
+    for (const { key, value } of securityHeaders) {
+      res.headers.set(key, value);
+    }
+    return res;
   }
 
-  // Admin route protection (allow login page through)
-  const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
-  const isLoginPage = request.nextUrl.pathname === "/admin/login";
+  // When a custom sudo_route is configured, the real "/admin" path must not resolve —
+  // otherwise the dashboard would be reachable from both the secret path and the guessable one.
+  if (
+    adminBasePath !== ADMIN_INTERNAL_BASE &&
+    (pathname === ADMIN_INTERNAL_BASE || pathname.startsWith(`${ADMIN_INTERNAL_BASE}/`))
+  ) {
+    return applySecurityHeaders(
+      NextResponse.rewrite(new URL("/admin-route-disabled", request.url))
+    );
+  }
 
-  if (isAdminPath && !isLoginPage) {
+  const isAdminRequest =
+    pathname === adminBasePath || pathname.startsWith(`${adminBasePath}/`);
+
+  if (!isAdminRequest) {
+    return applySecurityHeaders(
+      NextResponse.next({ request: { headers: requestHeaders } })
+    );
+  }
+
+  const suffix = pathname.slice(adminBasePath.length);
+  const internalPath = `${ADMIN_INTERNAL_BASE}${suffix}`;
+  const isLoginPage = suffix === "/login";
+
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+
+  if (!isLoginPage) {
     const sessionCookie = request.cookies.get("steban_session");
 
     if (!sessionCookie?.value) {
-      const loginUrl = new URL("/admin/login", request.url);
-      loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
-      return NextResponse.redirect(loginUrl);
+      const loginUrl = new URL(`${adminBasePath}/login`, request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
     try {
@@ -48,17 +73,32 @@ export async function proxy(request: NextRequest) {
       );
 
       if (!session.isAdmin) {
-        const loginUrl = new URL("/admin/login", request.url);
-        loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
-        return NextResponse.redirect(loginUrl);
+        const loginUrl = new URL(`${adminBasePath}/login`, request.url);
+        loginUrl.searchParams.set("callbackUrl", pathname);
+        return applySecurityHeaders(NextResponse.redirect(loginUrl));
       }
     } catch {
-      const loginUrl = new URL("/admin/login", request.url);
-      return NextResponse.redirect(loginUrl);
+      return applySecurityHeaders(
+        NextResponse.redirect(new URL(`${adminBasePath}/login`, request.url))
+      );
     }
   }
 
-  return response;
+  // Public path already matches the internal route (e.g. sudo_route is unset/"admin") — nothing to rewrite.
+  if (pathname === internalPath) {
+    return applySecurityHeaders(response);
+  }
+
+  // Transparently map the public sudo_route path to the real app/admin/* files on disk.
+  const rewritten = NextResponse.rewrite(
+    new URL(`${internalPath}${request.nextUrl.search}`, request.url),
+    { request: { headers: requestHeaders } }
+  );
+  const setCookie = response.headers.get("set-cookie");
+  if (setCookie) {
+    rewritten.headers.set("set-cookie", setCookie);
+  }
+  return applySecurityHeaders(rewritten);
 }
 
 export const config = {
