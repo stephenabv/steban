@@ -1,0 +1,64 @@
+@import "styles/variables.less";
+
+.wrapper {
+  flex: 1;
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: @space-4;
+}
+
+// Slim indeterminate progress bar pinned to the very top of the viewport,
+// above the navbar (nav z-index is 100).
+.topBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 200;
+  background: fade(@color-accent, 15%);
+  overflow: hidden;
+}
+
+.topBarProgress {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, @color-accent, @color-accent-light);
+  border-radius: 0 2px 2px 0;
+  animation: slide 1s ease-in-out infinite;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  60% {
+    transform: translateX(150%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid @color-border;
+  border-top-color: @color-accent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.text {
+  font-size: @fs-sm;
+  color: @color-text-muted;
+}

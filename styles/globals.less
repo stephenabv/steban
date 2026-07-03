@@ -32,6 +32,13 @@ body {
   flex: 1;
 }
 
+// Lists used purely for layout (nav menus, card grids) opt out of bullets.
+// role="list" keeps them announced as lists by screen readers.
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
 a {
   color: inherit;
   text-decoration: none;

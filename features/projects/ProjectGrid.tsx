@@ -43,7 +43,7 @@ export function ProjectGrid({ projects }: Props) {
             <div className={styles.body}>
               <h3 className={styles.title}>{project.title}</h3>
               <p className={styles.summary}>{project.summary}</p>
-              <ul className={styles.techs} aria-label="Technologies">
+              <ul className={styles.techs} role="list" aria-label="Technologies">
                 {project.technologies.slice(0, 5).map((t) => (
                   <li key={t} className={styles.tech}>
                     {t}

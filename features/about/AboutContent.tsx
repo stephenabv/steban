@@ -66,7 +66,7 @@ export function AboutContent({ about }: Props) {
                 <p className={styles.timelineSubtitle}>{exp.company}</p>
                 <p className={styles.timelineDescription}>{exp.description}</p>
                 {exp.technologies.length > 0 && (
-                  <ul className={styles.timelineTechs} aria-label="Technologies used">
+                  <ul className={styles.timelineTechs} role="list" aria-label="Technologies used">
                     {exp.technologies.map((t) => (
                       <li key={t} className={styles.timelineTech}>{t}</li>
                     ))}

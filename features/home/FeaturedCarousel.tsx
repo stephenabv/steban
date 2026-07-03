@@ -107,7 +107,7 @@ export function FeaturedCarousel({ projects }: Props) {
                 <p className={styles.cardLabel}>Featured Project</p>
                 <h3 className={styles.cardTitle}>{project.title}</h3>
                 <p className={styles.cardSummary}>{project.summary}</p>
-                <ul className={styles.techList} aria-label="Technologies used">
+                <ul className={styles.techList} role="list" aria-label="Technologies used">
                   {project.technologies.slice(0, 6).map((tech) => (
                     <li key={tech} className={styles.techBadge}>
                       {tech}
