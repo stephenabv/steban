@@ -11,7 +11,24 @@
       "PowerShell($killed = @\\(\\); Get-NetTCPConnection -LocalPort 3000,3001,3002 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -Confirm:$false -ErrorAction Stop; $killed += $_ } catch {} }; if \\($killed\\) { \"killed: $\\($killed -join ', '\\)\" } else { \"no orphans\" })",
       "Bash(npm uninstall *)",
       "Bash(node -e \"console.log\\(require\\('pg/package.json'\\).version\\)\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(ls .claude/skills)",
+      "Bash(which chromium-cli *)",
+      "Bash(npm ls *)",
+      "Bash(chromium-cli --session projcheck)",
+      "Bash(node -e \"require.resolve\\('playwright'\\)\")",
+      "Read(//c//**)",
+      "Bash(cygpath -w /tmp/azari-verify/node_modules/playwright)",
+      "Bash(node \"C:\\\\Users\\\\Owner\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Owner-Documents-steban\\\\621dea51-5170-4408-9146-d423a1a72d2e\\\\scratchpad\\\\shot.js\")",
+      "Bash(npm init *)",
+      "Bash(node shot.js)",
+      "Bash(cp data/projects.json /tmp/projects.json.bak)",
+      "Bash(cd \"c:\\\\Users\\\\Owner\\\\Documents\\\\steban\" && cp /tmp/projects.json.bak data/projects.json && cat data/projects.json | head -5 && echo \"restored\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"npm run dev\")"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

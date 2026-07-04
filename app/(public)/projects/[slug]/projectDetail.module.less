@@ -5,39 +5,80 @@
   padding-top: @nav-height;
 }
 
-.header {
+.hero {
+  position: relative;
+  width: 100%;
+  height: min(640px, 70vw);
+  min-height: 420px;
+  background: @color-bg-elevated;
+  overflow: hidden;
+  margin-bottom: @space-16;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 15, 0.55) 0%,
+    rgba(10, 10, 15, 0.3) 35%,
+    rgba(10, 10, 15, 0.85) 100%
+  );
+}
+
+.heroContent {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   .container();
-  padding-top: @space-12;
-  padding-bottom: @space-12;
+  padding-top: @space-8;
+  padding-bottom: @space-10;
+
+  @media (min-width: @bp-lg) {
+    padding-top: @space-10;
+    padding-bottom: @space-16;
+  }
+}
+
+.back {
+  align-self: flex-start;
+  padding: @space-2 @space-5;
+  border-radius: @radius-full;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  color: @color-text-primary;
+  font-size: @fs-sm;
+  font-weight: @fw-medium;
+  transition: background @transition-fast, border-color @transition-fast;
+  .focus-ring();
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.heroText {
   display: flex;
   flex-direction: column;
   gap: @space-5;
   max-width: 800px;
 }
 
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: @space-2;
-  font-size: @fs-sm;
-  color: @color-text-muted;
-  transition: color @transition-fast;
-  .focus-ring();
-
-  &:hover {
-    color: @color-text-primary;
-  }
-}
-
 .title {
   font-size: clamp(@fs-4xl, 5vw, @fs-6xl);
   font-weight: @fw-extrabold;
   letter-spacing: -0.03em;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
 }
 
 .summary {
   font-size: @fs-xl;
-  color: @color-text-secondary;
+  color: rgba(255, 255, 255, 0.85);
   line-height: @lh-relaxed;
 }
 
@@ -53,14 +94,6 @@
 
 .btnOutline {
   .btn-outline();
-}
-
-.cover {
-  position: relative;
-  width: 100%;
-  height: min(560px, 60vw);
-  background: @color-bg-elevated;
-  margin-bottom: @space-16;
 }
 
 .body {
