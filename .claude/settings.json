@@ -8,7 +8,10 @@
       "Bash(curl -s -X POST http://localhost:3000/admin/projects/new -H 'Next-Action: 404d175894ad9a0753c82c23cf1903841074cf276b' -H 'Content-Type: application/json' -d '[{\"title\":\"X\",\"slug\":\"x-guard-test\",\"summary\":\"\",\"description\":\"\",\"technologies\":[],\"features\":[],\"coverImage\":\"\",\"liveUrl\":\"\",\"githubUrl\":\"\",\"featured\":false}]')",
       "Bash(curl -s -b \"C:/tmp/ck.txt\" http://localhost:3000/admin/projects)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/projects/portfolio-website)",
-      "PowerShell($killed = @\\(\\); Get-NetTCPConnection -LocalPort 3000,3001,3002 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -Confirm:$false -ErrorAction Stop; $killed += $_ } catch {} }; if \\($killed\\) { \"killed: $\\($killed -join ', '\\)\" } else { \"no orphans\" })"
+      "PowerShell($killed = @\\(\\); Get-NetTCPConnection -LocalPort 3000,3001,3002 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -Confirm:$false -ErrorAction Stop; $killed += $_ } catch {} }; if \\($killed\\) { \"killed: $\\($killed -join ', '\\)\" } else { \"no orphans\" })",
+      "Bash(npm uninstall *)",
+      "Bash(node -e \"console.log\\(require\\('pg/package.json'\\).version\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

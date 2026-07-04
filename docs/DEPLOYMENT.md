@@ -80,28 +80,27 @@ These are injected automatically — do not set them manually.
 
 | Variable | Integration |
 |---|---|
-| `POSTGRES_URL` | Vercel Postgres |
-| `POSTGRES_USER` | Vercel Postgres |
-| `POSTGRES_PASSWORD` | Vercel Postgres |
-| `POSTGRES_HOST` | Vercel Postgres |
-| `POSTGRES_DATABASE` | Vercel Postgres |
+| `DATABASE_URL` | Postgres storage (Prisma Postgres, Neon, etc.) — used by the app |
+| `POSTGRES_URL` | Postgres storage — fallback if `DATABASE_URL` is absent |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob |
 | `KV_URL` | Vercel KV |
 | `KV_REST_API_TOKEN` | Vercel KV |
 | `KV_REST_API_READ_ONLY_TOKEN` | Vercel KV |
 | `KV_REST_API_URL` | Vercel KV |
 
+The app connects with plain `pg`, not `@vercel/postgres`, so it works with any Postgres-compatible connection string — it doesn't require Neon's pooled `-pooler.` hostname format.
+
 ---
 
 ## Vercel Integrations
 
-### Vercel Postgres
+### Postgres
 
 Required for persistent content management via the admin dashboard.
 
-1. In the Vercel dashboard → your project → **Storage** → **Connect Store** → **Postgres** → **Create New**.
+1. In the Vercel dashboard → your project → **Storage** → **Connect Store**, add a Postgres-compatible store (Prisma Postgres, Neon, etc.) → **Create New**.
 2. Choose a region closest to your visitors.
-3. After creation, the `POSTGRES_*` env vars are automatically added.
+3. After creation, `DATABASE_URL` (and/or `POSTGRES_URL`) are automatically added.
 4. Run the SQL schemas from [docs/DATABASE.md → Suggested SQL Schemas](DATABASE.md#suggested-sql-schemas) against the new database.
 5. Implement and wire the concrete repository classes (see [docs/DATABASE.md → Repository Pattern](DATABASE.md#repository-pattern)).
 

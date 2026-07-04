@@ -21,7 +21,7 @@ function revive(stored: StoredProject): Project {
 }
 
 /**
- * File-backed repository for local development (no POSTGRES_URL configured).
+ * File-backed repository for local development (no DATABASE_URL/POSTGRES_URL configured).
  * Not suitable for serverless production — the filesystem there is ephemeral.
  */
 export class JsonProjectRepository extends ProjectRepository {

@@ -15,7 +15,7 @@ This document covers the entity schemas, repository pattern, and the steps to co
   - [ContactMessage](#contactmessage)
   - [SeoMetadata](#seometadata)
 - [Repository Pattern](#repository-pattern)
-- [Connecting Vercel Postgres](#connecting-vercel-postgres)
+- [Connecting Postgres](#connecting-postgres)
 - [Suggested SQL Schemas](#suggested-sql-schemas)
 
 ---
@@ -205,25 +205,25 @@ Concrete implementations plug in by extending the domain-specific abstract class
 
 ```ts
 // Example implementation
-import { sql } from '@vercel/postgres';
+import { getPool } from '@/server/db/pool';
 
 class PostgresProjectRepository extends ProjectRepository {
   async findById(id: string): Promise<Project | null> {
-    const { rows } = await sql`SELECT * FROM projects WHERE id = ${id} LIMIT 1`;
+    const { rows } = await getPool().query('SELECT * FROM projects WHERE id = $1 LIMIT 1', [id]);
     return rows[0] ? mapRowToProject(rows[0]) : null;
   }
 
   async findBySlug(slug: string): Promise<Project | null> {
-    const { rows } = await sql`SELECT * FROM projects WHERE slug = ${slug} LIMIT 1`;
+    const { rows } = await getPool().query('SELECT * FROM projects WHERE slug = $1 LIMIT 1', [slug]);
     return rows[0] ? mapRowToProject(rows[0]) : null;
   }
 
   async getFeatured(): Promise<Project[]> {
-    const { rows } = await sql`
+    const { rows } = await getPool().query(`
       SELECT * FROM projects
       WHERE featured = true
       ORDER BY featured_order ASC
-    `;
+    `);
     return rows.map(mapRowToProject);
   }
 
@@ -233,16 +233,21 @@ class PostgresProjectRepository extends ProjectRepository {
 
 ---
 
-## Connecting Vercel Postgres
+## Connecting Postgres
 
-### 1. Add the integration
+The app uses plain `pg` (node-postgres) via the shared pool in `server/db/pool.ts`, reading `DATABASE_URL` (falling back to `POSTGRES_URL`). This is intentionally provider-agnostic — it works with Prisma Postgres, Neon, Supabase, or any standard Postgres connection string.
 
-In the Vercel dashboard → your project → **Storage** → **Connect Store** → choose **Postgres**. This sets all `POSTGRES_*` environment variables automatically.
+> **Why not `@vercel/postgres`?** That package is a thin wrapper around Neon's serverless driver and hard-requires a pooled Neon connection string (hostname containing `-pooler.`). It throws `invalid_connection_string` against any other provider's connection string, including Prisma Postgres.
+
+### 1. Add a Postgres integration
+
+In the Vercel dashboard → your project → **Storage** → **Connect Store**, add a Postgres-compatible store (e.g. Prisma Postgres or Neon). This sets `DATABASE_URL` / `POSTGRES_URL` automatically.
 
 ### 2. Install the client
 
 ```bash
-npm install @vercel/postgres
+npm install pg
+npm install -D @types/pg
 ```
 
 ### 3. Run migrations
@@ -255,7 +260,7 @@ Update service constructors or a DI root file to use the Postgres implementation
 
 ```ts
 // server/services/index.ts
-import { PostgresProjectRepository } from '../repositories/postgres/PostgresProjectRepository';
+import { PostgresProjectRepository } from '../repositories/PostgresProjectRepository';
 
 export const projectService = new ProjectService(new PostgresProjectRepository());
 ```

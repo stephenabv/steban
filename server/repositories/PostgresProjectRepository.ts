@@ -1,5 +1,5 @@
-import { sql } from "@vercel/postgres";
 import { randomUUID } from "crypto";
+import { getPool } from "@/server/db/pool";
 import type { Project, CreateProjectInput, UpdateProjectInput } from "@/server/domain/entities";
 import type { Paginated, PaginationParams } from "@/server/domain/types";
 import { ProjectRepository } from "./ProjectRepository";
@@ -45,49 +45,53 @@ function toProject(row: ProjectRow): Project {
 let tableReady: Promise<void> | null = null;
 
 function ensureTable(): Promise<void> {
-  tableReady ??= sql`
-    CREATE TABLE IF NOT EXISTS projects (
-      id TEXT PRIMARY KEY,
-      slug TEXT UNIQUE NOT NULL,
-      title TEXT NOT NULL,
-      summary TEXT NOT NULL DEFAULT '',
-      description TEXT NOT NULL DEFAULT '',
-      cover_image TEXT NOT NULL DEFAULT '',
-      gallery JSONB NOT NULL DEFAULT '[]',
-      technologies JSONB NOT NULL DEFAULT '[]',
-      features JSONB NOT NULL DEFAULT '[]',
-      github_url TEXT,
-      live_url TEXT,
-      featured BOOLEAN NOT NULL DEFAULT FALSE,
-      featured_order INT,
-      published_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  tableReady ??= getPool()
+    .query(
+      `CREATE TABLE IF NOT EXISTS projects (
+        id TEXT PRIMARY KEY,
+        slug TEXT UNIQUE NOT NULL,
+        title TEXT NOT NULL,
+        summary TEXT NOT NULL DEFAULT '',
+        description TEXT NOT NULL DEFAULT '',
+        cover_image TEXT NOT NULL DEFAULT '',
+        gallery JSONB NOT NULL DEFAULT '[]',
+        technologies JSONB NOT NULL DEFAULT '[]',
+        features JSONB NOT NULL DEFAULT '[]',
+        github_url TEXT,
+        live_url TEXT,
+        featured BOOLEAN NOT NULL DEFAULT FALSE,
+        featured_order INT,
+        published_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )`
     )
-  `.then(() => undefined);
+    .then(() => undefined);
   return tableReady;
 }
 
-/** Production repository backed by Vercel Postgres / Neon (POSTGRES_URL). */
+/** Production repository backed by a standard Postgres connection (DATABASE_URL / POSTGRES_URL). */
 export class PostgresProjectRepository extends ProjectRepository {
   async findById(id: string): Promise<Project | null> {
     await ensureTable();
-    const { rows } = await sql<ProjectRow>`SELECT * FROM projects WHERE id = ${id}`;
+    const { rows } = await getPool().query<ProjectRow>("SELECT * FROM projects WHERE id = $1", [id]);
     return rows[0] ? toProject(rows[0]) : null;
   }
 
   async findBySlug(slug: string): Promise<Project | null> {
     await ensureTable();
-    const { rows } = await sql<ProjectRow>`SELECT * FROM projects WHERE slug = ${slug}`;
+    const { rows } = await getPool().query<ProjectRow>("SELECT * FROM projects WHERE slug = $1", [
+      slug,
+    ]);
     return rows[0] ? toProject(rows[0]) : null;
   }
 
   async findFeatured(): Promise<Project[]> {
     await ensureTable();
-    const { rows } = await sql<ProjectRow>`
-      SELECT * FROM projects
-      WHERE featured = TRUE
-      ORDER BY featured_order NULLS LAST, published_at DESC
-    `;
+    const { rows } = await getPool().query<ProjectRow>(
+      `SELECT * FROM projects
+       WHERE featured = TRUE
+       ORDER BY featured_order NULLS LAST, published_at DESC`
+    );
     return rows.map(toProject);
   }
 
@@ -96,29 +100,41 @@ export class PostgresProjectRepository extends ProjectRepository {
     const page = params?.page ?? 1;
     const pageSize = params?.pageSize ?? 20;
     const offset = (page - 1) * pageSize;
-    const { rows } = await sql<ProjectRow>`
-      SELECT * FROM projects ORDER BY published_at DESC LIMIT ${pageSize} OFFSET ${offset}
-    `;
-    const { rows: countRows } = await sql<{ count: string }>`SELECT COUNT(*) FROM projects`;
+    const { rows } = await getPool().query<ProjectRow>(
+      "SELECT * FROM projects ORDER BY published_at DESC LIMIT $1 OFFSET $2",
+      [pageSize, offset]
+    );
+    const { rows: countRows } = await getPool().query<{ count: string }>(
+      "SELECT COUNT(*) FROM projects"
+    );
     return this.paginate(rows.map(toProject), Number(countRows[0].count), params);
   }
 
   async create(input: CreateProjectInput): Promise<Project> {
     await ensureTable();
     const id = randomUUID();
-    const { rows } = await sql<ProjectRow>`
-      INSERT INTO projects (
+    const { rows } = await getPool().query<ProjectRow>(
+      `INSERT INTO projects (
         id, slug, title, summary, description, cover_image,
         gallery, technologies, features, github_url, live_url, featured, featured_order
-      ) VALUES (
-        ${id}, ${input.slug}, ${input.title}, ${input.summary}, ${input.description},
-        ${input.coverImage}, ${JSON.stringify(input.gallery)},
-        ${JSON.stringify(input.technologies)}, ${JSON.stringify(input.features)},
-        ${input.githubUrl ?? null}, ${input.liveUrl ?? null},
-        ${input.featured}, ${input.featuredOrder ?? null}
-      )
-      RETURNING *
-    `;
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      RETURNING *`,
+      [
+        id,
+        input.slug,
+        input.title,
+        input.summary,
+        input.description,
+        input.coverImage,
+        JSON.stringify(input.gallery),
+        JSON.stringify(input.technologies),
+        JSON.stringify(input.features),
+        input.githubUrl ?? null,
+        input.liveUrl ?? null,
+        input.featured,
+        input.featuredOrder ?? null,
+      ]
+    );
     return toProject(rows[0]);
   }
 
@@ -126,30 +142,45 @@ export class PostgresProjectRepository extends ProjectRepository {
     const existing = await this.findById(id);
     if (!existing) return null;
     const merged = { ...existing, ...input };
-    const { rows } = await sql<ProjectRow>`
-      UPDATE projects SET
-        slug = ${merged.slug},
-        title = ${merged.title},
-        summary = ${merged.summary},
-        description = ${merged.description},
-        cover_image = ${merged.coverImage},
-        gallery = ${JSON.stringify(merged.gallery)},
-        technologies = ${JSON.stringify(merged.technologies)},
-        features = ${JSON.stringify(merged.features)},
-        github_url = ${merged.githubUrl ?? null},
-        live_url = ${merged.liveUrl ?? null},
-        featured = ${merged.featured},
-        featured_order = ${merged.featuredOrder ?? null},
+    const { rows } = await getPool().query<ProjectRow>(
+      `UPDATE projects SET
+        slug = $1,
+        title = $2,
+        summary = $3,
+        description = $4,
+        cover_image = $5,
+        gallery = $6,
+        technologies = $7,
+        features = $8,
+        github_url = $9,
+        live_url = $10,
+        featured = $11,
+        featured_order = $12,
         updated_at = NOW()
-      WHERE id = ${id}
-      RETURNING *
-    `;
+      WHERE id = $13
+      RETURNING *`,
+      [
+        merged.slug,
+        merged.title,
+        merged.summary,
+        merged.description,
+        merged.coverImage,
+        JSON.stringify(merged.gallery),
+        JSON.stringify(merged.technologies),
+        JSON.stringify(merged.features),
+        merged.githubUrl ?? null,
+        merged.liveUrl ?? null,
+        merged.featured,
+        merged.featuredOrder ?? null,
+        id,
+      ]
+    );
     return rows[0] ? toProject(rows[0]) : null;
   }
 
   async delete(id: string): Promise<boolean> {
     await ensureTable();
-    const { rowCount } = await sql`DELETE FROM projects WHERE id = ${id}`;
+    const { rowCount } = await getPool().query("DELETE FROM projects WHERE id = $1", [id]);
     return (rowCount ?? 0) > 0;
   }
 }
