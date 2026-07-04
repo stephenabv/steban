@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { siteUrl } from "@/config/site";
 import type { Project } from "@/server/domain/entities";
 import { getProjectService } from "@/server/services";
 import styles from "./projectDetail.module.less";
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: project.title,
     description: project.summary,
-    alternates: { canonical: `${siteConfig.url}/projects/${slug}` },
+    alternates: { canonical: siteUrl(`/projects/${slug}`) },
     openGraph: {
       title: project.title,
       description: project.summary,

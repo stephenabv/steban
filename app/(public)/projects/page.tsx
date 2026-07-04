@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { ProjectGrid } from "@/features/projects/ProjectGrid";
-import { siteConfig } from "@/config/site";
+import { siteConfig, siteUrl } from "@/config/site";
 import { getProjectService } from "@/server/services";
 import styles from "./projects.module.less";
 
 export const metadata: Metadata = {
   title: "Projects",
   description: `A showcase of software projects built by ${siteConfig.name}.`,
-  alternates: { canonical: `${siteConfig.url}/projects` },
+  alternates: { canonical: siteUrl("/projects") },
 };
 
 export default async function ProjectsPage() {

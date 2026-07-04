@@ -25,7 +25,15 @@
       "Bash(cp data/projects.json /tmp/projects.json.bak)",
       "Bash(cd \"c:\\\\Users\\\\Owner\\\\Documents\\\\steban\" && cp /tmp/projects.json.bak data/projects.json && cat data/projects.json | head -5 && echo \"restored\")",
       "Bash(pkill -f \"next dev\")",
-      "Bash(pkill -f \"npm run dev\")"
+      "Bash(pkill -f \"npm run dev\")",
+      "Bash(git stash *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3457/)",
+      "Bash(curl -s http://localhost:3457/robots.txt)",
+      "Bash(curl -s http://localhost:3457/sitemap.xml)",
+      "Bash(curl -s -D - -o /dev/null http://localhost:3457/admin)",
+      "Bash(curl -s -D - -o /dev/null http://localhost:3457/api/contact)",
+      "Bash(curl -s -D - -o /dev/null http://localhost:3457/)",
+      "Bash(taskkill //F //IM node.exe)"
     ],
     "additionalDirectories": [
       "\\tmp"

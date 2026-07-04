@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import { siteConfig, siteUrl } from "@/config/site";
 import { socialLinks } from "@/config/social";
 
 export function personSchema() {
@@ -9,7 +9,7 @@ export function personSchema() {
     url: siteConfig.url,
     jobTitle: "Computer Engineer",
     email: `mailto:${siteConfig.author.email}`,
-    image: `${siteConfig.url}/opengraph-image`,
+    image: siteUrl("/opengraph-image"),
     knowsAbout: [
       "Computer Engineering",
       "Full-Stack Web Development",

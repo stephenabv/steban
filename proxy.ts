@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { buildCsp, securityHeaders } from "@/server/security/csp";
+import { getRobotsTagHeader } from "@/server/security/robotsTag";
 import { randomBytes } from "crypto";
 import { getAdminBasePath } from "@/lib/adminRoute";
 
 const ADMIN_INTERNAL_BASE = "/admin";
+const API_BASE = "/api";
 
 export async function proxy(request: NextRequest) {
   const nonce = randomBytes(16).toString("base64");
@@ -21,6 +23,10 @@ export async function proxy(request: NextRequest) {
     res.headers.set("Content-Security-Policy", csp);
     for (const { key, value } of securityHeaders) {
       res.headers.set(key, value);
+    }
+    const robotsTag = getRobotsTagHeader(pathname, [adminBasePath, ADMIN_INTERNAL_BASE, API_BASE]);
+    if (robotsTag) {
+      res.headers.set(robotsTag.key, robotsTag.value);
     }
     return res;
   }

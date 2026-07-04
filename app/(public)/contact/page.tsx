@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/features/contact/ContactForm";
 import { socialLinks } from "@/config/social";
-import { siteConfig } from "@/config/site";
+import { siteConfig, siteUrl } from "@/config/site";
 import styles from "./contact.module.less";
 
 export const metadata: Metadata = {
   title: "Get in Touch",
   description: `Contact ${siteConfig.name} for collaboration, job opportunities, or general inquiries.`,
-  alternates: { canonical: `${siteConfig.url}/contact` },
+  alternates: { canonical: siteUrl("/contact") },
 };
 
 export default function ContactPage() {
