@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "@/features/admin/AdminPage.module.less";
+import { DeleteProjectButton } from "@/features/admin/DeleteProjectButton";
+import { getProjectService } from "@/server/services";
 import { getAdminBasePath } from "@/lib/adminRoute";
 
 export const metadata: Metadata = { title: "Projects" };
 
-// TODO: fetch from ProjectService when DB is wired up
-const projects: { id: string; title: string; slug: string; featured: boolean; publishedAt: Date }[] = [];
-
-export default function AdminProjectsPage() {
+export default async function AdminProjectsPage() {
   const basePath = getAdminBasePath();
+  const result = await getProjectService().getAll({ pageSize: 100 });
+  const projects = result.ok ? result.value.items : [];
 
   return (
     <div className={styles.page}>
@@ -17,6 +18,12 @@ export default function AdminProjectsPage() {
         <h1 className={styles.title}>Projects</h1>
         <p className={styles.subtitle}>Manage all portfolio projects.</p>
       </div>
+
+      {!result.ok && (
+        <div className={styles.errorBanner} role="alert">
+          Failed to load projects: {result.error.message}
+        </div>
+      )}
 
       <div className={styles.card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
@@ -56,12 +63,10 @@ export default function AdminProjectsPage() {
                   </td>
                   <td className={styles.td}>
                     <div className={styles.tableActions}>
-                      <Link href={`${basePath}/projects/${p.id}`} className={styles.tableActionBtn}>
-                        Edit
+                      <Link href={`/projects/${p.slug}`} className={styles.tableActionBtn} target="_blank" rel="noopener noreferrer">
+                        View
                       </Link>
-                      <button className={`${styles.tableActionBtn} ${styles.danger}`} type="button">
-                        Delete
-                      </button>
+                      <DeleteProjectButton id={p.id} title={p.title} />
                     </div>
                   </td>
                 </tr>

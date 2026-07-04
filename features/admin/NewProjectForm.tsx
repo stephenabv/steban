@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createProjectAction } from "./projectActions";
 import styles from "./AdminPage.module.less";
 
 function slugify(value: string) {
@@ -14,13 +16,16 @@ function slugify(value: string) {
 }
 
 export function NewProjectForm({ basePath }: { basePath: string }) {
-  const [saved, setSaved] = useState(false);
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [summary, setSummary] = useState("");
   const [description, setDescription] = useState("");
   const [techStack, setTechStack] = useState("");
+  const [features, setFeatures] = useState("");
   const [liveUrl, setLiveUrl] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -35,9 +40,32 @@ export function NewProjectForm({ basePath }: { basePath: string }) {
 
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: call Server Action / API when DB is wired up
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setError(null);
+    setSaving(true);
+    try {
+      const result = await createProjectAction({
+        title,
+        slug,
+        summary,
+        description,
+        technologies: techStack.split(",").map((t) => t.trim()).filter(Boolean),
+        features: features.split("\n").map((f) => f.trim()).filter(Boolean),
+        coverImage: imageUrl.trim(),
+        liveUrl: liveUrl.trim(),
+        githubUrl: repoUrl.trim(),
+        featured,
+      });
+      if (!result.ok) {
+        setError(result.error ?? "Failed to save project.");
+        return;
+      }
+      router.push(`${basePath}/projects`);
+      router.refresh();
+    } catch {
+      setError("Something went wrong while saving. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -47,9 +75,9 @@ export function NewProjectForm({ basePath }: { basePath: string }) {
         <p className={styles.subtitle}>Add a new project to your portfolio.</p>
       </div>
 
-      {saved && (
-        <div className={styles.successBanner} role="status">
-          ✓ Project saved successfully.
+      {error && (
+        <div className={styles.errorBanner} role="alert">
+          {error}
         </div>
       )}
 
@@ -95,6 +123,12 @@ export function NewProjectForm({ basePath }: { basePath: string }) {
             <span className={styles.hint}>Comma-separated list of technologies.</span>
           </div>
 
+          <div className={styles.fieldFull}>
+            <label className={styles.label} htmlFor="p-features">Key Features</label>
+            <textarea id="p-features" className={styles.textarea} value={features} onChange={e => setFeatures(e.target.value)} placeholder={"Real-time collaboration\nOffline support\nRole-based access control"} rows={4} />
+            <span className={styles.hint}>One feature per line — shown on the project detail page.</span>
+          </div>
+
           <div className={styles.row}>
             <div className={styles.field}>
               <label className={styles.label} htmlFor="p-live">Live URL</label>
@@ -122,7 +156,9 @@ export function NewProjectForm({ basePath }: { basePath: string }) {
           </div>
 
           <div className={styles.actions}>
-            <button type="submit" className={styles.btnSave}>Save Project</button>
+            <button type="submit" className={styles.btnSave} disabled={saving} aria-busy={saving}>
+              {saving ? "Saving…" : "Save Project"}
+            </button>
             <Link href={`${basePath}/projects`} className={styles.btnCancel} style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
               Cancel
             </Link>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ProjectGrid } from "@/features/projects/ProjectGrid";
 import { siteConfig } from "@/config/site";
+import { getProjectService } from "@/server/services";
 import styles from "./projects.module.less";
 
 export const metadata: Metadata = {
@@ -9,10 +10,9 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteConfig.url}/projects` },
 };
 
-// TODO: fetch from ProjectService when DB is wired up
-const projects: never[] = [];
-
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const result = await getProjectService().getAll({ pageSize: 100 });
+  const projects = result.ok ? result.value.items : [];
   return (
     <div className={styles.page}>
       <section className={styles.hero} aria-labelledby="projects-heading">

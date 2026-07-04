@@ -1,4 +1,5 @@
 export { ProjectService } from "./ProjectService";
+export { getProjectService } from "./projectService.instance";
 export { HeroService } from "./HeroService";
 export { AboutService } from "./AboutService";
 export { ContactService } from "./ContactService";

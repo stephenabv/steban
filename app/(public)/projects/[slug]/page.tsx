@@ -4,15 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import type { Project } from "@/server/domain/entities";
+import { getProjectService } from "@/server/services";
 import styles from "./projectDetail.module.less";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// TODO: replace with real ProjectService lookup when DB is wired up
-async function getProject(_slug: string): Promise<Project | null> {
-  return null;
+async function getProject(slug: string): Promise<Project | null> {
+  const result = await getProjectService().getBySlug(slug);
+  return result.ok ? result.value : null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400,
+    // Project cover/gallery images are pasted as external URLs in the admin (e.g. Vercel Blob).
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
 
   experimental: {
