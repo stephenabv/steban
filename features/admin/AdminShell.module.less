@@ -10,19 +10,16 @@
 .main {
   flex: 1;
   min-width: 0;
-  padding: @space-8;
   overflow-y: auto;
-
-  @media (min-width: @bp-lg) {
-    padding: @space-10;
-  }
+  display: flex;
+  flex-direction: column;
 }
 
 .topbar {
   display: none;
   align-items: center;
   gap: @space-3;
-  margin: -@space-8 -@space-8 @space-6;
+  flex-shrink: 0;
   padding: @space-4 @space-5;
   border-bottom: 1px solid @color-border;
   background: @color-bg-card;
@@ -32,6 +29,14 @@
 
   @media (max-width: @bp-lg) {
     display: flex;
+  }
+}
+
+.mainContent {
+  padding: @space-8;
+
+  @media (min-width: @bp-lg) {
+    padding: @space-10;
   }
 }
 

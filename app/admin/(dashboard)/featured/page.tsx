@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BackButton } from "@/features/admin/BackButton";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export const metadata: Metadata = { title: "Featured Projects" };
@@ -10,7 +9,6 @@ const allProjects: { id: string; title: string; featured: boolean; featuredOrder
 export default function AdminFeaturedPage() {
   return (
     <div className={styles.page}>
-      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Featured Projects</h1>
         <p className={styles.subtitle}>Choose which projects appear in the homepage carousel (max 5). Drag to reorder.</p>

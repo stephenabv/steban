@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { analyticsConfig } from "@/config/analytics";
-import { BackButton } from "@/features/admin/BackButton";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export const metadata: Metadata = { title: "Analytics" };
@@ -10,7 +9,6 @@ export default function AdminAnalyticsPage() {
 
   return (
     <div className={styles.page}>
-      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Analytics</h1>
         <p className={styles.subtitle}>Firebase Analytics integration status and configuration.</p>

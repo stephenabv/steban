@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createProjectAction } from "./projectActions";
-import { BackButton } from "./BackButton";
 import { useToast } from "@/components/ui/ToastProvider";
 import styles from "./AdminPage.module.less";
 
@@ -74,7 +73,6 @@ export function NewProjectForm({ basePath }: { basePath: string }) {
 
   return (
     <div className={styles.page}>
-      <BackButton href={`${basePath}/projects`} label="Back to Projects" />
       <div className={styles.header}>
         <h1 className={styles.title}>New Project</h1>
         <p className={styles.subtitle}>Add a new project to your portfolio.</p>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { BackButton } from "@/features/admin/BackButton";
 import { useToast } from "@/components/ui/ToastProvider";
 import styles from "@/features/admin/AdminPage.module.less";
 
@@ -18,7 +17,6 @@ export default function AdminSocialPage() {
 
   return (
     <div className={styles.page}>
-      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Social Links</h1>
         <p className={styles.subtitle}>Manage social profile URLs shown in the footer and contact page.</p>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { BackButton } from "@/features/admin/BackButton";
 import { useToast } from "@/components/ui/ToastProvider";
 import styles from "@/features/admin/AdminPage.module.less";
 
@@ -17,7 +16,6 @@ export default function AdminFooterPage() {
 
   return (
     <div className={styles.page}>
-      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Footer</h1>
         <p className={styles.subtitle}>Manage footer legal links.</p>

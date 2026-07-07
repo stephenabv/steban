@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "@/features/admin/AdminPage.module.less";
 import { ProjectRowActions } from "@/features/admin/ProjectRowActions";
-import { BackButton } from "@/features/admin/BackButton";
 import { getProjectService } from "@/server/services";
 import { getAdminBasePath } from "@/lib/adminRoute";
 
@@ -15,7 +14,6 @@ export default async function AdminProjectsPage() {
 
   return (
     <div className={styles.page}>
-      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Projects</h1>
         <p className={styles.subtitle}>Manage all portfolio projects.</p>

@@ -1,24 +1,26 @@
 @import "styles/variables.less";
 
-.wrapper {
-  flex: 1;
-  min-height: 40vh;
+// Full-viewport splash overlay. Fixed + high z-index so it always renders on
+// top of the navbar (100), admin drawer (60), modals (150), and toasts (200)
+// no matter where loading.tsx places it in the component tree.
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: @space-4;
+  background: @color-bg;
 }
 
-// Slim indeterminate progress bar pinned to the very top of the viewport,
-// above the navbar (nav z-index is 100).
 .topBar {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
-  z-index: 200;
   background: fade(@color-accent, 15%);
   overflow: hidden;
 }
