@@ -1,27 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { BackButton } from "@/features/admin/BackButton";
+import { useToast } from "@/components/ui/ToastProvider";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export default function AdminAboutPage() {
+  const toast = useToast();
   const [biography, setBiography] = useState("");
-  const [saved, setSaved] = useState(false);
 
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
     // TODO: save via AboutService when DB is wired up
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    toast.success("About content saved.");
   }
 
   return (
     <div className={styles.page}>
+      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>About</h1>
         <p className={styles.subtitle}>Edit biography, skills, experience, education, certifications, and awards.</p>
       </div>
-
-      {saved && <div className={styles.successBanner} role="status">✓ About content saved.</div>}
 
       <form className={styles.card} onSubmit={onSave}>
         <h2 className={styles.cardTitle}>Biography</h2>

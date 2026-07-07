@@ -1,33 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import { BackButton } from "@/features/admin/BackButton";
+import { useToast } from "@/components/ui/ToastProvider";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export default function AdminContactInfoPage() {
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [facebook, setFacebook] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
-  const [saved, setSaved] = useState(false);
 
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
     // TODO: save via ContactService when DB is wired up
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    toast.success("Contact info saved.");
   }
 
   return (
     <div className={styles.page}>
+      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Contact Information</h1>
         <p className={styles.subtitle}>Update contact details and social links shown on the Contact page.</p>
       </div>
-
-      {saved && (
-        <div className={styles.successBanner} role="status">✓ Contact info saved.</div>
-      )}
 
       <form className={styles.card} onSubmit={onSave}>
         <h2 className={styles.cardTitle}>Contact Details</h2>

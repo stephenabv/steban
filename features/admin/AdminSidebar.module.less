@@ -13,7 +13,18 @@
   top: 0;
 
   @media (max-width: @bp-lg) {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform @transition-normal;
+    box-shadow: @shadow-lg;
+
+    &.mobileOpen {
+      transform: translateX(0);
+    }
   }
 }
 

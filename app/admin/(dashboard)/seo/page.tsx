@@ -1,38 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import { BackButton } from "@/features/admin/BackButton";
+import { useToast } from "@/components/ui/ToastProvider";
 import styles from "@/features/admin/AdminPage.module.less";
 
 const PAGE_KEYS = ["home", "projects", "about", "contact"];
 
 export default function AdminSeoPage() {
+  const toast = useToast();
   const [pageKey, setPageKey] = useState("home");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [keywords, setKeywords] = useState("");
   const [ogImageUrl, setOgImageUrl] = useState("");
   const [noIndex, setNoIndex] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
     // TODO: save via SeoService when DB is wired up
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    toast.success("SEO metadata saved.");
   }
 
   return (
     <div className={styles.page}>
+      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>SEO Metadata</h1>
         <p className={styles.subtitle}>Edit page-level title, description, and Open Graph data.</p>
       </div>
-
-      {saved && (
-        <div className={styles.successBanner} role="status">
-          ✓ SEO metadata saved.
-        </div>
-      )}
 
       <form className={styles.card} onSubmit={onSave}>
         <h2 className={styles.cardTitle}>Edit Page SEO</h2>

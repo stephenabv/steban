@@ -104,7 +104,7 @@ const ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-export function AdminSidebar({ basePath }: { basePath: string }) {
+export function AdminSidebar({ basePath, mobileOpen = false }: { basePath: string; mobileOpen?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const nav = buildNav(basePath);
@@ -118,7 +118,10 @@ export function AdminSidebar({ basePath }: { basePath: string }) {
   const [first, last] = siteConfig.name.split(" ");
 
   return (
-    <aside className={styles.sidebar} aria-label="Admin navigation">
+    <aside
+      className={`${styles.sidebar} ${mobileOpen ? styles.mobileOpen : ""}`}
+      aria-label="Admin navigation"
+    >
       <div className={styles.logo}>
         <Logo size={24} />
         <span>

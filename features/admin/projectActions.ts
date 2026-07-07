@@ -24,6 +24,7 @@ const createProjectSchema = z.object({
 });
 
 export type CreateProjectActionInput = z.input<typeof createProjectSchema>;
+export type UpdateProjectActionInput = z.input<typeof createProjectSchema>;
 
 export interface ActionResult {
   ok: boolean;
@@ -60,6 +61,36 @@ export async function createProjectAction(input: CreateProjectActionInput): Prom
   }
 
   revalidatePath("/projects");
+  revalidatePath("/");
+  return { ok: true };
+}
+
+export async function updateProjectAction(id: string, input: UpdateProjectActionInput): Promise<ActionResult> {
+  if (!(await requireAdmin())) {
+    return { ok: false, error: "Unauthorized." };
+  }
+
+  const parsed = createProjectSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const { liveUrl, githubUrl, ...rest } = parsed.data;
+  const result = await getProjectService().update(id, {
+    ...rest,
+    liveUrl: liveUrl || undefined,
+    githubUrl: githubUrl || undefined,
+  });
+
+  if (!result.ok) {
+    return { ok: false, error: result.error.message };
+  }
+  if (!result.value) {
+    return { ok: false, error: "Project not found." };
+  }
+
+  revalidatePath("/projects");
+  revalidatePath(`/projects/${parsed.data.slug}`);
   revalidatePath("/");
   return { ok: true };
 }

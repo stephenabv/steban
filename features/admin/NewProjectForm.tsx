@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createProjectAction } from "./projectActions";
+import { BackButton } from "./BackButton";
+import { useToast } from "@/components/ui/ToastProvider";
 import styles from "./AdminPage.module.less";
 
 function slugify(value: string) {
@@ -17,6 +19,7 @@ function slugify(value: string) {
 
 export function NewProjectForm({ basePath }: { basePath: string }) {
   const router = useRouter();
+  const toast = useToast();
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
@@ -59,6 +62,7 @@ export function NewProjectForm({ basePath }: { basePath: string }) {
         setError(result.error ?? "Failed to save project.");
         return;
       }
+      toast.success("Project created.");
       router.push(`${basePath}/projects`);
       router.refresh();
     } catch {
@@ -70,6 +74,7 @@ export function NewProjectForm({ basePath }: { basePath: string }) {
 
   return (
     <div className={styles.page}>
+      <BackButton href={`${basePath}/projects`} label="Back to Projects" />
       <div className={styles.header}>
         <h1 className={styles.title}>New Project</h1>
         <p className={styles.subtitle}>Add a new project to your portfolio.</p>

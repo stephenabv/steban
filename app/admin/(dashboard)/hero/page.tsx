@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { BackButton } from "@/features/admin/BackButton";
+import { useToast } from "@/components/ui/ToastProvider";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export default function AdminHeroPage() {
-  const [saved, setSaved] = useState(false);
+  const toast = useToast();
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [introduction, setIntroduction] = useState("");
@@ -14,22 +16,16 @@ export default function AdminHeroPage() {
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
     // TODO: call Server Action / API when DB is wired up
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    toast.success("Hero content saved successfully.");
   }
 
   return (
     <div className={styles.page}>
+      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Hero Section</h1>
         <p className={styles.subtitle}>Edit your name, title, introduction, and photo shown in the hero.</p>
       </div>
-
-      {saved && (
-        <div className={styles.successBanner} role="status">
-          ✓ Hero content saved successfully.
-        </div>
-      )}
 
       <form className={styles.card} onSubmit={onSave}>
         <h2 className={styles.cardTitle}>Hero Content</h2>

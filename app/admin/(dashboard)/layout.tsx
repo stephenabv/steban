@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { AdminSidebar } from "@/features/admin/AdminSidebar";
+import { AdminShell } from "@/features/admin/AdminShell";
 import { getSession } from "@/server/auth/session";
 import { getAdminBasePath } from "@/lib/adminRoute";
-import styles from "./admin.module.less";
 
 export const metadata: Metadata = {
   title: { default: "Admin", template: "%s | Admin" },
@@ -24,12 +23,5 @@ export default async function AdminLayout({
     redirect(`${basePath}/login`);
   }
 
-  return (
-    <div className={styles.layout}>
-      <AdminSidebar basePath={basePath} />
-      <main className={styles.main} id="main-content" tabIndex={-1}>
-        {children}
-      </main>
-    </div>
-  );
+  return <AdminShell basePath={basePath}>{children}</AdminShell>;
 }

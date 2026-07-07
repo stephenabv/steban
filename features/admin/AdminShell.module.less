@@ -1,0 +1,80 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.layout {
+  display: flex;
+  min-height: 100dvh;
+  background: @color-bg;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: @space-8;
+  overflow-y: auto;
+
+  @media (min-width: @bp-lg) {
+    padding: @space-10;
+  }
+}
+
+.topbar {
+  display: none;
+  align-items: center;
+  gap: @space-3;
+  margin: -@space-8 -@space-8 @space-6;
+  padding: @space-4 @space-5;
+  border-bottom: 1px solid @color-border;
+  background: @color-bg-card;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+
+  @media (max-width: @bp-lg) {
+    display: flex;
+  }
+}
+
+.menuToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: @radius-md;
+  border: 1px solid @color-border;
+  background: transparent;
+  color: @color-text-primary;
+  cursor: pointer;
+  .focus-ring();
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    border-color: @color-accent;
+    color: @color-accent;
+  }
+}
+
+.topbarTitle {
+  font-size: @fs-sm;
+  font-weight: @fw-semibold;
+  color: @color-text-primary;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  z-index: 55;
+  cursor: pointer;
+
+  @media (min-width: @bp-lg) {
+    display: none;
+  }
+}

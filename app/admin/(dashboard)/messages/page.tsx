@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getContactService } from "@/server/services";
 import { MessagesInbox } from "@/features/admin/MessagesInbox";
 import type { InboxMessage } from "@/features/admin/MessagesInbox";
+import { BackButton } from "@/features/admin/BackButton";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export const metadata: Metadata = { title: "Messages" };
@@ -26,6 +27,7 @@ export default async function AdminMessagesPage() {
 
   return (
     <div className={styles.page}>
+      <BackButton />
       <div className={styles.header}>
         <h1 className={styles.title}>Messages</h1>
         <p className={styles.subtitle}>Contact form submissions from visitors.</p>

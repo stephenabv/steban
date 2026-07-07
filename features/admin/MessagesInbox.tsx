@@ -3,7 +3,11 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { markMessageReadAction, deleteMessageAction } from "./messageActions";
+import { Modal } from "@/components/ui/Modal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { useToast } from "@/components/ui/ToastProvider";
 import styles from "./AdminPage.module.less";
+import modalStyles from "@/components/ui/Modal.module.less";
 
 export interface InboxMessage {
   id: string;
@@ -17,36 +21,39 @@ export interface InboxMessage {
 
 export function MessagesInbox({ messages }: { messages: InboxMessage[] }) {
   const router = useRouter();
+  const toast = useToast();
   const [pending, startTransition] = useTransition();
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  function runAction(fn: () => Promise<{ ok: boolean; error?: string }>) {
-    setError(null);
-    startTransition(async () => {
-      const result = await fn();
-      if (!result.ok) {
-        setError(result.error ?? "Something went wrong.");
-        return;
-      }
-      router.refresh();
-    });
-  }
+  const [viewMessage, setViewMessage] = useState<InboxMessage | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<InboxMessage | null>(null);
 
   function onView(m: InboxMessage) {
-    const next = openId === m.id ? null : m.id;
-    setOpenId(next);
-    if (next && !m.read) {
-      runAction(() => markMessageReadAction(m.id));
+    setViewMessage(m);
+    if (!m.read) {
+      startTransition(async () => {
+        const result = await markMessageReadAction(m.id);
+        if (!result.ok) {
+          toast.error(result.error ?? "Failed to mark message as read.");
+          return;
+        }
+        router.refresh();
+      });
     }
   }
 
-  function onDelete(m: InboxMessage) {
-    if (!window.confirm(`Delete the message from ${m.name}? This cannot be undone.`)) {
-      return;
-    }
-    if (openId === m.id) setOpenId(null);
-    runAction(() => deleteMessageAction(m.id));
+  function onConfirmDelete() {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+    startTransition(async () => {
+      const result = await deleteMessageAction(target.id);
+      if (!result.ok) {
+        toast.error(result.error ?? "Failed to delete message.");
+        return;
+      }
+      toast.success("Message deleted.");
+      if (viewMessage?.id === target.id) setViewMessage(null);
+      setDeleteTarget(null);
+      router.refresh();
+    });
   }
 
   if (messages.length === 0) {
@@ -65,110 +72,101 @@ export function MessagesInbox({ messages }: { messages: InboxMessage[] }) {
 
   return (
     <>
-      {error && (
-        <div className={styles.errorBanner} role="alert" style={{ marginBottom: "1rem" }}>
-          {error}
-        </div>
-      )}
+      <div className={styles.tableWrap}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th className={styles.th}>From</th>
+              <th className={styles.th}>Subject</th>
+              <th className={styles.th}>Date</th>
+              <th className={styles.th}>Status</th>
+              <th className={styles.th}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {messages.map((m) => (
+              <tr key={m.id}>
+                <td className={styles.td}>
+                  <div>
+                    <div>{m.name}</div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #606075)" }}>
+                      {m.email}
+                    </div>
+                  </div>
+                </td>
+                <td className={styles.td}>{m.subject}</td>
+                <td className={styles.td}>{new Date(m.createdAt).toLocaleDateString()}</td>
+                <td className={styles.td}>
+                  <span className={`${styles.tableBadge} ${m.read ? styles.inactive : styles.active}`}>
+                    {m.read ? "Read" : "Unread"}
+                  </span>
+                </td>
+                <td className={styles.td}>
+                  <div className={styles.tableActions}>
+                    <button className={styles.tableActionBtn} type="button" onClick={() => onView(m)}>
+                      View
+                    </button>
+                    <button
+                      className={`${styles.tableActionBtn} ${styles.danger}`}
+                      type="button"
+                      onClick={() => setDeleteTarget(m)}
+                      disabled={pending}
+                      aria-busy={pending}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th className={styles.th}>From</th>
-            <th className={styles.th}>Subject</th>
-            <th className={styles.th}>Date</th>
-            <th className={styles.th}>Status</th>
-            <th className={styles.th}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {messages.map((m) => (
-            <MessageRow
-              key={m.id}
-              message={m}
-              expanded={openId === m.id}
-              busy={pending}
-              onView={() => onView(m)}
-              onDelete={() => onDelete(m)}
-            />
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
-}
-
-function MessageRow({
-  message: m,
-  expanded,
-  busy,
-  onView,
-  onDelete,
-}: {
-  message: InboxMessage;
-  expanded: boolean;
-  busy: boolean;
-  onView: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <>
-      <tr>
-        <td className={styles.td}>
-          <div>
-            <div>{m.name}</div>
-            <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #606075)" }}>
-              {m.email}
-            </div>
-          </div>
-        </td>
-        <td className={styles.td}>{m.subject}</td>
-        <td className={styles.td}>{new Date(m.createdAt).toLocaleDateString()}</td>
-        <td className={styles.td}>
-          <span className={`${styles.tableBadge} ${m.read ? styles.inactive : styles.active}`}>
-            {m.read ? "Read" : "Unread"}
-          </span>
-        </td>
-        <td className={styles.td}>
-          <div className={styles.tableActions}>
+      <Modal
+        open={viewMessage !== null}
+        onClose={() => setViewMessage(null)}
+        title={viewMessage ? `Message from ${viewMessage.name}` : ""}
+        footer={
+          viewMessage && (
             <button
-              className={styles.tableActionBtn}
               type="button"
-              onClick={onView}
-              aria-expanded={expanded}
-            >
-              {expanded ? "Hide" : "View"}
-            </button>
-            <button
-              className={`${styles.tableActionBtn} ${styles.danger}`}
-              type="button"
-              onClick={onDelete}
-              disabled={busy}
-              aria-busy={busy}
+              className={modalStyles.btnDanger}
+              onClick={() => setDeleteTarget(viewMessage)}
             >
               Delete
             </button>
-          </div>
-        </td>
-      </tr>
-      {expanded && (
-        <tr>
-          <td className={styles.td} colSpan={5}>
-            <div
-              style={{
-                whiteSpace: "pre-wrap",
-                padding: "0.5rem 0",
-                color: "var(--color-text, inherit)",
-              }}
-            >
-              <a href={`mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject)}`}>
-                Reply to {m.email}
+          )
+        }
+      >
+        {viewMessage && (
+          <div>
+            <p>
+              <strong>Subject:</strong> {viewMessage.subject}
+            </p>
+            <p>
+              <strong>Received:</strong> {new Date(viewMessage.createdAt).toLocaleString()}
+            </p>
+            <p style={{ marginTop: "1rem", whiteSpace: "pre-wrap" }}>{viewMessage.message}</p>
+            <p style={{ marginTop: "1rem" }}>
+              <a href={`mailto:${viewMessage.email}?subject=Re: ${encodeURIComponent(viewMessage.subject)}`}>
+                Reply to {viewMessage.email}
               </a>
-              <p style={{ marginTop: "0.75rem" }}>{m.message}</p>
-            </div>
-          </td>
-        </tr>
-      )}
+            </p>
+          </div>
+        )}
+      </Modal>
+
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="Delete message"
+        message={deleteTarget ? `Delete the message from ${deleteTarget.name}? This cannot be undone.` : ""}
+        confirmLabel="Delete"
+        danger
+        busy={pending}
+        onConfirm={onConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </>
   );
 }
