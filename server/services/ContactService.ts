@@ -57,4 +57,12 @@ export class ContactService {
       return err(e instanceof Error ? e : new Error(String(e)));
     }
   }
+
+  async deleteMessage(id: string): Promise<Result<boolean>> {
+    try {
+      return ok(await this.messageRepo.delete(id));
+    } catch (e) {
+      return err(e instanceof Error ? e : new Error(String(e)));
+    }
+  }
 }
