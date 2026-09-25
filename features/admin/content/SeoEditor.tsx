@@ -2,10 +2,10 @@
 
 import { Field, Input, Switch, Textarea } from "@/components/ui/Field";
 import { formLayout } from "@/components/ui/formLayout";
-import { cn } from "@/lib/cn";
 import { saveSeoAction } from "../contentActions";
 import { ContentEditor } from "./ContentEditor";
 import { useContentForm } from "./useContentForm";
+import { Segmented } from "@/components/ui/Segmented";
 import styles from "./SeoEditor.module.less";
 
 type PageKey = "home" | "projects" | "about" | "contact";
@@ -64,20 +64,20 @@ export function SeoEditor({ pages, siteUrl }: { pages: Record<PageKey, SeoPageEn
       saveLabel="Save SEO"
       form={form}
       beforeForm={
-        <div className={styles.tabs} role="group" aria-label="Page">
-          {(Object.keys(PAGE_LABELS) as PageKey[]).map((key) => (
-            <button
-              key={key}
-              type="button"
-              className={cn(styles.tab, key === values.pageKey && styles.tabActive)}
-              aria-pressed={key === values.pageKey}
-              onClick={() => switchPage(key)}
-            >
-              {PAGE_LABELS[key]}
-              {pages[key].savedAt && <span className={styles.customised} aria-label="(customised)" />}
-            </button>
-          ))}
-        </div>
+        <Segmented
+          label="Page"
+          value={values.pageKey}
+          onChange={switchPage}
+          items={(Object.keys(PAGE_LABELS) as PageKey[]).map((key) => ({
+            key,
+            label: (
+              <>
+                {PAGE_LABELS[key]}
+                {pages[key].savedAt && <span className={styles.customised} aria-label="(customised)" />}
+              </>
+            ),
+          }))}
+        />
       }
     >
       <div className={formLayout.grid}>

@@ -22,3 +22,10 @@ export { SEO_PAGE_KEYS } from "./SeoMetadata";
 export type { FooterSettings, FooterContent } from "./Footer";
 export type { ManagedFile, ManagedFileContent, CreateManagedFileInput } from "./ManagedFile";
 export type { ResumeFile, ResumeFileContent, CreateResumeFileInput } from "./Resume";
+export type {
+  LegalDocumentKind,
+  LegalDocumentVersion,
+  LegalDraftContent,
+  LegalVersionStatus,
+} from "./LegalDocument";
+export { LEGAL_DOCUMENT_KINDS, LEGAL_VERSION_STATUSES, isLegalDocumentKind } from "./LegalDocument";

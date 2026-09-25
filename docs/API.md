@@ -202,6 +202,16 @@ the current photo but with `max-age=0, must-revalidate`. `404` when no photo is 
 
 ---
 
+## Legal pages
+
+Managed through admin Server Actions in `features/admin/legalActions.ts` (session re-checked,
+ids validated as UUIDs, drafts validated with `legalDraftSchema`): `createLegalDraftAction`,
+`saveLegalDraftAction`, `publishLegalVersionAction`, `unpublishLegalVersionAction`,
+`deleteLegalVersionAction`. `/privacy` and `/terms` render the published version, or the built-in
+wording when none is published.
+
+---
+
 ## Error Responses
 
 All error responses follow this shape:

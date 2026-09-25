@@ -38,6 +38,7 @@ export const adminNavigation: AdminNavGroup[] = [
       { path: "/seo", label: "SEO Metadata", icon: "search", description: "Titles, descriptions, OG images" },
       { path: "/social", label: "Social Links", icon: "share", description: "Footer and contact profiles" },
       { path: "/footer", label: "Footer", icon: "layout", description: "Legal links" },
+      { path: "/legal", label: "Legal Pages", icon: "shield", description: "Privacy Policy and Terms versions" },
       { path: "/analytics", label: "Analytics", icon: "bar-chart", description: "Tracking status" },
     ],
   },

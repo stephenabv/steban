@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { z } from "zod";
 import { SEO_PAGE_KEYS } from "@/server/domain/entities";
+import { LEGAL_LIMITS } from "@/config/legal";
 
 /*
  * Validation for admin-editable site content. Every URL that can end up in an
@@ -176,3 +177,14 @@ export type SeoFormInput = z.input<typeof seoSchema>;
 export type ContactEmailFormInput = z.input<typeof contactEmailSchema>;
 export type SocialLinksFormInput = z.input<typeof socialLinksSchema>;
 export type FooterFormInput = z.input<typeof footerSchema>;
+
+// ─── Legal documents ──────────────────────────────────────────────────────────
+export const legalDraftSchema = z.object({
+  title: requiredText("Title", LEGAL_LIMITS.titleMax),
+  body: requiredText("Content", LEGAL_LIMITS.bodyMax),
+  changeNote: text(LEGAL_LIMITS.changeNoteMax),
+});
+export type LegalDraftFormInput = z.input<typeof legalDraftSchema>;
+
+/** Version ids are server-generated UUIDs; anything else is rejected before storage. */
+export const legalVersionIdSchema = z.uuid();

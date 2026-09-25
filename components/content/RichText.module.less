@@ -1,0 +1,57 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.richText {
+  display: flex;
+  flex-direction: column;
+  gap: @space-4;
+  font-size: @fs-base;
+  color: @color-text-secondary;
+  line-height: @lh-relaxed;
+  overflow-wrap: anywhere;
+
+  h2 {
+    margin-top: @space-6;
+    font-size: @fs-xl;
+    scroll-margin-top: calc(@nav-height + @space-4);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h3 {
+    margin-top: @space-3;
+    font-size: @fs-lg;
+    scroll-margin-top: calc(@nav-height + @space-4);
+  }
+
+  ul,
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: @space-2;
+    padding-left: @space-6;
+  }
+
+  li::marker {
+    color: @color-accent-light;
+  }
+
+  strong {
+    color: @color-text-primary;
+    font-weight: @fw-semibold;
+  }
+
+  a {
+    color: @color-accent-light;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    border-radius: @radius-xs;
+    .focus-ring();
+
+    &:hover {
+      color: @color-accent-lighter;
+    }
+  }
+}

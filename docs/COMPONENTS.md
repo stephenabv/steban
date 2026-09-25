@@ -259,6 +259,8 @@ Access is protected at the middleware level (`proxy.ts`) — unauthenticated req
 | `/admin` | `app/admin/page.tsx` | Dashboard: exact counts (projects, featured, messages, unread — from `COUNT(*)` queries) + recent activity. |
 | `/admin/login` | `app/admin/login/page.tsx` | Login page using `AdminLoginForm`. |
 | `/admin/hero` | `app/admin/(dashboard)/hero/page.tsx` | `HeroEditor`: name, title, introduction and photo alt text (saved; drives the home hero and JSON-LD), plus `ProfilePhotoManager` to upload, preview, replace or remove the profile photo. |
+| `/admin/legal` | `app/admin/(dashboard)/legal/page.tsx` | `LegalDocumentsManager`: per-document (Privacy / Terms) live status and version table with publish, unpublish, new-draft-from and delete (commands in `features/admin/legal/legalCommands.ts`). |
+| `/admin/legal/[id]` | `app/admin/(dashboard)/legal/[id]/page.tsx` | `LegalVersionEditor`: edit a draft with Write/Preview (rendered by `components/content/RichText`), or view a published/unpublished version read-only. |
 | `/admin/resume` | `app/admin/(dashboard)/resume/page.tsx` | Resume management: view current PDF and metadata, upload or replace (`features/admin/files/ResumeManager`). Both file managers share `useFileUpload` + `FileDropzone`. |
 | `/admin/about` | `app/admin/(dashboard)/about/page.tsx` | `AboutEditor`: biography plus reorderable skills, experience, education, certifications and awards. |
 | `/admin/projects` | `app/admin/projects/page.tsx` | Project list with create / edit / delete controls. |
