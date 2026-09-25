@@ -90,21 +90,23 @@ interface Hero {
   name: string;
   title: string;              // Professional title, e.g. "Senior Software Engineer"
   introduction: string;       // Short introductory paragraph
-  photoUrl: string;           // Profile photo URL
-  photoAlt: string;           // Alt text for the photo
+  photoAlt: string;           // Alt text for the uploaded profile photo
 }
 ```
 
-The resume is not a URL field: it is an uploaded file stored in `resume_files` (see below)
-and served at `/resume.pdf`.
+Neither the resume nor the profile photo is a URL field: both are **managed files**, uploaded
+in the admin and stored in `resume_files` / `profile_photos` (see below). The resume is served
+at `/resume.pdf`; the photo at `/profile-photo/<version>`, where the version is a prefix of its
+SHA-256. A `photoUrl` saved by older versions is ignored.
 
 ```ts
-interface ResumeFile {
+// server/domain/entities/ManagedFile.ts (ResumeFile is an alias)
+interface ManagedFile {
   id: string;
   fileName: string;           // Sanitised original name, used for display and download
-  contentType: string;        // Always application/pdf
-  sizeBytes: number;          // Max 4 MB (config/resume.ts)
-  sha256: string;             // HTTP ETag and cache-busting key
+  contentType: string;        // Detected from the bytes: application/pdf, image/jpeg|png|webp
+  sizeBytes: number;          // Max 4 MB (config/uploads.ts)
+  sha256: string;             // HTTP ETag and URL version
   uploadedAt: Date;
 }
 ```
@@ -313,7 +315,7 @@ CREATE TABLE hero (
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Resume (created automatically by PostgresResumeRepository)
+-- Resume (created automatically by PostgresManagedFileRepository)
 -- Replacing runs INSERT → switch active → DELETE old in one transaction, so a failed
 -- upload never replaces the live file and old files never accumulate.
 CREATE TABLE resume_files (
@@ -327,6 +329,20 @@ CREATE TABLE resume_files (
   uploaded_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX uq_resume_files_active ON resume_files (is_active) WHERE is_active;
+
+-- Hero profile photo — same schema and replacement rules as resume_files
+-- (PostgresManagedFileRepository serves both from an allow-list of table names).
+CREATE TABLE profile_photos (
+  id            TEXT PRIMARY KEY,
+  file_name     TEXT NOT NULL,
+  content_type  TEXT NOT NULL,
+  size_bytes    INT NOT NULL,
+  sha256        TEXT NOT NULL,
+  content       BYTEA NOT NULL,
+  is_active     BOOLEAN NOT NULL DEFAULT FALSE,
+  uploaded_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE UNIQUE INDEX uq_profile_photos_active ON profile_photos (is_active) WHERE is_active;
 
 -- Editable site content (created automatically by PostgresDocumentStore).
 -- One JSONB document per key: 'hero', 'about', 'seo' (map of page -> metadata), 'footer'.

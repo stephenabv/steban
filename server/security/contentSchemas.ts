@@ -63,7 +63,6 @@ export const heroSchema = z.object({
   name: requiredText("Display name", 100),
   title: requiredText("Professional title", 120),
   introduction: text(600),
-  photoUrl: optionalHttpUrl,
   photoAlt: text(200),
 });
 

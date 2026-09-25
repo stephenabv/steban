@@ -12,7 +12,14 @@ export class DocumentHeroRepository extends HeroRepository {
     super();
     this.doc = new SingletonDocument<HeroContent>(store, "hero", {
       encode: (value) => value,
-      decode: (stored, updatedAt) => ({ ...stored, updatedAt }),
+      // Pick known fields so legacy keys (e.g. the retired photoUrl) never leak out.
+      decode: ({ name, title, introduction, photoAlt }, updatedAt) => ({
+        name,
+        title,
+        introduction,
+        photoAlt: photoAlt ?? "",
+        updatedAt,
+      }),
     });
   }
 

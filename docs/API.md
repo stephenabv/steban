@@ -163,7 +163,7 @@ The swap is atomic: if validation or storage fails, the current resume stays act
 
 | Status | Meaning |
 |---|---|
-| `200` | `{ "ok": true, "resume": { id, fileName, sizeBytes, sha256, uploadedAt } }` |
+| `200` | `{ "ok": true, "file": { fileName, contentType, sizeBytes, sha256, uploadedAt } }` |
 | `400` | No file / unreadable form data |
 | `401` / `403` | Not signed in / cross-origin request |
 | `413` | File larger than 4 MB |
@@ -176,6 +176,29 @@ Public. Streams the active resume (`Content-Type: application/pdf`, `inline`; ad
 for `attachment`). Responses carry an `ETag` (SHA-256) with `Cache-Control: public, max-age=0,
 must-revalidate`, so a replaced resume is served immediately and unchanged files return `304`.
 Returns `404` when no resume has been uploaded.
+
+---
+
+## Profile photo
+
+### POST /api/admin/profile-photo
+
+Uploads the hero profile photo and makes it the active one. Same auth, body, atomic swap and
+status codes as `POST /api/admin/resume`, except the accepted formats: **JPEG, PNG or WebP**,
+recognised by signature and checked for truncation (PNG `IEND`, JPEG `EOI`, WebP RIFF size).
+SVG and anything else is rejected with `422`. Max 4 MB.
+
+### DELETE /api/admin/profile-photo
+
+Removes the active photo; the home page falls back to initials. **Admin session required**,
+same-origin only. `200 { "ok": true, "removed": boolean }`.
+
+### GET /profile-photo/{version}
+
+Public. Streams the active photo. When `{version}` matches the current photo's hash prefix the
+response is `Cache-Control: public, max-age=31536000, immutable`; a stale version still returns
+the current photo but with `max-age=0, must-revalidate`. `404` when no photo is uploaded.
+`next/image` optimises this path only (`images.localPatterns`, no query strings).
 
 ---
 

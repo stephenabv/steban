@@ -11,5 +11,5 @@ export {
 } from "./PostgresContactRepository";
 export { JsonContactInfoRepository, JsonContactMessageRepository } from "./JsonContactRepository";
 export { SeoRepository } from "./SeoRepository";
-export { ResumeRepository } from "./ResumeRepository";
+export { ManagedFileRepository } from "./ManagedFileRepository";
 export { FooterRepository } from "./FooterRepository";

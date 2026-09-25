@@ -135,3 +135,29 @@
     }
   }
 }
+
+.section {
+  margin-top: @space-5;
+}
+
+.photoThumb {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 88px;
+  aspect-ratio: 4 / 5;
+  border-radius: @radius-md;
+  overflow: hidden;
+  background: linear-gradient(160deg, @color-accent-soft, fade(@color-accent-2, 8%));
+  border: 1px solid @color-border-hover;
+  color: @color-accent-lighter;
+  font-family: @font-display;
+  font-size: @fs-2xl;
+  font-weight: @fw-bold;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
