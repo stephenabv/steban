@@ -328,6 +328,14 @@ CREATE TABLE resume_files (
 );
 CREATE UNIQUE INDEX uq_resume_files_active ON resume_files (is_active) WHERE is_active;
 
+-- Editable site content (created automatically by PostgresDocumentStore).
+-- One JSONB document per key: 'hero', 'about', 'seo' (map of page -> metadata), 'footer'.
+CREATE TABLE site_content (
+  key         TEXT PRIMARY KEY,
+  data        JSONB NOT NULL,
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Note: contact_info.resume_url still exists in databases created before the resume
 -- upload feature. It is deprecated and never read or written; drop it at leisure.
 

@@ -1,6 +1,11 @@
 import { randomUUID } from "crypto";
 import { getPool } from "@/server/db/pool";
-import type { CreateResumeFileInput, ResumeFile, ResumeFileContent } from "@/server/domain/entities";
+import { ensureOnce } from "@/server/db/ensureOnce";
+import type {
+  CreateResumeFileInput,
+  ResumeFile,
+  ResumeFileContent,
+} from "@/server/domain/entities";
 import { ResumeRepository } from "./ResumeRepository";
 
 interface ResumeRow {
@@ -29,13 +34,10 @@ function toResume(row: ResumeRow): ResumeFile {
   };
 }
 
-let tableReady: Promise<void> | null = null;
-
-function ensureTable(): Promise<void> {
-  // The partial unique index guarantees at most one active resume.
-  tableReady ??= getPool()
-    .query(
-      `CREATE TABLE IF NOT EXISTS resume_files (
+// The partial unique index guarantees at most one active resume.
+const ensureTable = ensureOnce(() =>
+  getPool().query(
+    `CREATE TABLE IF NOT EXISTS resume_files (
         id           TEXT PRIMARY KEY,
         file_name    TEXT NOT NULL,
         content_type TEXT NOT NULL,
@@ -47,10 +49,8 @@ function ensureTable(): Promise<void> {
       );
       CREATE UNIQUE INDEX IF NOT EXISTS uq_resume_files_active
         ON resume_files (is_active) WHERE is_active;`
-    )
-    .then(() => undefined);
-  return tableReady;
-}
+  )
+);
 
 /**
  * Stores resumes in the existing Postgres database (the app's only persistent

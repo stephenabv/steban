@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { getPool } from "@/server/db/pool";
+import { ensureOnce } from "@/server/db/ensureOnce";
 import type { Project, CreateProjectInput, UpdateProjectInput } from "@/server/domain/entities";
 import type { Paginated, PaginationParams } from "@/server/domain/types";
 import { ProjectRepository } from "./ProjectRepository";
@@ -42,12 +43,9 @@ function toProject(row: ProjectRow): Project {
   };
 }
 
-let tableReady: Promise<void> | null = null;
-
-function ensureTable(): Promise<void> {
-  tableReady ??= getPool()
-    .query(
-      `CREATE TABLE IF NOT EXISTS projects (
+const ensureTable = ensureOnce(() =>
+  getPool().query(
+    `CREATE TABLE IF NOT EXISTS projects (
         id TEXT PRIMARY KEY,
         slug TEXT UNIQUE NOT NULL,
         title TEXT NOT NULL,
@@ -64,16 +62,16 @@ function ensureTable(): Promise<void> {
         published_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )`
-    )
-    .then(() => undefined);
-  return tableReady;
-}
+  )
+);
 
 /** Production repository backed by a standard Postgres connection (DATABASE_URL / POSTGRES_URL). */
 export class PostgresProjectRepository extends ProjectRepository {
   async findById(id: string): Promise<Project | null> {
     await ensureTable();
-    const { rows } = await getPool().query<ProjectRow>("SELECT * FROM projects WHERE id = $1", [id]);
+    const { rows } = await getPool().query<ProjectRow>("SELECT * FROM projects WHERE id = $1", [
+      id,
+    ]);
     return rows[0] ? toProject(rows[0]) : null;
   }
 

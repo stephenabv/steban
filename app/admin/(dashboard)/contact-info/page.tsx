@@ -1,36 +1,21 @@
-"use client";
+import type { Metadata } from "next";
+import { getContactService } from "@/server/services";
+import { siteConfig } from "@/config/site";
+import { ContactEmailEditor } from "@/features/admin/content/ContactEmailEditor";
+import { LoadError } from "@/features/admin/content/LoadError";
 
-import { useState } from "react";
-import { Field, Input } from "@/components/ui/Field";
-import { formLayout } from "@/components/ui/formLayout";
-import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
+export const metadata: Metadata = { title: "Contact Info" };
+export const dynamic = "force-dynamic";
 
-export default function AdminContactInfoPage() {
-  const [email, setEmail] = useState("");
-  const [github, setGithub] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-  const [facebook, setFacebook] = useState("");
+export default async function AdminContactInfoPage() {
+  const result = await getContactService().getContactInfo();
+  if (!result.ok) return <LoadError title="Contact information" />;
+  const info = result.value;
 
   return (
-    <PlaceholderEditor
-      title="Contact information"
-      description="Contact details and profile links shown on the Contact page."
-      sectionTitle="Contact details"
-    >
-      <div className={formLayout.grid}>
-        <Field label="Email address" id="ci-email" className={formLayout.span2}>
-          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-        </Field>
-        <Field label="GitHub URL" id="ci-github" className={formLayout.span2}>
-          <Input type="url" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="https://github.com/…" />
-        </Field>
-        <Field label="LinkedIn URL" id="ci-linkedin">
-          <Input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/…" />
-        </Field>
-        <Field label="Facebook URL" id="ci-facebook">
-          <Input type="url" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="https://facebook.com/…" />
-        </Field>
-      </div>
-    </PlaceholderEditor>
+    <ContactEmailEditor
+      savedAt={info?.updatedAt.toISOString() ?? null}
+      initial={{ email: info ? info.email : siteConfig.author.email }}
+    />
   );
 }

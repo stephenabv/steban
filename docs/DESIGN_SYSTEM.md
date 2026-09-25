@@ -52,6 +52,10 @@ Decorative by default; pass `label` when an icon carries meaning on its own.
 ## Patterns
 
 - **Page frame**: public pages use `PageShell`; admin pages use `AdminPageHeader` inside `styles.page`.
+- **Content editors**: build on `useContentForm` + `ContentEditor` (features/admin/content): Save is
+  enabled only when dirty, server field errors map to `Field` by dotted path, leaving with unsaved
+  edits asks first, and an expired session offers sign-in in a new tab. If the record can't be
+  loaded, render `LoadError` instead of the form.
 - **Transitions**: `template.tsx` files apply `.route-page` (fade-up, 420 ms). Don't add per-page entrances.
 - **Reduced motion**: never branch *rendered output* on `useReducedMotion()` (it's `null` during
   SSR). `MotionProvider` sets `reducedMotion="user"` globally; CSS uses `.reduced-motion()`.

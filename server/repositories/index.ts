@@ -12,3 +12,4 @@ export {
 export { JsonContactInfoRepository, JsonContactMessageRepository } from "./JsonContactRepository";
 export { SeoRepository } from "./SeoRepository";
 export { ResumeRepository } from "./ResumeRepository";
+export { FooterRepository } from "./FooterRepository";

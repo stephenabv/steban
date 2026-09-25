@@ -3,6 +3,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import type {
   ContactInfo,
+  ContactInfoContent,
   ContactMessage,
   CreateContactMessageInput,
   UpdateContactInfoInput,
@@ -124,6 +125,16 @@ export class JsonContactInfoRepository extends ContactInfoRepository {
   async getContactInfo(): Promise<ContactInfo | null> {
     const all = await this.read();
     return all[0] ? reviveInfo(all[0]) : null;
+  }
+
+  async save(content: ContactInfoContent): Promise<ContactInfo> {
+    const existing = await this.getContactInfo();
+    if (existing) {
+      return (await this.update(existing.id, content)) as ContactInfo;
+    }
+    const created: StoredInfo = { id: randomUUID(), ...content, updatedAt: new Date().toISOString() };
+    await writeJson(INFO_FILE, [created]);
+    return reviveInfo(created);
   }
 
   async findById(id: string): Promise<ContactInfo | null> {

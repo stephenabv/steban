@@ -2,18 +2,20 @@ import type { Metadata } from "next";
 import { AboutContent } from "@/features/about/AboutContent";
 import { PageShell } from "@/features/shared/PageShell";
 import { CtaBand } from "@/features/shared/CtaBand";
-import { siteConfig, siteUrl } from "@/config/site";
+import { siteUrl } from "@/config/site";
+import { getAboutContent, getPageMetadata } from "@/lib/content/publicContent";
+import { pageSeoDefaults } from "@/config/seo";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: `Learn more about ${siteConfig.name} — skills, experience, education, and background.`,
-  alternates: { canonical: siteUrl("/about") },
-};
+export function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("about", {
+    title: pageSeoDefaults.about.title,
+    description: pageSeoDefaults.about.description,
+    alternates: { canonical: siteUrl("/about") },
+  });
+}
 
-// TODO: fetch from AboutService when DB is wired up
-const about = null;
-
-export default function AboutPage() {
+export default async function AboutPage() {
+  const about = await getAboutContent();
   return (
     <>
       <PageShell

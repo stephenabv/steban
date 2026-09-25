@@ -1,29 +1,20 @@
-"use client";
+import type { Metadata } from "next";
+import { getFooterService } from "@/server/services";
+import { FooterEditor } from "@/features/admin/content/FooterEditor";
+import { LoadError } from "@/features/admin/content/LoadError";
 
-import { useState } from "react";
-import { Field, Input } from "@/components/ui/Field";
-import { formLayout } from "@/components/ui/formLayout";
-import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
+export const metadata: Metadata = { title: "Footer" };
+export const dynamic = "force-dynamic";
 
-export default function AdminFooterPage() {
-  const [privacyUrl, setPrivacyUrl] = useState("/privacy");
-  const [termsUrl, setTermsUrl] = useState("/terms");
+export default async function AdminFooterPage() {
+  const result = await getFooterService().get();
+  if (!result.ok) return <LoadError title="Footer" />;
+  const footer = result.value;
 
   return (
-    <PlaceholderEditor
-      title="Footer"
-      description="Legal links shown at the bottom of every public page."
-      sectionTitle="Legal links"
-      saveLabel="Save footer"
-    >
-      <div className={formLayout.grid}>
-        <Field label="Privacy policy URL" id="f-privacy">
-          <Input type="text" value={privacyUrl} onChange={(e) => setPrivacyUrl(e.target.value)} />
-        </Field>
-        <Field label="Terms & conditions URL" id="f-terms">
-          <Input type="text" value={termsUrl} onChange={(e) => setTermsUrl(e.target.value)} />
-        </Field>
-      </div>
-    </PlaceholderEditor>
+    <FooterEditor
+      savedAt={footer?.updatedAt.toISOString() ?? null}
+      initial={{ privacyUrl: footer?.privacyUrl ?? "/privacy", termsUrl: footer?.termsUrl ?? "/terms" }}
+    />
   );
 }

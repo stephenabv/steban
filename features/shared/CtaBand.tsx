@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import { getPublicContact } from "@/lib/content/publicContent";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import styles from "./CtaBand.module.less";
@@ -9,10 +9,11 @@ export interface CtaBandProps {
 }
 
 /** Closing call-to-action that routes visitors to the contact form. */
-export function CtaBand({
+export async function CtaBand({
   title = "Have a project in mind?",
   description = "Whether it's a new product, a hard technical problem, or a role on your team — let's talk about how I can help.",
 }: CtaBandProps) {
+  const { email } = await getPublicContact();
   return (
     <section className={styles.wrap} aria-labelledby="cta-heading">
       <Reveal className={styles.band}>
@@ -27,9 +28,11 @@ export function CtaBand({
           <Button href="/contact" size="lg" iconRight="arrow-right">
             Start a conversation
           </Button>
-          <Button href={`mailto:${siteConfig.author.email}`} size="lg" variant="secondary" icon="mail">
-            Email me
-          </Button>
+          {email && (
+            <Button href={`mailto:${email}`} size="lg" variant="secondary" icon="mail">
+              Email me
+            </Button>
+          )}
         </div>
       </Reveal>
     </section>

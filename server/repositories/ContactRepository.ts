@@ -1,5 +1,6 @@
 import type {
   ContactInfo,
+  ContactInfoContent,
   ContactMessage,
   CreateContactMessageInput,
   UpdateContactInfoInput,
@@ -13,6 +14,8 @@ export abstract class ContactInfoRepository extends BaseRepository<
   UpdateContactInfoInput
 > {
   abstract getContactInfo(): Promise<ContactInfo | null>;
+  /** Creates the single settings row on first save, updates it afterwards. */
+  abstract save(content: ContactInfoContent): Promise<ContactInfo>;
   create(_input: never): Promise<ContactInfo> {
     throw new Error("ContactInfoRepository does not support create — use update.");
   }

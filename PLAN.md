@@ -324,9 +324,6 @@ Every client-facing surface editable: Hero · About · Skills · Projects · Fea
 None. Next step requires Vercel environment setup (Postgres, Blob).
 
 ## Technical debt
-- Admin editor forms (Hero, About, SEO, Social, Contact Info, Footer) are not persisted yet. Since the
-  2026-09-25 redesign they share `PlaceholderEditor`, show a "Not connected yet" notice, and no longer
-  report a false "saved" success. Wire up when their repositories exist.
 - AuditService logs to console only; needs Postgres table.
 - Rate limiter uses in-memory store; should use Vercel KV for multi-instance production.
 - Featured carousel order can't be edited from the admin: `featuredOrder` isn't part of the project
@@ -395,6 +392,19 @@ Status:   Accepted.
 
 ## Changelog
 ```
+## 2026-09-25 — Admin content editors persisted
+### Added
+- Hero, About (biography, skills, experience, education, certifications, awards), SEO (per page),
+  Contact email, Social links and Footer editors now save and drive the public site.
+- DocumentStore abstraction (Postgres `site_content` JSONB table / JSON files in dev) composed by
+  DocumentHero/About/Seo/FooterRepository; contact_info gained a first-save upsert.
+- Server Actions with Zod validation (http(s)-only URLs, per-field errors), dirty tracking,
+  unsaved-changes guard, and expired-session detection with sign-in-in-new-tab recovery.
+- Public read models (lib/content/publicContent.ts) with config fallback: pages render defaults
+  when nothing is saved or the database is unreachable.
+### Security
+- JSON-LD is now escaped (`jsonLd()`), since it includes admin-editable values.
+
 ## 2026-09-25 — Admin fixes and resume upload
 ### Fixed
 - Dashboard cards showed 0: on main they were hard-coded literals. Counts now come from exact

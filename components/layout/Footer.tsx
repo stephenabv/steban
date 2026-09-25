@@ -1,16 +1,22 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { contactNav, legalNav, primaryNav } from "@/config/navigation";
+import { contactNav, primaryNav } from "@/config/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/icons/Icon";
 import { Logo } from "./Logo";
-import { getSocialItems } from "./SocialLinks";
+import { getLegalLinks, getPublicContact } from "@/lib/content/publicContent";
 import styles from "./Footer.module.less";
 
-export function Footer() {
+export async function Footer() {
   const year = new Date().getFullYear();
   const [first, last] = siteConfig.name.split(" ");
-  const socials = getSocialItems();
+  const [contact, legalLinks] = await Promise.all([getPublicContact(), getLegalLinks()]);
+  const connect = [
+    ...contact.profiles,
+    ...(contact.email
+      ? [{ platform: "email" as const, label: "Email", url: `mailto:${contact.email}`, icon: "mail" as const, external: false }]
+      : []),
+  ];
 
   return (
     <footer className={styles.footer}>
@@ -49,7 +55,7 @@ export function Footer() {
               Connect
             </h2>
             <ul role="list">
-              {socials.map((item) => (
+              {connect.map((item) => (
                 <li key={item.platform}>
                   <a
                     href={item.url}
@@ -71,9 +77,15 @@ export function Footer() {
             &copy; {year} {siteConfig.name}. All Rights Reserved.
           </p>
           <ul className={styles.legal} role="list">
-            {legalNav.map(({ href, label }) => (
-              <li key={href}>
-                <Link href={href}>{label}</Link>
+            {legalLinks.map(({ href, label }) => (
+              <li key={label}>
+                {href.startsWith("/") ? (
+                  <Link href={href}>{label}</Link>
+                ) : (
+                  <a href={href} target="_blank" rel="noopener noreferrer">
+                    {label}
+                  </a>
+                )}
               </li>
             ))}
             <li>

@@ -1,5 +1,6 @@
 import type {
   ContactInfo,
+  ContactInfoContent,
   ContactMessage,
   CreateContactMessageInput,
   UpdateContactInfoInput,
@@ -17,6 +18,15 @@ export class ContactService {
   async getContactInfo(): Promise<Result<ContactInfo | null>> {
     try {
       return ok(await this.infoRepo.getContactInfo());
+    } catch (e) {
+      return err(e instanceof Error ? e : new Error(String(e)));
+    }
+  }
+
+  /** Creates the settings row on first save, updates it afterwards. */
+  async saveContactInfo(content: ContactInfoContent): Promise<Result<ContactInfo>> {
+    try {
+      return ok(await this.infoRepo.save(content));
     } catch (e) {
       return err(e instanceof Error ? e : new Error(String(e)));
     }

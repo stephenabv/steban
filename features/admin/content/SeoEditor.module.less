@@ -1,0 +1,85 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 2px;
+  padding: 3px;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: @radius-md;
+  border: 1px solid @color-border;
+  background: @color-bg-subtle;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 @space-4;
+  border: none;
+  border-radius: calc(@radius-md - 3px);
+  background: transparent;
+  color: @color-text-secondary;
+  font-size: @fs-sm;
+  font-weight: @fw-medium;
+  cursor: pointer;
+  .focus-ring-inset();
+
+  &:hover {
+    color: @color-text-primary;
+  }
+}
+
+.tabActive {
+  background: @color-bg-hover;
+  color: @color-text-primary;
+  box-shadow: @shadow-sm, @shadow-inset-highlight;
+}
+
+.customised {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: @color-accent-light;
+}
+
+.preview {
+  margin-top: @space-8;
+  padding: @space-4 @space-5;
+  border-radius: @radius-md;
+  border: 1px solid @color-border;
+  background: @color-bg-subtle;
+}
+
+.previewLabel {
+  font-size: 11px;
+  font-weight: @fw-semibold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: @color-text-muted;
+  margin-bottom: @space-3;
+}
+
+.previewUrl {
+  font-size: @fs-xs;
+  color: @color-text-secondary;
+  overflow-wrap: anywhere;
+}
+
+.previewTitle {
+  font-size: @fs-lg;
+  color: #8ab4f8;
+  line-height: @lh-snug;
+  margin: 2px 0 @space-1;
+  overflow-wrap: anywhere;
+}
+
+.previewDescription {
+  font-size: @fs-sm;
+  line-height: @lh-normal;
+  .line-clamp(2);
+}

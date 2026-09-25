@@ -1,0 +1,36 @@
+@import "styles/variables.less";
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: @space-10;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: @space-4;
+  min-width: 0;
+}
+
+.heading {
+  padding-bottom: @space-3;
+  border-bottom: 1px solid @color-border;
+  font-size: @fs-base;
+  font-weight: @fw-semibold;
+}
+
+.hint {
+  margin-top: -@space-2;
+  font-size: @fs-sm;
+  color: @color-text-muted;
+}
+
+.grid3 {
+  display: grid;
+  gap: @space-4;
+
+  @media (min-width: @bp-md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

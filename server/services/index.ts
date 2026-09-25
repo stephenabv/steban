@@ -9,3 +9,5 @@ export { ResumeService, ResumeValidationError } from "./ResumeService";
 export { getResumeService } from "./resumeService.instance";
 export { AuditService } from "./AuditService";
 export type { AuditAction, AuditEntry } from "./AuditService";
+export { FooterService } from "./FooterService";
+export { getHeroService, getAboutService, getSeoService, getFooterService } from "./contentServices.instance";

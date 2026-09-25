@@ -25,23 +25,30 @@ export function ContactChannels({ email, channels }: Props) {
 
   return (
     <ul className={styles.list} role="list" aria-label="Contact channels">
-      <li className={styles.item}>
-        <span className={styles.icon} aria-hidden="true">
-          <Icon name="mail" size={18} />
-        </span>
-        <div className={styles.text}>
-          <span className={styles.label}>Email</span>
-          <a href={`mailto:${email}`} className={styles.value}>
-            {email}
-          </a>
-        </div>
-        <button type="button" className={styles.copy} onClick={copyEmail} aria-label="Copy email address">
-          <Icon name={copied ? "check" : "copy"} size={16} />
-        </button>
-        <span className="sr-only" aria-live="polite">
-          {copied ? "Email address copied" : ""}
-        </span>
-      </li>
+      {email && (
+        <li className={styles.item}>
+          <span className={styles.icon} aria-hidden="true">
+            <Icon name="mail" size={18} />
+          </span>
+          <div className={styles.text}>
+            <span className={styles.label}>Email</span>
+            <a href={`mailto:${email}`} className={styles.value}>
+              {email}
+            </a>
+          </div>
+          <button
+            type="button"
+            className={styles.copy}
+            onClick={copyEmail}
+            aria-label="Copy email address"
+          >
+            <Icon name={copied ? "check" : "copy"} size={16} />
+          </button>
+          <span className="sr-only" aria-live="polite">
+            {copied ? "Email address copied" : ""}
+          </span>
+        </li>
+      )}
 
       {channels.map((c) => (
         <li key={c.platform} className={styles.item}>

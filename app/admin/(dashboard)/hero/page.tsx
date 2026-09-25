@@ -1,51 +1,28 @@
-"use client";
+import type { Metadata } from "next";
+import { getHeroService } from "@/server/services";
+import { siteConfig } from "@/config/site";
+import { HeroEditor } from "@/features/admin/content/HeroEditor";
+import { LoadError } from "@/features/admin/content/LoadError";
 
-import { useState } from "react";
-import { Field, Input, Textarea } from "@/components/ui/Field";
-import { formLayout } from "@/components/ui/formLayout";
-import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
-import styles from "@/features/admin/AdminPage.module.less";
+export const metadata: Metadata = { title: "Hero" };
+export const dynamic = "force-dynamic";
 
-export default function AdminHeroPage() {
-  const [name, setName] = useState("");
-  const [title, setTitle] = useState("");
-  const [introduction, setIntroduction] = useState("");
-  const [photoUrl, setPhotoUrl] = useState("");
-  const hasPreview = /^https?:\/\//.test(photoUrl.trim());
+export default async function AdminHeroPage() {
+  const result = await getHeroService().getHero();
+  if (!result.ok) return <LoadError title="Hero section" />;
+  const hero = result.value;
 
   return (
-    <PlaceholderEditor
-      title="Hero section"
-      description="Your name, title, introduction and photo at the top of the home page."
-      sectionTitle="Hero content"
-    >
-      <div className={formLayout.grid}>
-        <Field label="Display name" id="h-name">
-          <Input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Stephen Abueva" />
-        </Field>
-        <Field label="Professional title" id="h-title">
-          <Input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Computer Engineer" />
-        </Field>
-        <Field label="Introduction" id="h-intro" className={formLayout.span2}>
-          <Textarea
-            value={introduction}
-            onChange={(e) => setIntroduction(e.target.value)}
-            placeholder="Short professional introduction…"
-            rows={4}
-          />
-        </Field>
-        <Field label="Profile photo URL" id="h-photo" hint="Upload to Vercel Blob and paste the URL here.">
-          <Input type="url" value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} placeholder="https://…" />
-        </Field>
-        <div className={styles.imagePreview} aria-hidden="true">
-          {hasPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={photoUrl.trim()} alt="" />
-          ) : (
-            "Photo preview"
-          )}
-        </div>
-      </div>
-    </PlaceholderEditor>
+    <HeroEditor
+      savedAt={hero?.updatedAt.toISOString() ?? null}
+      initial={{
+        // Unsaved: start from what the site shows today.
+        name: hero?.name ?? siteConfig.name,
+        title: hero?.title ?? "Computer Engineer",
+        introduction: hero?.introduction ?? "",
+        photoUrl: hero?.photoUrl ?? "",
+        photoAlt: hero?.photoAlt ?? "",
+      }}
+    />
   );
 }

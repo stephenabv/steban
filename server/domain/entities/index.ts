@@ -6,14 +6,18 @@ export type {
   ExperienceEntry,
   Certification,
   Award,
+  AboutContent,
   UpdateAboutInput,
 } from "./About";
-export type { Hero, UpdateHeroInput } from "./Hero";
+export type { Hero, HeroContent, UpdateHeroInput } from "./Hero";
 export type {
   ContactInfo,
   ContactMessage,
   CreateContactMessageInput,
+  ContactInfoContent,
   UpdateContactInfoInput,
 } from "./Contact";
-export type { SeoMetadata, UpdateSeoMetadataInput } from "./SeoMetadata";
+export type { SeoMetadata, SeoContent, SeoPageKey, UpdateSeoMetadataInput } from "./SeoMetadata";
+export { SEO_PAGE_KEYS } from "./SeoMetadata";
+export type { FooterSettings, FooterContent } from "./Footer";
 export type { ResumeFile, ResumeFileContent, CreateResumeFileInput } from "./Resume";
