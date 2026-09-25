@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 86400,
     // Project cover/gallery images are pasted as external URLs in the admin (e.g. Vercel Blob).
     remotePatterns: [{ protocol: "https", hostname: "**" }],
+    // The only local images are uploaded profile photos, versioned in the path.
+    // Query strings are refused so the optimizer can't be used to enumerate URLs.
+    localPatterns: [{ pathname: "/profile-photo/**", search: "" }],
   },
 
   experimental: {

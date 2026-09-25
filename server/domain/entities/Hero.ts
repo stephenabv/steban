@@ -3,7 +3,7 @@ export interface Hero {
   name: string;
   title: string;
   introduction: string;
-  photoUrl: string;
+  /** Alt text for the uploaded profile photo (the image itself is a managed file). */
   photoAlt: string;
   updatedAt: Date;
 }

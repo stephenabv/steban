@@ -95,7 +95,8 @@ The top section of the home page.
 
 | Prop | Type | Description |
 |---|---|---|
-| `hero` | `Hero \| null` | Data object with `name`, `title`, `introduction`, `photoUrl`, `photoAlt` |
+| `hero` | `Hero \| null` | Data object with `name`, `title`, `introduction`, `photoAlt` |
+| `photoSrc` | `string \| null` | Versioned URL of the uploaded profile photo; initials are shown when `null` |
 | `resumeAvailable` | `boolean` | Whether an uploaded resume is published; hides the Resume button otherwise |
 
 ---
@@ -257,8 +258,8 @@ Access is protected at the middleware level (`proxy.ts`) — unauthenticated req
 |---|---|---|
 | `/admin` | `app/admin/page.tsx` | Dashboard: exact counts (projects, featured, messages, unread — from `COUNT(*)` queries) + recent activity. |
 | `/admin/login` | `app/admin/login/page.tsx` | Login page using `AdminLoginForm`. |
-| `/admin/hero` | `app/admin/(dashboard)/hero/page.tsx` | `HeroEditor`: name, title, introduction, photo URL + alt text (saved; drives the home hero and JSON-LD). |
-| `/admin/resume` | `app/admin/(dashboard)/resume/page.tsx` | Resume management: view current PDF and metadata, upload or replace (`ResumeManager`). |
+| `/admin/hero` | `app/admin/(dashboard)/hero/page.tsx` | `HeroEditor`: name, title, introduction and photo alt text (saved; drives the home hero and JSON-LD), plus `ProfilePhotoManager` to upload, preview, replace or remove the profile photo. |
+| `/admin/resume` | `app/admin/(dashboard)/resume/page.tsx` | Resume management: view current PDF and metadata, upload or replace (`features/admin/files/ResumeManager`). Both file managers share `useFileUpload` + `FileDropzone`. |
 | `/admin/about` | `app/admin/(dashboard)/about/page.tsx` | `AboutEditor`: biography plus reorderable skills, experience, education, certifications and awards. |
 | `/admin/projects` | `app/admin/projects/page.tsx` | Project list with create / edit / delete controls. |
 | `/admin/featured` | `app/admin/featured/page.tsx` | Drag-and-drop or ordered selection of featured projects for the carousel. |

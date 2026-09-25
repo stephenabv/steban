@@ -63,7 +63,7 @@ export function SeoEditor({ pages, siteUrl }: { pages: Record<PageKey, SeoPageEn
       sectionTitle={`${PAGE_LABELS[values.pageKey]} page`}
       saveLabel="Save SEO"
       form={form}
-      toolbar={
+      beforeForm={
         <div className={styles.tabs} role="group" aria-label="Page">
           {(Object.keys(PAGE_LABELS) as PageKey[]).map((key) => (
             <button

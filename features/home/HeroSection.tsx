@@ -8,10 +8,13 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/icons/Icon";
 import { EASE_OUT, fadeUp } from "@/lib/motion";
+import { initials } from "@/lib/initials";
 import styles from "./HeroSection.module.less";
 
 interface Props {
   hero: Hero | null;
+  /** Versioned URL of the uploaded profile photo; initials are shown without one. */
+  photoSrc: string | null;
   /** Whether an uploaded resume is published; the button is hidden otherwise. */
   resumeAvailable: boolean;
   /** Anchor id of the section the scroll cue should jump to. */
@@ -21,11 +24,8 @@ interface Props {
 const DEFAULT_INTRO =
   "Building scalable, high-performance web applications with a focus on clean architecture, security, and exceptional developer experience.";
 
-export function HeroSection({ hero, resumeAvailable, nextSectionId }: Props) {
-  const initials = siteConfig.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
+export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: Props) {
+  const name = hero?.name || siteConfig.name;
 
   // Stagger children in sequence (reduced motion is handled by MotionConfig).
   const item = (i: number) => fadeUp(i * 0.1);
@@ -47,7 +47,7 @@ export function HeroSection({ hero, resumeAvailable, nextSectionId }: Props) {
           </motion.div>
 
           <motion.h1 id="hero-heading" variants={item(1)} className={styles.name}>
-            {hero?.name || siteConfig.name}
+            {name}
           </motion.h1>
 
           <motion.p variants={item(2)} className={styles.title}>
@@ -86,18 +86,18 @@ export function HeroSection({ hero, resumeAvailable, nextSectionId }: Props) {
           animate={{ opacity: 1, scale: 1, transition: { duration: 0.8, delay: 0.2, ease: EASE_OUT } }}
         >
           <div className={styles.photoFrame}>
-            {hero?.photoUrl ? (
+            {photoSrc ? (
               <Image
-                src={hero.photoUrl}
-                alt={hero.photoAlt || `${siteConfig.name} — profile photo`}
+                src={photoSrc}
+                alt={hero?.photoAlt || `${name} — profile photo`}
                 fill
                 className={styles.photo}
                 priority
                 sizes="(max-width: 1024px) 70vw, 420px"
               />
             ) : (
-              <div className={styles.photoPlaceholder} role="img" aria-label={`${siteConfig.name} initials`}>
-                {initials}
+              <div className={styles.photoPlaceholder} role="img" aria-label={`${name} initials`}>
+                {initials(name)}
               </div>
             )}
           </div>

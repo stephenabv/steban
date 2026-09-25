@@ -1,30 +1,36 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Field, Input, Textarea } from "@/components/ui/Field";
 import { formLayout } from "@/components/ui/formLayout";
 import { saveHeroAction } from "../contentActions";
 import { ContentEditor } from "./ContentEditor";
 import { useContentForm } from "./useContentForm";
-import styles from "../AdminPage.module.less";
 
 export interface HeroFormValues {
   name: string;
   title: string;
   introduction: string;
-  photoUrl: string;
   photoAlt: string;
 }
 
-export function HeroEditor({ initial, savedAt }: { initial: HeroFormValues; savedAt: string | null }) {
+interface Props {
+  initial: HeroFormValues;
+  savedAt: string | null;
+  /** Profile photo upload card; the photo is a file, saved independently of the text. */
+  photoManager: ReactNode;
+}
+
+export function HeroEditor({ initial, savedAt, photoManager }: Props) {
   const form = useContentForm(initial, savedAt, saveHeroAction, "Hero saved — the home page is updated.");
   const { values, patch, errors } = form;
-  const hasPreview = /^https?:\/\//.test(values.photoUrl.trim());
 
   return (
     <ContentEditor
       title="Hero section"
       description="Your name, title, introduction and photo at the top of the home page."
       sectionTitle="Hero content"
+      beforeForm={photoManager}
       form={form}
     >
       <div className={formLayout.grid}>
@@ -50,29 +56,12 @@ export function HeroEditor({ initial, savedAt }: { initial: HeroFormValues; save
           />
         </Field>
         <Field
-          label="Profile photo URL"
-          id="h-photo"
-          optional
-          error={errors.photoUrl}
-          hint="A full https:// image URL. Without one, your initials are shown."
-        >
-          <Input type="url" value={values.photoUrl} onChange={(e) => patch({ photoUrl: e.target.value })} placeholder="https://…" />
-        </Field>
-        <div className={styles.imagePreview} aria-hidden="true">
-          {hasPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={values.photoUrl.trim()} alt="" />
-          ) : (
-            "Photo preview"
-          )}
-        </div>
-        <Field
           label="Photo description (alt text)"
           id="h-alt"
           optional
           className={formLayout.span2}
           error={errors.photoAlt}
-          hint="Describes the photo for screen readers, e.g. “Stephen smiling in front of a whiteboard”."
+          hint="Describes the profile photo for screen readers, e.g. “Stephen smiling in front of a whiteboard”."
         >
           <Input type="text" value={values.photoAlt} onChange={(e) => patch({ photoAlt: e.target.value })} />
         </Field>

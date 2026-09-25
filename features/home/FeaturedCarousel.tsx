@@ -146,7 +146,7 @@ export function FeaturedCarousel({ projects, id }: Props) {
               )}
               <div className={styles.links}>
                 <Button href={`/projects/${project.slug}`} iconRight="arrow-right" draggable={false}>
-                  View case study
+                  Full Details
                 </Button>
                 {project.liveUrl && (
                   <Button

@@ -17,8 +17,8 @@ interface Props<T> {
   sectionTitle?: string;
   sectionDescription?: ReactNode;
   saveLabel?: string;
-  /** Rendered between the header and the form card (e.g. a page switcher). */
-  toolbar?: ReactNode;
+  /** Rendered between the header and the form (e.g. a page switcher or an upload card). */
+  beforeForm?: ReactNode;
   form: ContentForm<T>;
   children: ReactNode;
 }
@@ -30,7 +30,7 @@ export function ContentEditor<T>({
   sectionTitle,
   sectionDescription,
   saveLabel = "Save changes",
-  toolbar,
+  beforeForm,
   form,
   children,
 }: Props<T>) {
@@ -39,7 +39,7 @@ export function ContentEditor<T>({
   return (
     <div className={`${styles.page} ${styles.narrow}`}>
       <AdminPageHeader title={title} description={description} />
-      {toolbar}
+      {beforeForm}
 
       {form.formError && (
         <Alert
