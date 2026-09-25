@@ -19,20 +19,32 @@ export const metadata: Metadata = { title: "Dashboard" };
 export const dynamic = "force-dynamic";
 
 const RECENT_LIMIT = 5;
+/** Rows fetched to build the "recent" lists (the counts do not depend on this). */
+const RECENT_SOURCE_SIZE = 100;
+/** Unavailable figures render as an em dash rather than a misleading 0. */
+const display = (value: number | null) => (value === null ? "—" : value);
 const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 export default async function AdminDashboardPage() {
   const basePath = getAdminBasePath();
-  const [projectsResult, messagesResult] = await Promise.all([
-    getProjectService().getAll({ pageSize: 100 }),
-    getContactService().getMessages({ page: 1, pageSize: 100 }),
+  const projectService = getProjectService();
+  const contactService = getContactService();
+  // Every card reads an exact figure from the data layer — totals come from
+  // COUNT(*) queries, never from the length of a paginated page.
+  const [projectsResult, featuredResult, messagesResult, unreadResult] = await Promise.all([
+    projectService.getAll({ pageSize: RECENT_SOURCE_SIZE }),
+    projectService.getFeatured(),
+    contactService.getMessages({ page: 1, pageSize: RECENT_SOURCE_SIZE }),
+    contactService.getUnreadCount(),
   ]);
 
   const projects = projectsResult.ok ? projectsResult.value.items : [];
   const messages = messagesResult.ok ? messagesResult.value.items : [];
-  const messageTotal = messagesResult.ok ? messagesResult.value.total : 0;
-  const featuredCount = projects.filter((p) => p.featured).length;
-  const unreadCount = messages.filter((m) => !m.read).length;
+  const projectTotal = projectsResult.ok ? projectsResult.value.total : null;
+  const featuredCount = featuredResult.ok ? featuredResult.value.length : null;
+  const messageTotal = messagesResult.ok ? messagesResult.value.total : null;
+  const unreadCount = unreadResult.ok ? unreadResult.value : null;
+  const failed = [projectsResult, featuredResult, messagesResult, unreadResult].some((r) => !r.ok);
 
   const recentMessages = [...messages]
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -51,7 +63,7 @@ export default async function AdminDashboardPage() {
         actions={
           <>
             <Button href={`${basePath}/messages`} variant="secondary" icon="inbox">
-              Inbox{unreadCount > 0 ? ` (${unreadCount})` : ""}
+              Inbox{unreadCount ? ` (${unreadCount})` : ""}
             </Button>
             <Button href={`${basePath}/projects/new`} icon="plus">
               New project
@@ -60,32 +72,30 @@ export default async function AdminDashboardPage() {
         }
       />
 
-      {(!projectsResult.ok || !messagesResult.ok) && (
+      {failed && (
         <Alert tone="danger" title="Some data couldn't be loaded">
-          {!projectsResult.ok && "Projects are unavailable. "}
-          {!messagesResult.ok && "Messages are unavailable. "}
-          Counts below may be incomplete.
+          Figures that couldn&apos;t be read are shown as &ldquo;—&rdquo;. Refresh to try again.
         </Alert>
       )}
 
       <section className={styles.statsGrid} aria-label="Summary">
-        <StatCard label="Projects" value={projects.length} icon="layers" href={`${basePath}/projects`} />
+        <StatCard label="Projects" value={display(projectTotal)} icon="layers" href={`${basePath}/projects`} />
         <StatCard
           label="Featured"
-          value={featuredCount}
+          value={display(featuredCount)}
           icon="star"
           tone="accent"
           href={`${basePath}/featured`}
           hint="Shown in the home carousel"
         />
-        <StatCard label="Messages" value={messageTotal} icon="message" href={`${basePath}/messages`} />
+        <StatCard label="Messages" value={display(messageTotal)} icon="message" href={`${basePath}/messages`} />
         <StatCard
           label="Unread"
-          value={unreadCount}
+          value={display(unreadCount)}
           icon="mail"
-          tone={unreadCount > 0 ? "warning" : "default"}
+          tone={unreadCount ? "warning" : "default"}
           href={`${basePath}/messages`}
-          hint={unreadCount > 0 ? "Awaiting your reply" : "You're all caught up"}
+          hint={unreadCount === null ? undefined : unreadCount > 0 ? "Awaiting your reply" : "You're all caught up"}
         />
       </section>
 

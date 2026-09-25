@@ -12,6 +12,8 @@ import styles from "./HeroSection.module.less";
 
 interface Props {
   hero: Hero | null;
+  /** Whether an uploaded resume is published; the button is hidden otherwise. */
+  resumeAvailable: boolean;
   /** Anchor id of the section the scroll cue should jump to. */
   nextSectionId?: string;
 }
@@ -19,7 +21,7 @@ interface Props {
 const DEFAULT_INTRO =
   "Building scalable, high-performance web applications with a focus on clean architecture, security, and exceptional developer experience.";
 
-export function HeroSection({ hero, nextSectionId }: Props) {
+export function HeroSection({ hero, resumeAvailable, nextSectionId }: Props) {
   const initials = siteConfig.name
     .split(" ")
     .map((n) => n[0])
@@ -63,16 +65,18 @@ export function HeroSection({ hero, nextSectionId }: Props) {
             <Button href="/contact" size="lg" variant="secondary">
               Contact Me
             </Button>
-            <Button
-              href={hero?.resumeUrl ?? siteConfig.resumeUrl}
-              size="lg"
-              variant="ghost"
-              icon="download"
-              external
-              aria-label="Download resume (opens in new tab)"
-            >
-              Resume
-            </Button>
+            {resumeAvailable && (
+              <Button
+                href={siteConfig.resumePath}
+                size="lg"
+                variant="ghost"
+                icon="download"
+                external // plain <a>: a Next <Link> would prefetch the PDF route
+                aria-label="View resume (PDF, opens in new tab)"
+              >
+                Resume
+              </Button>
+            )}
           </motion.div>
         </motion.div>
 

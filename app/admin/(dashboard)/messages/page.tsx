@@ -11,8 +11,14 @@ export const metadata: Metadata = { title: "Messages" };
 // Always read fresh — this inbox reflects live submissions.
 export const dynamic = "force-dynamic";
 
+/** Rows loaded into the client-side table (search/filter/sort run in the browser). */
+const PAGE_LIMIT = 100;
+
 export default async function AdminMessagesPage() {
-  const result = await getContactService().getMessages({ page: 1, pageSize: 100 });
+  const [result, unreadResult] = await Promise.all([
+    getContactService().getMessages({ page: 1, pageSize: PAGE_LIMIT }),
+    getContactService().getUnreadCount(),
+  ]);
 
   const messages: InboxMessage[] = result.ok
     ? result.value.items.map((m) => ({
@@ -25,7 +31,9 @@ export default async function AdminMessagesPage() {
         read: m.read,
       }))
     : [];
-  const unread = messages.filter((m) => !m.read).length;
+  // Exact figures from the database, independent of how many rows were loaded.
+  const unread = unreadResult.ok ? unreadResult.value : null;
+  const total = result.ok ? result.value.total : 0;
 
   return (
     <div className={styles.page}>
@@ -33,10 +41,16 @@ export default async function AdminMessagesPage() {
         title="Messages"
         description={
           result.ok
-            ? `Contact form submissions from visitors${unread > 0 ? ` · ${unread} unread` : ""}.`
+            ? `${total} message${total === 1 ? "" : "s"} from visitors${unread ? ` · ${unread} unread` : ""}.`
             : "Contact form submissions from visitors."
         }
       />
+
+      {result.ok && total > messages.length && (
+        <Alert tone="info" title={`Showing ${messages.length} of ${total} messages`}>
+          Unread messages are loaded first, then the newest. Delete handled messages to bring older ones into view.
+        </Alert>
+      )}
 
       {result.ok ? (
         <MessagesInbox messages={messages} />

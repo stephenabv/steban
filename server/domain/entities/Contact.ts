@@ -4,7 +4,6 @@ export interface ContactInfo {
   githubUrl: string;
   linkedinUrl: string;
   facebookUrl: string;
-  resumeUrl: string;
   updatedAt: Date;
 }
 

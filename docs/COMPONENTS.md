@@ -88,14 +88,15 @@ The top section of the home page.
 **Contents:**
 - Profile photo.
 - Animated name, title, and introduction text using Framer Motion staggered fade-up animations.
-- Three CTA buttons: **View Projects** (links to `/projects`), **Contact** (links to `/contact`), **Download Resume** (links to `config/site.ts → resumeUrl`).
+- Three CTA buttons: **View Projects** (links to `/projects`), **Contact** (links to `/contact`), **Resume** (links to `/resume.pdf`, which streams the PDF uploaded in Admin → Resume; the button is hidden until a resume is uploaded).
 - Scroll indicator arrow at the bottom.
 
 **Props:**
 
 | Prop | Type | Description |
 |---|---|---|
-| `hero` | `Hero` | Data object with `name`, `title`, `introduction`, `photoUrl`, `photoAlt`, `resumeUrl` |
+| `hero` | `Hero \| null` | Data object with `name`, `title`, `introduction`, `photoUrl`, `photoAlt` |
+| `resumeAvailable` | `boolean` | Whether an uploaded resume is published; hides the Resume button otherwise |
 
 ---
 
@@ -254,9 +255,10 @@ Access is protected at the middleware level (`proxy.ts`) — unauthenticated req
 
 | Route | File | Description |
 |---|---|---|
-| `/admin` | `app/admin/page.tsx` | Dashboard: quick stats (projects, messages, unread count) + links to all sections. |
+| `/admin` | `app/admin/page.tsx` | Dashboard: exact counts (projects, featured, messages, unread — from `COUNT(*)` queries) + recent activity. |
 | `/admin/login` | `app/admin/login/page.tsx` | Login page using `AdminLoginForm`. |
-| `/admin/hero` | `app/admin/hero/page.tsx` | Form to edit name, title, introduction, photo URL, resume URL. |
+| `/admin/hero` | `app/admin/hero/page.tsx` | Form to edit name, title, introduction, photo URL. |
+| `/admin/resume` | `app/admin/(dashboard)/resume/page.tsx` | Resume management: view current PDF and metadata, upload or replace (`ResumeManager`). |
 | `/admin/about` | `app/admin/about/page.tsx` | Form to edit bio, skills, experience, education, certifications. |
 | `/admin/projects` | `app/admin/projects/page.tsx` | Project list with create / edit / delete controls. |
 | `/admin/featured` | `app/admin/featured/page.tsx` | Drag-and-drop or ordered selection of featured projects for the carousel. |

@@ -331,8 +331,6 @@ None. Next step requires Vercel environment setup (Postgres, Blob).
 - Rate limiter uses in-memory store; should use Vercel KV for multi-instance production.
 - Featured carousel order can't be edited from the admin: `featuredOrder` isn't part of the project
   Server Action schema. Needs a backward-compatible schema addition before drag-to-reorder UI.
-- `siteConfig.resumeUrl` points to `/resume.pdf`, but there is no `public/` directory yet, so the
-  hero's Resume button 404s until the file is added.
 
 ## Known issues
 - Dev server only: the CSP (`'strict-dynamic'` + nonce) blocks Turbopack's lazily loaded `loading.tsx`
@@ -397,6 +395,20 @@ Status:   Accepted.
 
 ## Changelog
 ```
+## 2026-09-25 — Admin fixes and resume upload
+### Fixed
+- Dashboard cards showed 0: on main they were hard-coded literals. Counts now come from exact
+  queries (project/message COUNT(*), featured query, new unread COUNT) instead of the length of a
+  100-row page, and a failed query renders "—" rather than a misleading 0.
+- Page became unscrollable after deleting a message from inside the message dialog: stacked
+  dialogs each saved/restored body overflow, and closing both in one render restored "hidden".
+  Replaced with a reference-counted scroll lock (lib/dom/scrollLock.ts).
+### Changed
+- Resume is now an uploaded PDF (Admin → Resume) stored in Postgres (resume_files) and served at
+  the unchanged public URL /resume.pdf. The URL-based fields (Hero.resumeUrl, ContactInfo.resumeUrl,
+  siteConfig.resumeUrl) are removed; contact_info.resume_url is kept but unused (no destructive
+  migration). The home Resume button is hidden until a resume exists.
+
 ## 2026-09-25 — UI/UX redesign (presentation layer only)
 ### Added
 - Design system: runtime tokens, Outfit display face, icon registry, Button/Badge/Card/Alert/

@@ -28,4 +28,6 @@ export abstract class ContactMessageRepository extends BaseRepository<
 > {
   abstract findAll(params?: { page?: number; pageSize?: number }): Promise<Paginated<ContactMessage>>;
   abstract markAsRead(id: string): Promise<boolean>;
+  /** Exact number of unread messages (independent of pagination). */
+  abstract countUnread(): Promise<number>;
 }

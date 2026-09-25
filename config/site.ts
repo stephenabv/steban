@@ -32,7 +32,12 @@ export const siteConfig = {
     name: "Stephen Abueva",
     email: "stephen.abueva@gmail.com",
   },
-  resumeUrl: "/resume.pdf",
+  /**
+   * Public route that streams the resume uploaded in the admin panel
+   * (app/resume.pdf/route.ts). Not configurable content: upload a new file
+   * in Admin → Resume instead of changing a URL.
+   */
+  resumePath: "/resume.pdf",
 } as const;
 
 export type SiteConfig = typeof siteConfig;

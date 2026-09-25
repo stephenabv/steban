@@ -5,7 +5,6 @@ export interface Hero {
   introduction: string;
   photoUrl: string;
   photoAlt: string;
-  resumeUrl: string;
   updatedAt: Date;
 }
 

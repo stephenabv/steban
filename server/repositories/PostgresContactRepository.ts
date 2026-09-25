@@ -119,6 +119,15 @@ export class PostgresContactMessageRepository extends ContactMessageRepository {
     return (rowCount ?? 0) > 0;
   }
 
+  async countUnread(): Promise<number> {
+    await ensureMessageTable();
+    // Served by idx_contact_messages_read (read, created_at).
+    const { rows } = await getPool().query<{ count: string }>(
+      "SELECT COUNT(*) FROM contact_messages WHERE read = FALSE"
+    );
+    return Number(rows[0].count);
+  }
+
   async delete(id: string): Promise<boolean> {
     await ensureMessageTable();
     const { rowCount } = await getPool().query("DELETE FROM contact_messages WHERE id = $1", [id]);
@@ -136,7 +145,6 @@ interface ContactInfoRow {
   github_url: string;
   linkedin_url: string;
   facebook_url: string;
-  resume_url: string;
   updated_at: string;
 }
 
@@ -147,7 +155,6 @@ function toContactInfo(row: ContactInfoRow): ContactInfo {
     githubUrl: row.github_url,
     linkedinUrl: row.linkedin_url,
     facebookUrl: row.facebook_url,
-    resumeUrl: row.resume_url,
     updatedAt: new Date(row.updated_at),
   };
 }
@@ -163,6 +170,8 @@ function ensureInfoTable(): Promise<void> {
         github_url   TEXT NOT NULL DEFAULT '',
         linkedin_url TEXT NOT NULL DEFAULT '',
         facebook_url TEXT NOT NULL DEFAULT '',
+        -- Deprecated: the resume is now an uploaded file (resume_files). Kept so
+        -- existing databases need no destructive migration; never read or written.
         resume_url   TEXT NOT NULL DEFAULT '',
         updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )`
@@ -201,11 +210,10 @@ export class PostgresContactInfoRepository extends ContactInfoRepository {
         github_url = $2,
         linkedin_url = $3,
         facebook_url = $4,
-        resume_url = $5,
         updated_at = NOW()
-      WHERE id = $6
+      WHERE id = $5
       RETURNING *`,
-      [merged.email, merged.githubUrl, merged.linkedinUrl, merged.facebookUrl, merged.resumeUrl, id]
+      [merged.email, merged.githubUrl, merged.linkedinUrl, merged.facebookUrl, id]
     );
     return rows[0] ? toContactInfo(rows[0]) : null;
   }

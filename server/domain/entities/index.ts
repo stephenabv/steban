@@ -16,3 +16,4 @@ export type {
   UpdateContactInfoInput,
 } from "./Contact";
 export type { SeoMetadata, UpdateSeoMetadataInput } from "./SeoMetadata";
+export type { ResumeFile, ResumeFileContent, CreateResumeFileInput } from "./Resume";

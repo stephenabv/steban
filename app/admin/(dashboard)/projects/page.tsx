@@ -10,10 +10,14 @@ import styles from "@/features/admin/AdminPage.module.less";
 
 export const metadata: Metadata = { title: "Projects" };
 
+/** Rows loaded into the client-side table (search/filter/sort run in the browser). */
+const PAGE_LIMIT = 100;
+
 export default async function AdminProjectsPage() {
   const basePath = getAdminBasePath();
-  const result = await getProjectService().getAll({ pageSize: 100 });
+  const result = await getProjectService().getAll({ pageSize: PAGE_LIMIT });
   const projects = result.ok ? result.value.items.map(toAdminProjectRow) : [];
+  const total = result.ok ? result.value.total : 0;
 
   return (
     <div className={styles.page}>
@@ -26,6 +30,12 @@ export default async function AdminProjectsPage() {
           </Button>
         }
       />
+
+      {result.ok && total > projects.length && (
+        <Alert tone="info" title={`Showing the ${projects.length} most recent of ${total} projects`}>
+          Older projects aren&apos;t listed here yet; they remain published on the site.
+        </Alert>
+      )}
 
       {result.ok ? (
         <ProjectsTable projects={projects} newHref={`${basePath}/projects/new`} />

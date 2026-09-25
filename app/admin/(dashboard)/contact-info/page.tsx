@@ -10,7 +10,6 @@ export default function AdminContactInfoPage() {
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [facebook, setFacebook] = useState("");
-  const [resumeUrl, setResumeUrl] = useState("");
 
   return (
     <PlaceholderEditor
@@ -19,11 +18,8 @@ export default function AdminContactInfoPage() {
       sectionTitle="Contact details"
     >
       <div className={formLayout.grid}>
-        <Field label="Email address" id="ci-email">
+        <Field label="Email address" id="ci-email" className={formLayout.span2}>
           <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-        </Field>
-        <Field label="Resume URL" id="ci-resume">
-          <Input type="text" value={resumeUrl} onChange={(e) => setResumeUrl(e.target.value)} placeholder="/resume.pdf or https://…" />
         </Field>
         <Field label="GitHub URL" id="ci-github" className={formLayout.span2}>
           <Input type="url" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="https://github.com/…" />

@@ -107,6 +107,5 @@ Findings outside the scope of a presentation change (not modified):
 | Finding | Why not changed here | Suggested fix |
 |---|---|---|
 | Featured order isn't editable | `featuredOrder` isn't in the project Server Action schema | Add an optional `featuredOrder` to the Zod schema (backward-compatible), then a reorder UI. |
-| Resume button 404s | No `public/resume.pdf` in the repo | Add the file, or point `siteConfig.resumeUrl` at hosted storage. |
 | Dev-only CSP block of admin `loading` chunks | Pre-existing; security configuration; absent in production builds | Investigate Turbopack dev chunk loading under `'strict-dynamic'`. |
 | Placeholder editors don't persist | Repositories for Hero/About/SEO/etc. don't exist yet | Implement repositories + Server Actions; `PlaceholderEditor` has a single TODO hook point. |

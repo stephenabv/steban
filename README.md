@@ -234,8 +234,9 @@ Navigate to `/admin` (redirects to `/admin/login` when not authenticated).
 
 | Section | Route | What you can edit |
 |---|---|---|
-| Dashboard | `/admin` | Overview stats + quick links |
-| Hero | `/admin/hero` | Name, title, introduction, profile photo, resume link |
+| Dashboard | `/admin` | Live counts (projects, featured, messages, unread) + recent activity |
+| Hero | `/admin/hero` | Name, title, introduction, profile photo |
+| Resume | `/admin/resume` | Upload, view, download and replace the resume PDF served at `/resume.pdf` |
 | About | `/admin/about` | Biography, skills, experience, education, certifications |
 | Projects | `/admin/projects` | Create, edit, delete projects |
 | Featured | `/admin/featured` | Choose which projects appear in the home carousel and their order |

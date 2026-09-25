@@ -11,7 +11,6 @@ export default function AdminHeroPage() {
   const [title, setTitle] = useState("");
   const [introduction, setIntroduction] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
-  const [resumeUrl, setResumeUrl] = useState("");
   const hasPreview = /^https?:\/\//.test(photoUrl.trim());
 
   return (
@@ -46,9 +45,6 @@ export default function AdminHeroPage() {
             "Photo preview"
           )}
         </div>
-        <Field label="Resume URL" id="h-resume" className={formLayout.span2}>
-          <Input type="text" value={resumeUrl} onChange={(e) => setResumeUrl(e.target.value)} placeholder="/resume.pdf or https://…" />
-        </Field>
       </div>
     </PlaceholderEditor>
   );

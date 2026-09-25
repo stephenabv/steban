@@ -5,5 +5,7 @@ export { AboutService } from "./AboutService";
 export { ContactService } from "./ContactService";
 export { getContactService } from "./contactService.instance";
 export { SeoService } from "./SeoService";
+export { ResumeService, ResumeValidationError } from "./ResumeService";
+export { getResumeService } from "./resumeService.instance";
 export { AuditService } from "./AuditService";
 export type { AuditAction, AuditEntry } from "./AuditService";
