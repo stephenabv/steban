@@ -7,15 +7,16 @@ import { useId } from "react";
  * Also reproduced in app/icon.tsx / app/apple-icon.tsx / app/opengraph-image.tsx —
  * keep the geometry and colors in sync when changing it.
  */
-export function Logo({ size = 32 }: { size?: number }) {
+export function Logo({ size = 32, decorative = false }: { size?: number; decorative?: boolean }) {
   const gradientId = useId();
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 64 64"
-      role="img"
-      aria-label="Stephen Abueva logo"
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : "Stephen Abueva logo"}
+      aria-hidden={decorative || undefined}
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">

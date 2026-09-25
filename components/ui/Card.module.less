@@ -1,0 +1,68 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.card {
+  .surface();
+  min-width: 0;
+}
+
+.interactive {
+  .card();
+}
+
+.padSm {
+  padding: @space-4;
+}
+
+.padMd {
+  padding: @space-5;
+
+  @media (min-width: @bp-sm) {
+    padding: @space-6;
+  }
+}
+
+.padLg {
+  padding: @space-6;
+
+  @media (min-width: @bp-sm) {
+    padding: @space-8;
+  }
+}
+
+.padNone {
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: @space-4;
+  flex-wrap: wrap;
+  margin-bottom: @space-5;
+}
+
+.headerText {
+  min-width: 0;
+}
+
+.title {
+  font-size: @fs-lg;
+  font-weight: @fw-semibold;
+  letter-spacing: -0.01em;
+}
+
+.description {
+  font-size: @fs-sm;
+  line-height: @lh-normal;
+  color: @color-text-muted;
+  margin-top: @space-1;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: @space-2;
+  flex-wrap: wrap;
+}

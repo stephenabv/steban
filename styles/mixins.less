@@ -1,13 +1,22 @@
 @import "./variables.less";
 
+// ─── Layout ───────────────────────────────────────────────────────────────────
 .container() {
   width: 100%;
   max-width: @container-max;
   margin-inline: auto;
-  padding-inline: @space-6;
+  padding-inline: @space-5;
+
+  @media (min-width: @bp-md) {
+    padding-inline: @space-8;
+  }
+}
+
+.section-spacing() {
+  padding-block: @space-16;
 
   @media (min-width: @bp-lg) {
-    padding-inline: @space-8;
+    padding-block: @space-24;
   }
 }
 
@@ -29,47 +38,172 @@
   border: 0;
 }
 
+.line-clamp(@lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: @lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ─── Interaction ──────────────────────────────────────────────────────────────
 .focus-ring() {
   &:focus-visible {
-    outline: 2px solid @color-accent;
+    outline: 2px solid @color-accent-light;
     outline-offset: 3px;
-    border-radius: @radius-sm;
   }
 }
 
-.card() {
+.focus-ring-inset() {
+  &:focus-visible {
+    outline: 2px solid @color-accent-light;
+    outline-offset: -2px;
+  }
+}
+
+.reduced-motion() {
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+// ─── Surfaces ─────────────────────────────────────────────────────────────────
+.surface() {
   background: @color-bg-card;
   border: 1px solid @color-border;
   border-radius: @radius-lg;
-  transition: border-color @transition-normal, box-shadow @transition-normal;
+  box-shadow: @shadow-inset-highlight;
+}
+
+.card() {
+  .surface();
+  transition:
+    border-color @transition-normal,
+    box-shadow @transition-normal,
+    transform @transition-normal;
 
   &:hover {
     border-color: @color-border-hover;
-    box-shadow: @shadow-md;
+    box-shadow: @shadow-md, @shadow-inset-highlight;
   }
 }
 
+// Frosted-glass surface (adapted from the reference navbar treatment).
+.glass() {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 60%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+// ─── Typography ───────────────────────────────────────────────────────────────
+.display() {
+  font-family: @font-display;
+  font-weight: @fw-bold;
+  letter-spacing: @tracking-tight;
+  line-height: @lh-tight;
+  color: @color-text-primary;
+}
+
+.eyebrow() {
+  display: inline-flex;
+  align-items: center;
+  gap: @space-2;
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  color: @color-accent-light;
+  text-transform: uppercase;
+  letter-spacing: @tracking-wide;
+}
+
 .gradient-text() {
-  background: linear-gradient(135deg, @color-text-primary 0%, @color-accent-light 100%);
+  background: linear-gradient(135deg, @color-text-primary 20%, @color-accent-light 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.accent-text() {
+  background: @gradient-accent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+// ─── Form controls ────────────────────────────────────────────────────────────
+.control-base() {
+  width: 100%;
+  min-height: 44px;
+  background: @color-bg-subtle;
+  border: 1px solid @color-border-hover;
+  border-radius: @radius-md;
+  padding: @space-3 @space-4;
+  color: @color-text-primary;
+  font-size: @fs-sm;
+  line-height: @lh-normal;
+  transition:
+    border-color @transition-fast,
+    box-shadow @transition-fast,
+    background @transition-fast;
+
+  &::placeholder {
+    color: @color-text-muted;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: @color-border-strong;
+  }
+
+  &:focus-visible,
+  &:focus {
+    outline: none;
+    border-color: @color-accent;
+    box-shadow: 0 0 0 3px @color-accent-soft;
+  }
+
+  &[aria-invalid="true"] {
+    border-color: fade(@color-error, 70%);
+
+    &:focus {
+      box-shadow: 0 0 0 3px fade(@color-error, 15%);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Legacy button mixins (kept for modules not yet migrated to <Button>) ────
 .btn-base() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: @space-2;
+  min-height: 44px;
   padding: @space-3 @space-6;
   border-radius: @radius-full;
   font-weight: @fw-semibold;
   font-size: @fs-sm;
   line-height: 1;
   cursor: pointer;
-  transition: all @transition-normal;
+  transition:
+    background @transition-normal,
+    border-color @transition-normal,
+    color @transition-normal,
+    box-shadow @transition-normal,
+    transform @transition-normal;
   text-decoration: none;
-  border: none;
+  border: 1px solid transparent;
   .focus-ring();
 }
 
@@ -93,11 +227,10 @@
   .btn-base();
   background: transparent;
   color: @color-text-primary;
-  border: 1px solid @color-border;
+  border-color: @color-border-hover;
 
   &:hover {
-    border-color: @color-accent;
-    color: @color-accent;
-    background: @color-accent-glow;
+    border-color: @color-accent-light;
+    background: @color-accent-soft;
   }
 }

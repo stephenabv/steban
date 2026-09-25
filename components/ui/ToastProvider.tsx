@@ -1,7 +1,13 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { Icon } from "@/components/icons/Icon";
+import type { IconName } from "@/components/icons/Icon";
+import { useIsClient } from "@/lib/hooks/useIsClient";
+import { EASE_OUT } from "@/lib/motion";
+import { cn } from "@/lib/cn";
 import styles from "./Toast.module.less";
 
 type ToastVariant = "success" | "error" | "info";
@@ -20,33 +26,25 @@ interface ToastApi {
 
 const ToastContext = createContext<ToastApi | null>(null);
 
-const AUTO_DISMISS_MS = 4000;
+const AUTO_DISMISS_MS: Record<ToastVariant, number> = {
+  success: 4000,
+  info: 5000,
+  // Errors stay longer so they can be read before disappearing.
+  error: 7000,
+};
 
-const ICONS: Record<ToastVariant, React.ReactNode> = {
-  success: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  ),
-  error: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-    </svg>
-  ),
-  info: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
-  ),
+const MAX_VISIBLE = 4;
+
+const ICONS: Record<ToastVariant, IconName> = {
+  success: "check-circle",
+  error: "alert",
+  info: "info",
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const idRef = useRef(0);
-  // Portal must not render during SSR/initial hydration, or the client's first
-  // pass (which does have `document`) won't match the server-rendered tree.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const isClient = useIsClient();
 
   const dismiss = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -55,8 +53,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const push = useCallback(
     (variant: ToastVariant, message: string) => {
       const id = ++idRef.current;
-      setToasts((prev) => [...prev, { id, message, variant }]);
-      setTimeout(() => dismiss(id), AUTO_DISMISS_MS);
+      setToasts((prev) => [...prev, { id, message, variant }].slice(-MAX_VISIBLE));
+      setTimeout(() => dismiss(id), AUTO_DISMISS_MS[variant]);
     },
     [dismiss]
   );
@@ -73,29 +71,35 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      {mounted &&
+      {isClient &&
         createPortal(
           <div className={styles.viewport} role="region" aria-label="Notifications">
-            {toasts.map((t) => (
-              <div
-                key={t.id}
-                className={`${styles.toast} ${styles[t.variant]}`}
-                role={t.variant === "error" ? "alert" : "status"}
-              >
-                <span className={styles.icon}>{ICONS[t.variant]}</span>
-                <span className={styles.message}>{t.message}</span>
-                <button
-                  type="button"
-                  className={styles.dismiss}
-                  aria-label="Dismiss notification"
-                  onClick={() => dismiss(t.id)}
+            <AnimatePresence initial={false}>
+              {toasts.map((t) => (
+                <motion.div
+                  key={t.id}
+                  layout
+                  className={cn(styles.toast, styles[t.variant])}
+                  role={t.variant === "error" ? "alert" : "status"}
+                  initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.25, ease: EASE_OUT } }}
+                  exit={{ opacity: 0, x: 24, transition: { duration: 0.15 } }}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-            ))}
+                  <span className={styles.icon}>
+                    <Icon name={ICONS[t.variant]} size={18} />
+                  </span>
+                  <span className={styles.message}>{t.message}</span>
+                  <button
+                    type="button"
+                    className={styles.dismiss}
+                    aria-label="Dismiss notification"
+                    onClick={() => dismiss(t.id)}
+                  >
+                    <Icon name="close" size={14} />
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>,
           document.body
         )}

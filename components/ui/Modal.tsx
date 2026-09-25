@@ -1,71 +1,118 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useId, useRef } from "react";
+import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Icon } from "@/components/icons/Icon";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
+import { useIsClient } from "@/lib/hooks/useIsClient";
+import { EASE_OUT } from "@/lib/motion";
+import { cn } from "@/lib/cn";
 import styles from "./Modal.module.less";
+
+export type ModalSize = "sm" | "md" | "lg";
 
 export interface ModalProps {
   open: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
+  description?: ReactNode;
+  children: ReactNode;
+  footer?: ReactNode;
+  size?: ModalSize;
+  /** Set to false while a blocking operation is in flight. */
+  dismissible?: boolean;
 }
 
-export function Modal({ open, onClose, title, children, footer }: ModalProps) {
+/**
+ * Accessible dialog: portal-mounted, focus-trapped, Escape/backdrop dismissal,
+ * animated in and out, and presented as a bottom sheet on small screens.
+ */
+export function Modal({
+  open,
+  onClose,
+  title,
+  description,
+  children,
+  footer,
+  size = "md",
+  dismissible = true,
+}: ModalProps) {
+  const isClient = useIsClient();
+  const reduceMotion = useReducedMotion();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
 
-  useEffect(() => {
-    if (!open) return;
+  const requestClose = () => {
+    if (dismissible) onClose();
+  };
 
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
+  useFocusTrap(dialogRef, { active: open, onEscape: requestClose });
 
-    document.addEventListener("keydown", onKeyDown);
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    dialogRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-      previouslyFocused?.focus();
-    };
-  }, [open, onClose]);
-
-  if (!open || typeof document === "undefined") return null;
+  if (!isClient) return null;
 
   return createPortal(
-    <div className={styles.overlay}>
-      <button
-        type="button"
-        className={styles.backdrop}
-        aria-label="Close dialog"
-        onClick={onClose}
-        tabIndex={-1}
-      />
-      <div
-        ref={dialogRef}
-        className={styles.dialog}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        tabIndex={-1}
-      >
-        <div className={styles.dialogHeader}>
-          <h2 className={styles.dialogTitle}>{title}</h2>
-          <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Close dialog">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
+    <AnimatePresence>
+      {open && (
+        <div className={styles.overlay}>
+          <motion.button
+            type="button"
+            className={styles.backdrop}
+            aria-label="Close dialog"
+            tabIndex={-1}
+            onClick={requestClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          />
+          <motion.div
+            ref={dialogRef}
+            className={cn(styles.dialog, styles[size])}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            aria-describedby={description ? descriptionId : undefined}
+            tabIndex={-1}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.28, ease: EASE_OUT } }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.98, transition: { duration: 0.16 } }}
+          >
+            <div className={styles.grabber} aria-hidden="true" />
+            <div className={styles.header}>
+              <div>
+                <h2 id={titleId} className={styles.title}>
+                  {title}
+                </h2>
+                {description && (
+                  <p id={descriptionId} className={styles.description}>
+                    {description}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={requestClose}
+                disabled={!dismissible}
+                aria-label="Close dialog"
+              >
+                <Icon name="close" size={16} />
+              </button>
+            </div>
+            <div className={styles.body}>{children}</div>
+            {footer && <div className={styles.footer}>{footer}</div>}
+          </motion.div>
         </div>
-        <div className={styles.dialogBody}>{children}</div>
-        {footer && <div className={styles.dialogFooter}>{footer}</div>}
-      </div>
-    </div>,
+      )}
+    </AnimatePresence>,
     document.body
   );
+}
+
+/** Pushes footer content to the start edge (e.g. a destructive action). */
+export function ModalFooterStart({ children }: { children: ReactNode }) {
+  return <div className={styles.footerStart}>{children}</div>;
 }

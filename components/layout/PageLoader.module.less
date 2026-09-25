@@ -1,18 +1,26 @@
 @import "styles/variables.less";
 
-// Full-viewport splash overlay. Fixed + high z-index so it always renders on
-// top of the navbar (100), admin drawer (60), modals (150), and toasts (200)
-// no matter where loading.tsx places it in the component tree.
+// Full-viewport splash overlay above navbars, drawers, modals and toasts.
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: @z-loader;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: @space-4;
-  background: @color-bg;
+  background: fade(@color-bg, 92%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  animation: appear @duration-normal ease 150ms forwards;
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
 }
 
 .topBar {
@@ -28,39 +36,50 @@
 .topBarProgress {
   height: 100%;
   width: 40%;
-  background: linear-gradient(90deg, @color-accent, @color-accent-light);
+  background: @gradient-accent;
   border-radius: 0 2px 2px 0;
-  animation: slide 1s ease-in-out infinite;
+  animation: slide 1.1s @ease-in-out infinite;
 }
 
 @keyframes slide {
   0% {
     transform: translateX(-100%);
   }
-  60% {
-    transform: translateX(150%);
-  }
   100% {
-    transform: translateX(250%);
+    transform: translateX(260%);
   }
 }
 
-.spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid @color-border;
-  border-top-color: @color-accent;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+.mark {
+  animation: breathe 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 8px 24px @color-accent-glow);
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.92);
+    opacity: 0.75;
   }
 }
 
 .text {
   font-size: @fs-sm;
   color: @color-text-muted;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    animation: none;
+    opacity: 1;
+  }
+
+  .mark,
+  .topBarProgress {
+    animation: none;
+  }
 }

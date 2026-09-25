@@ -1,0 +1,62 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: @space-4;
+  max-width: 760px;
+}
+
+.row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: @space-6;
+  flex-wrap: wrap;
+}
+
+.center {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+
+.eyebrow {
+  .eyebrow();
+
+  &::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: @gradient-accent;
+  }
+}
+
+.title {
+  .display();
+}
+
+.page .title {
+  font-size: clamp(@fs-4xl, 7vw, @fs-7xl);
+  font-weight: @fw-extrabold;
+  line-height: 1.05;
+}
+
+.section .title {
+  font-size: clamp(@fs-3xl, 4.5vw, @fs-5xl);
+}
+
+.highlight {
+  .accent-text();
+}
+
+.description {
+  font-size: clamp(@fs-base, 1.6vw, @fs-lg);
+  max-width: 620px;
+}
+
+.center .description {
+  margin-inline: auto;
+}
