@@ -1,31 +1,29 @@
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import { siteConfig, siteUrl } from "@/config/site";
+import { LegalPage } from "@/features/legal/LegalPage";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions",
   description: `Terms and Conditions for ${siteConfig.name}'s portfolio website.`,
+  alternates: { canonical: siteUrl("/terms") },
 };
 
 export default function TermsPage() {
   return (
-    <div style={{ padding: "8rem 2rem 6rem", maxWidth: "760px", margin: "0 auto" }}>
-      <h1 style={{ fontSize: "2.5rem", fontWeight: 800, marginBottom: "2rem" }}>Terms &amp; Conditions</h1>
-      <p style={{ color: "#9090a8", lineHeight: 1.75, marginBottom: "1.5rem" }}>
+    <LegalPage title="Terms & Conditions">
+      <p>
         The content on this website is provided for informational purposes only. All project
-        descriptions, code samples, and other materials are the intellectual property of&nbsp;
+        descriptions, code samples, and other materials are the intellectual property of{" "}
         {siteConfig.name} unless otherwise noted.
       </p>
-      <p style={{ color: "#9090a8", lineHeight: 1.75, marginBottom: "1.5rem" }}>
+      <p>
         You may not reproduce, distribute, or use any content from this site without explicit
         written permission, except for personal, non-commercial purposes with proper attribution.
       </p>
-      <p style={{ color: "#9090a8", lineHeight: 1.75, marginBottom: "1.5rem" }}>
+      <p>
         This site is provided &ldquo;as is&rdquo; without warranties of any kind. {siteConfig.name} is not
         liable for any damages arising from the use of this website.
       </p>
-      <p style={{ color: "#606075", fontSize: "0.875rem" }}>
-        Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long" })}.
-      </p>
-    </div>
+    </LegalPage>
   );
 }

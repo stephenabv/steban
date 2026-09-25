@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/features/home/HeroSection";
 import { FeaturedCarousel } from "@/features/home/FeaturedCarousel";
+import { CtaBand } from "@/features/shared/CtaBand";
 import { siteConfig } from "@/config/site";
 import { personSchema, websiteSchema } from "@/lib/structuredData";
 import { getProjectService } from "@/server/services";
@@ -12,6 +13,8 @@ export const metadata: Metadata = {
 
 // TODO: replace hero with real data from HeroService when it's wired up
 const mockHero = null;
+
+const FEATURED_SECTION_ID = "featured";
 
 export default async function HomePage() {
   const featuredResult = await getProjectService().getFeatured();
@@ -29,8 +32,9 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema()) }}
       />
-      <HeroSection hero={mockHero} />
-      <FeaturedCarousel projects={featured} />
+      <HeroSection hero={mockHero} nextSectionId={featured.length > 0 ? FEATURED_SECTION_ID : undefined} />
+      <FeaturedCarousel id={FEATURED_SECTION_ID} projects={featured} />
+      <CtaBand />
     </>
   );
 }

@@ -3,7 +3,7 @@
 import { useId, useRef } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@/components/icons/Icon";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useIsClient } from "@/lib/hooks/useIsClient";
@@ -40,7 +40,6 @@ export function Modal({
   dismissible = true,
 }: ModalProps) {
   const isClient = useIsClient();
-  const reduceMotion = useReducedMotion();
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -76,9 +75,9 @@ export function Modal({
             aria-labelledby={titleId}
             aria-describedby={description ? descriptionId : undefined}
             tabIndex={-1}
-            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.98 }}
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.28, ease: EASE_OUT } }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.98, transition: { duration: 0.16 } }}
+            exit={{ opacity: 0, y: 16, scale: 0.98, transition: { duration: 0.16 } }}
           >
             <div className={styles.grabber} aria-hidden="true" />
             <div className={styles.header}>

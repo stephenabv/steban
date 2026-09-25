@@ -60,6 +60,9 @@ body {
 
 #main-content {
   flex: 1;
+  // Clip decorative glows that bleed past the viewport. `clip` (unlike `hidden`)
+  // creates no scroll container, so position: sticky keeps working inside.
+  overflow-x: clip;
 
   &:focus {
     outline: none;

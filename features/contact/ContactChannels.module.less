@@ -1,0 +1,97 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: @space-3;
+}
+
+.item {
+  .card();
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: @space-4;
+  padding: @space-4;
+  border-radius: @radius-md;
+
+  &:focus-within {
+    border-color: @color-accent-light;
+  }
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: @radius-md;
+  background: @color-accent-soft;
+  color: @color-accent-light;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.label {
+  font-size: @fs-xs;
+  color: @color-text-muted;
+}
+
+.value {
+  font-size: @fs-sm;
+  font-weight: @fw-medium;
+  color: @color-text-primary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  outline: none;
+
+  // Stretched link — the whole row is clickable.
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: @radius-sm;
+  border: 1px solid @color-border;
+  background: transparent;
+  color: @color-text-secondary;
+  cursor: pointer;
+  .focus-ring();
+
+  &:hover {
+    color: @color-text-primary;
+    border-color: @color-border-hover;
+  }
+}
+
+.arrow {
+  flex-shrink: 0;
+  color: @color-text-muted;
+  transition:
+    color @transition-fast,
+    transform @transition-fast;
+}
+
+.item:hover .arrow {
+  color: @color-accent-light;
+  transform: translate(2px, -2px);
+}

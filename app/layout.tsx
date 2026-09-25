@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
 import { FirebaseAnalytics } from "@/components/layout/FirebaseAnalytics";
+import { MotionProvider } from "@/components/layout/MotionProvider";
 import { analyticsConfig } from "@/config/analytics";
 import "@/styles/globals.less";
 
@@ -66,7 +67,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main-content" id="skip-nav">
           Skip to main content
         </a>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         {analyticsConfig.firebase.enabled && <FirebaseAnalytics />}
       </body>
     </html>

@@ -1,47 +1,49 @@
 "use client";
 
-import type { ElementType, ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { EASE_OUT } from "@/lib/motion";
+import { useEffect, useRef } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { cn } from "@/lib/cn";
+import styles from "./Reveal.module.less";
 
 export interface RevealProps {
   children: ReactNode;
   /** Seconds to wait after entering the viewport — use for simple staggers. */
   delay?: number;
-  /** Vertical travel in px. */
-  distance?: number;
   as?: "div" | "section" | "li" | "article";
   className?: string;
 }
 
-const MOTION_TAGS: Record<NonNullable<RevealProps["as"]>, ElementType> = {
-  div: motion.div,
-  section: motion.section,
-  li: motion.li,
-  article: motion.article,
-};
-
 /**
- * Fades content up the first time it scrolls into view. Renders statically
- * when the user prefers reduced motion.
+ * Progressive-enhancement scroll reveal. Content is visible in the server HTML
+ * (no-JS visitors and crawlers see everything); after hydration, only elements
+ * still below the fold are hidden and then faded up as they scroll into view.
+ * Motion is disabled by CSS under `prefers-reduced-motion`.
  */
-export function Reveal({ children, delay = 0, distance = 24, as = "div", className }: RevealProps) {
-  const reduceMotion = useReducedMotion();
-  const Tag = MOTION_TAGS[as];
+export function Reveal({ children, delay = 0, as: Tag = "div", className }: RevealProps) {
+  const ref = useRef<HTMLElement>(null);
 
-  if (reduceMotion) {
-    const Static = as;
-    return <Static className={className}>{children}</Static>;
-  }
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (el.getBoundingClientRect().top < window.innerHeight) return; // already on screen
+
+    el.classList.add(styles.pending);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        el.classList.add(styles.visible);
+        observer.disconnect();
+      },
+      { rootMargin: "0px 0px -8% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const style = delay ? ({ "--reveal-delay": `${delay}s` } as CSSProperties) : undefined;
 
   return (
-    <Tag
-      className={className}
-      initial={{ opacity: 0, y: distance }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
-      transition={{ duration: 0.6, delay, ease: EASE_OUT }}
-    >
+    <Tag ref={ref as never} className={cn(styles.reveal, className)} style={style}>
       {children}
     </Tag>
   );

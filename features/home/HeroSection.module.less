@@ -2,179 +2,213 @@
 @import "styles/mixins.less";
 
 .hero {
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
   position: relative;
-  padding-top: @nav-height;
+  isolation: isolate;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: calc(@nav-height + @space-10);
+  padding-bottom: @space-20;
   overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: -40%;
-    right: -20%;
-    width: 700px;
-    height: 700px;
-    background: radial-gradient(circle, @color-accent-glow 0%, transparent 70%);
-    pointer-events: none;
-  }
 }
 
+// ─── Ambient backdrop: faint engineering grid + two soft glows ────────────────
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(@color-border 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(90deg, @color-border 1px, transparent 1px) 0 0 / 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 60% 40%, #000 10%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 60% 40%, #000 10%, transparent 70%);
+  opacity: 0.6;
+}
+
+.glowA,
+.glowB {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+.glowA {
+  top: -12%;
+  right: -8%;
+  width: min(720px, 90vw);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, fade(@color-accent, 30%) 0%, transparent 65%);
+}
+
+.glowB {
+  bottom: 5%;
+  left: -12%;
+  width: min(560px, 80vw);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, fade(@color-accent-2, 8%) 0%, transparent 60%);
+}
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
 .inner {
   .container();
   display: grid;
-  gap: @space-16;
+  gap: @space-12;
   align-items: center;
 
   @media (min-width: @bp-lg) {
-    grid-template-columns: 1fr 1fr;
-    gap: @space-20;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: @space-16;
   }
 }
 
 .content {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: @space-6;
-}
+  order: 2;
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: @space-2;
-  padding: @space-2 @space-4;
-  background: @color-accent-glow;
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: @radius-full;
-  font-size: @fs-xs;
-  font-weight: @fw-semibold;
-  color: @color-accent-light;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  width: fit-content;
+  @media (min-width: @bp-lg) {
+    order: 1;
+  }
 }
 
 .name {
-  font-size: clamp(@fs-4xl, 6vw, @fs-7xl);
+  .display();
+  font-size: clamp(2.75rem, 8vw, @fs-8xl);
   font-weight: @fw-extrabold;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  line-height: 0.98;
   .gradient-text();
+  padding-bottom: 0.06em; // keeps descenders inside the clipped gradient
 }
 
 .title {
-  font-size: clamp(@fs-xl, 2.5vw, @fs-3xl);
+  font-family: @font-display;
+  font-size: clamp(@fs-xl, 2.6vw, @fs-3xl);
   font-weight: @fw-semibold;
-  color: @color-text-secondary;
+  letter-spacing: -0.02em;
+  line-height: @lh-snug;
+  .accent-text();
 }
 
 .intro {
-  font-size: @fs-lg;
-  color: @color-text-secondary;
-  line-height: @lh-relaxed;
-  max-width: 540px;
+  font-size: clamp(@fs-base, 1.5vw, @fs-lg);
+  max-width: 560px;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: @space-4;
+  gap: @space-3;
   margin-top: @space-2;
+
+  @media (max-width: (@bp-sm - 1px)) {
+    width: 100%;
+
+    > * {
+      flex: 1 1 auto;
+    }
+  }
 }
 
-.btnPrimary {
-  .btn-primary();
-  padding: @space-4 @space-8;
-  font-size: @fs-base;
-}
-
-.btnOutline {
-  .btn-outline();
-  padding: @space-4 @space-8;
-  font-size: @fs-base;
-}
-
+// ─── Portrait ─────────────────────────────────────────────────────────────────
 .photoWrapper {
   display: flex;
   justify-content: center;
+  order: 1;
 
   @media (min-width: @bp-lg) {
+    order: 2;
     justify-content: flex-end;
   }
 }
 
-.photoContainer {
+.photoFrame {
   position: relative;
-  width: min(380px, 90vw);
-  height: min(380px, 90vw);
+  width: min(420px, 62vw);
+  aspect-ratio: 4 / 5;
+  border-radius: @radius-xl;
+  padding: 1px;
+  background: linear-gradient(160deg, fade(@color-accent-light, 70%), fade(@color-accent, 10%) 40%, fade(@color-accent-2, 40%));
+  box-shadow: 0 30px 80px -20px fade(@color-accent, 45%);
 
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -4px;
-    background: linear-gradient(135deg, @color-accent, @color-accent-light, transparent);
-    border-radius: @radius-full;
-    z-index: 0;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: -20px;
-    background: radial-gradient(circle, @color-accent-glow, transparent 70%);
-    border-radius: @radius-full;
-    z-index: -1;
+  @media (max-width: (@bp-lg - 1px)) {
+    width: min(260px, 60vw);
   }
 }
 
 .photo {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  border-radius: @radius-full;
-  border: 3px solid @color-bg;
+  border-radius: calc(@radius-xl - 1px);
 }
 
 .photoPlaceholder {
-  position: relative;
-  z-index: 1;
   width: 100%;
   height: 100%;
-  border-radius: @radius-full;
-  border: 3px solid @color-bg;
-  background: linear-gradient(135deg, @color-bg-elevated, @color-bg-card);
+  border-radius: calc(@radius-xl - 1px);
+  background:
+    radial-gradient(circle at 30% 20%, fade(@color-accent, 25%), transparent 60%),
+    @color-bg-card;
   .flex-center();
-  font-size: @fs-7xl;
+  font-family: @font-display;
+  font-size: clamp(@fs-5xl, 9vw, @fs-8xl);
   font-weight: @fw-bold;
-  color: @color-accent;
   letter-spacing: -0.05em;
+  color: @color-accent-light;
 }
 
-.scrollIndicator {
+// ─── Scroll cue ───────────────────────────────────────────────────────────────
+.scrollCue {
   position: absolute;
-  bottom: @space-8;
+  bottom: @space-6;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
-  gap: @space-2;
-  color: @color-text-muted;
+  gap: @space-1;
+  padding: @space-2 @space-3;
+  border-radius: @radius-md;
   font-size: @fs-xs;
+  font-weight: @fw-medium;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  animation: bounce 2s ease-in-out infinite;
+  color: @color-text-muted;
+  transition: color @transition-fast;
+  .focus-ring();
 
   svg {
-    width: 20px;
-    height: 20px;
+    animation: nudge 2s ease-in-out infinite;
+  }
+
+  &:hover {
+    color: @color-text-primary;
+  }
+
+  @media (min-width: @bp-md) and (min-height: 760px) {
+    display: flex;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    svg {
+      animation: none;
+    }
   }
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(8px); }
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
 }

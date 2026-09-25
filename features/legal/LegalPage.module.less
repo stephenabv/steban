@@ -1,0 +1,34 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.prose {
+  .surface();
+  display: flex;
+  flex-direction: column;
+  gap: @space-5;
+  padding: @space-6;
+  font-size: @fs-base;
+
+  @media (min-width: @bp-sm) {
+    padding: @space-10;
+  }
+
+  a {
+    color: @color-accent-light;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    border-radius: @radius-xs;
+    .focus-ring();
+
+    &:hover {
+      color: @color-accent-lighter;
+    }
+  }
+}
+
+.updated {
+  padding-top: @space-5;
+  border-top: 1px solid @color-border;
+  font-size: @fs-sm;
+  color: @color-text-muted;
+}

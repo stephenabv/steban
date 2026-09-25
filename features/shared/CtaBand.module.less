@@ -1,0 +1,69 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.wrap {
+  .container();
+  padding-block: @space-12 0;
+}
+
+.band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: @space-8;
+  padding: @space-10 @space-6;
+  border-radius: @radius-xl;
+  border: 1px solid fade(@color-accent, 30%);
+  background:
+    linear-gradient(135deg, fade(@color-accent, 16%) 0%, fade(@color-bg-card, 90%) 55%),
+    @color-bg-card;
+
+  @media (min-width: @bp-md) {
+    padding: @space-12;
+  }
+
+  @media (min-width: @bp-lg) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.glow {
+  position: absolute;
+  z-index: -1;
+  top: -60%;
+  right: -10%;
+  width: 520px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, fade(@color-accent-light, 22%), transparent 65%);
+}
+
+.text {
+  max-width: 560px;
+}
+
+.title {
+  font-size: clamp(@fs-2xl, 3.5vw, @fs-4xl);
+  margin-bottom: @space-3;
+}
+
+.description {
+  font-size: @fs-base;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: @space-3;
+  flex-shrink: 0;
+
+  @media (max-width: (@bp-sm - 1px)) {
+    > * {
+      flex: 1 1 100%;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+@import "styles/variables.less";
+
+.reveal {
+  --reveal-delay: 0s;
+}
+
+.pending {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.pending.visible {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 600ms @ease-out var(--reveal-delay),
+    transform 600ms @ease-out var(--reveal-delay);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pending {
+    transform: none;
+  }
+
+  .pending.visible {
+    transition: opacity 300ms ease;
+  }
+}

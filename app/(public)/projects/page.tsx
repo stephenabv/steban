@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { ProjectGrid } from "@/features/projects/ProjectGrid";
+import { ProjectExplorer } from "@/features/projects/ProjectExplorer";
+import type { ProjectCardData } from "@/features/projects/types";
+import { PageShell } from "@/features/shared/PageShell";
+import { CtaBand } from "@/features/shared/CtaBand";
+import { Alert } from "@/components/ui/Alert";
 import { siteConfig, siteUrl } from "@/config/site";
 import { getProjectService } from "@/server/services";
-import styles from "./projects.module.less";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -12,22 +15,37 @@ export const metadata: Metadata = {
 
 export default async function ProjectsPage() {
   const result = await getProjectService().getAll({ pageSize: 100 });
-  const projects = result.ok ? result.value.items : [];
-  return (
-    <div className={styles.page}>
-      <section className={styles.hero} aria-labelledby="projects-heading">
-        <h1 id="projects-heading" className={styles.heading}>
-          Projects
-        </h1>
-        <p className={styles.subheading}>
-          A collection of work that spans full-stack web apps, cloud architecture, and developer
-          tools.
-        </p>
-      </section>
+  const projects: ProjectCardData[] = result.ok
+    ? result.value.items.map((p) => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        summary: p.summary,
+        coverImage: p.coverImage,
+        technologies: p.technologies,
+        featured: p.featured,
+        publishedAt: p.publishedAt.toISOString(),
+      }))
+    : [];
 
-      <section className={styles.grid} aria-label="All projects">
-        <ProjectGrid projects={projects} />
-      </section>
-    </div>
+  return (
+    <>
+      <PageShell
+        eyebrow="Portfolio"
+        title="Projects"
+        description="A collection of work that spans full-stack web apps, cloud architecture, and developer tools."
+      >
+        <section aria-label="All projects">
+          {result.ok ? (
+            <ProjectExplorer projects={projects} />
+          ) : (
+            <Alert tone="danger" title="Projects couldn't be loaded">
+              Please refresh the page in a moment.
+            </Alert>
+          )}
+        </section>
+      </PageShell>
+      <CtaBand />
+    </>
   );
 }
