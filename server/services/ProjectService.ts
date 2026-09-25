@@ -1,12 +1,12 @@
-import type { Project, CreateProjectInput, UpdateProjectInput } from "@/server/domain/entities";
-import type { Paginated, PaginationParams, Result } from "@/server/domain/types";
+import type { Project, CreateProjectInput, ProjectListParams, UpdateProjectInput } from "@/server/domain/entities";
+import type { Paginated, Result } from "@/server/domain/types";
 import { ok, err } from "@/server/domain/types";
 import type { ProjectRepository } from "@/server/repositories";
 
 export class ProjectService {
   constructor(private readonly repo: ProjectRepository) {}
 
-  async getAll(params?: PaginationParams): Promise<Result<Paginated<Project>>> {
+  async getAll(params?: ProjectListParams): Promise<Result<Paginated<Project>>> {
     try {
       const result = await this.repo.findAll(params);
       return ok(result);

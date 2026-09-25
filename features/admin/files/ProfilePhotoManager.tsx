@@ -12,6 +12,7 @@ import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useToast } from "@/components/ui/ToastProvider";
 import { FileDropzone } from "./FileDropzone";
 import { useFileUpload } from "./useFileUpload";
+import { useManagedFileMutations } from "./useManagedFileMutations";
 import { uploadedFormatter } from "./formatters";
 import styles from "./FileManager.module.less";
 
@@ -36,7 +37,7 @@ export function ProfilePhotoManager({ photo, src, initials }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [removing, setRemoving] = useState(false);
+  const mutations = useManagedFileMutations({ endpoint: ENDPOINT, label: "photo" });
 
   const onUploaded = useCallback(() => {
     toast.success(photo ? "Photo replaced — the home page now shows the new one." : "Photo uploaded and published.");
@@ -52,24 +53,7 @@ export function ProfilePhotoManager({ photo, src, initials }: Props) {
   });
 
   async function remove() {
-    setRemoving(true);
-    try {
-      const res = await fetch(ENDPOINT, { method: "DELETE" });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) {
-        toast.error(
-          res.status === 401 ? "Your session has expired. Sign in again, then retry." : (data.error ?? `Couldn't remove the photo (${res.status}).`)
-        );
-        return;
-      }
-      setConfirmOpen(false);
-      toast.success("Photo removed — the home page shows your initials.");
-      router.refresh();
-    } catch {
-      toast.error("Network error — the photo wasn't removed.");
-    } finally {
-      setRemoving(false);
-    }
+    if (await mutations.remove("Photo removed — the home page shows your initials.")) setConfirmOpen(false);
   }
 
   return (
@@ -144,7 +128,7 @@ export function ProfilePhotoManager({ photo, src, initials }: Props) {
         message="The home page will show your initials instead. You can upload a new photo at any time."
         confirmLabel="Remove photo"
         danger
-        busy={removing}
+        busy={mutations.pending === "remove"}
         onConfirm={() => void remove()}
         onCancel={() => setConfirmOpen(false)}
       />

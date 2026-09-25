@@ -1,9 +1,21 @@
 import { randomUUID } from "crypto";
 import { getPool } from "@/server/db/pool";
 import { ensureOnce } from "@/server/db/ensureOnce";
-import type { Project, CreateProjectInput, UpdateProjectInput } from "@/server/domain/entities";
-import type { Paginated, PaginationParams } from "@/server/domain/types";
+import type {
+  Project,
+  CreateProjectInput,
+  ProjectListOrder,
+  ProjectListParams,
+  UpdateProjectInput,
+} from "@/server/domain/entities";
+import type { Paginated } from "@/server/domain/types";
 import { ProjectRepository } from "./ProjectRepository";
+
+/** Allow-listed ORDER BY clauses; `id` is the final tie-breaker so pagination is stable. */
+const ORDER_BY: Record<ProjectListOrder, string> = {
+  newest: "published_at DESC, id",
+  featuredFirst: "featured DESC, (CASE WHEN featured THEN featured_order END) NULLS LAST, published_at DESC, id",
+};
 
 interface ProjectRow {
   id: string;
@@ -93,13 +105,13 @@ export class PostgresProjectRepository extends ProjectRepository {
     return rows.map(toProject);
   }
 
-  async findAll(params?: PaginationParams): Promise<Paginated<Project>> {
+  async findAll(params?: ProjectListParams): Promise<Paginated<Project>> {
     await ensureTable();
     const page = params?.page ?? 1;
     const pageSize = params?.pageSize ?? 20;
     const offset = (page - 1) * pageSize;
     const { rows } = await getPool().query<ProjectRow>(
-      "SELECT * FROM projects ORDER BY published_at DESC LIMIT $1 OFFSET $2",
+      `SELECT * FROM projects ORDER BY ${ORDER_BY[params?.order ?? "newest"]} LIMIT $1 OFFSET $2`,
       [pageSize, offset]
     );
     const { rows: countRows } = await getPool().query<{ count: string }>(

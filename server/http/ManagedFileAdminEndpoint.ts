@@ -3,7 +3,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/server/auth/session";
-import { FileValidationError, type ManagedFileService } from "@/server/services";
+import { z } from "zod";
+import {
+  FileValidationError,
+  ManagedFileError,
+  ManagedFileMissingError,
+  type ManagedFileService,
+} from "@/server/services";
 import { formatBytes } from "@/lib/formatBytes";
 import { toManagedFileSummary } from "@/lib/files/ManagedFileSummary";
 
@@ -19,6 +25,7 @@ export interface ManagedFileAdminEndpointOptions {
   revalidate: readonly string[];
 }
 
+const publishBodySchema = z.object({ published: z.boolean() }).strict();
 
 function json(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
@@ -82,6 +89,32 @@ export class ManagedFileAdminEndpoint {
       if (result.error instanceof FileValidationError) return json(422, { error: result.error.message });
       console.error(`[${this.options.label}] upload failed:`, result.error);
       return json(500, { error: `The ${this.options.label} couldn't be saved. Your current ${this.options.label} is unchanged.` });
+    }
+
+    this.revalidate();
+    return json(200, { ok: true, file: toManagedFileSummary(result.value) });
+  }
+
+  /** PATCH `{ "published": boolean }` — shows or hides the file on the public site. */
+  async setPublished(request: NextRequest): Promise<Response> {
+    const denied = await this.authorize(request);
+    if (denied) return denied;
+
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return json(400, { error: "Invalid request." });
+    }
+    const parsed = publishBodySchema.safeParse(body);
+    if (!parsed.success) return json(400, { error: "Invalid request." });
+
+    const result = await this.options.service().setPublished(parsed.data.published);
+    if (!result.ok) {
+      if (result.error instanceof ManagedFileMissingError) return json(404, { error: result.error.message });
+      if (result.error instanceof ManagedFileError) return json(409, { error: result.error.message });
+      console.error(`[${this.options.label}] publish change failed:`, result.error);
+      return json(500, { error: `The ${this.options.label} couldn't be updated. Please try again.` });
     }
 
     this.revalidate();

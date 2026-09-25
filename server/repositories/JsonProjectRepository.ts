@@ -1,9 +1,28 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import type { Project, CreateProjectInput, UpdateProjectInput } from "@/server/domain/entities";
-import type { Paginated, PaginationParams } from "@/server/domain/types";
+import type {
+  Project,
+  CreateProjectInput,
+  ProjectListOrder,
+  ProjectListParams,
+  UpdateProjectInput,
+} from "@/server/domain/entities";
+import type { Paginated } from "@/server/domain/types";
 import { ProjectRepository } from "./ProjectRepository";
+
+type Comparator = (a: Project, b: Project) => number;
+
+const newest: Comparator = (a, b) => b.publishedAt.getTime() - a.publishedAt.getTime();
+/** Carousel order: explicit featuredOrder first, then newest. */
+const featuredOrder: Comparator = (a, b) =>
+  (a.featuredOrder ?? Number.MAX_SAFE_INTEGER) - (b.featuredOrder ?? Number.MAX_SAFE_INTEGER) || newest(a, b);
+
+const COMPARATORS: Record<ProjectListOrder, Comparator> = {
+  newest,
+  featuredFirst: (a, b) =>
+    Number(b.featured) - Number(a.featured) || (a.featured ? featuredOrder(a, b) : newest(a, b)),
+};
 
 const DATA_FILE = path.join(process.cwd(), "data", "projects.json");
 
@@ -54,18 +73,11 @@ export class JsonProjectRepository extends ProjectRepository {
     const all = await this.readAll();
     return all
       .filter((p) => p.featured)
-      .sort(
-        (a, b) =>
-          (a.featuredOrder ?? Number.MAX_SAFE_INTEGER) -
-            (b.featuredOrder ?? Number.MAX_SAFE_INTEGER) ||
-          b.publishedAt.getTime() - a.publishedAt.getTime()
-      );
+      .sort(featuredOrder);
   }
 
-  async findAll(params?: PaginationParams): Promise<Paginated<Project>> {
-    const all = (await this.readAll()).sort(
-      (a, b) => b.publishedAt.getTime() - a.publishedAt.getTime()
-    );
+  async findAll(params?: ProjectListParams): Promise<Paginated<Project>> {
+    const all = (await this.readAll()).sort(COMPARATORS[params?.order ?? "newest"]);
     const page = params?.page ?? 1;
     const pageSize = params?.pageSize ?? 20;
     const items = all.slice((page - 1) * pageSize, page * pageSize);

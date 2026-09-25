@@ -170,12 +170,24 @@ The swap is atomic: if validation or storage fails, the current resume stays act
 | `422` | Not a PDF, empty, or truncated/corrupted |
 | `500` | Storage failed — `"Your current resume is unchanged."` |
 
+### PATCH /api/admin/resume
+
+Publishes or unpublishes the current resume. **Admin session required**, same-origin only.
+Body: `{ "published": boolean }`. `200 { "ok": true, "file": { …, published } }`; `404` when no
+resume is uploaded. Replacing a resume keeps its published state; the first upload is published.
+
+### DELETE /api/admin/resume
+
+Permanently removes the resume. **Admin session required**, same-origin only.
+`200 { "ok": true, "removed": boolean }`.
+
 ### GET /resume.pdf
 
 Public. Streams the active resume (`Content-Type: application/pdf`, `inline`; add `?download=1`
 for `attachment`). Responses carry an `ETag` (SHA-256) with `Cache-Control: public, max-age=0,
 must-revalidate`, so a replaced resume is served immediately and unchanged files return `304`.
-Returns `404` when no resume has been uploaded.
+Returns `404` when no resume has been uploaded or it is unpublished. A signed-in admin can still
+open an unpublished resume here (served with `Cache-Control: private, no-store`) to preview it.
 
 ---
 

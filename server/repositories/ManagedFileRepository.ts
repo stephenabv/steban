@@ -4,12 +4,16 @@ import type { CreateManagedFileInput, ManagedFile, ManagedFileContent } from "@/
  * Storage contract for a single-slot uploaded file (resume, profile photo).
  *
  * `replaceActive` must be atomic: the new file becomes active only once it is
- * fully stored, and on failure the previous file stays active and intact.
+ * fully stored, and on failure the previous file stays active and intact. A
+ * replacement keeps the previous file's published state; the first upload is
+ * published.
  */
 export abstract class ManagedFileRepository {
   abstract findActive(): Promise<ManagedFile | null>;
   abstract findActiveContent(): Promise<ManagedFileContent | null>;
   abstract replaceActive(input: CreateManagedFileInput): Promise<ManagedFile>;
+  /** Publishes or unpublishes the active file. Returns null if there is none. */
+  abstract setPublished(published: boolean): Promise<ManagedFile | null>;
   /** Removes the active file (and any stored versions). Returns false if there was none. */
   abstract clearActive(): Promise<boolean>;
 }

@@ -7,6 +7,8 @@ export interface ManagedFile {
   /** SHA-256 of the content — used as the HTTP ETag and to version public URLs. */
   sha256: string;
   uploadedAt: Date;
+  /** Whether the public site may serve it. Unpublished files stay visible to the admin. */
+  published: boolean;
 }
 
 export interface ManagedFileContent extends ManagedFile {
