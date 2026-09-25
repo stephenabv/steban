@@ -1,10 +1,14 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
+import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Switch, Textarea } from "@/components/ui/Field";
 import { formLayout } from "@/components/ui/formLayout";
 import { saveAboutAction } from "../contentActions";
+import { CollapsibleSection } from "./CollapsibleSection";
 import { ContentEditor } from "./ContentEditor";
 import { RepeatableList } from "./RepeatableList";
+import { useCollapsibleSections } from "./useCollapsibleSections";
 import { useContentForm } from "./useContentForm";
 import styles from "./AboutEditor.module.less";
 
@@ -58,6 +62,11 @@ export interface AboutFormValues {
   awards: AwardForm[];
 }
 
+const SECTION_KEYS = ["biography", "skills", "experience", "education", "certifications", "awards"] as const;
+type SectionKey = (typeof SECTION_KEYS)[number];
+
+const countLabel = (n: number, singular: string, plural = `${singular}s`) => (n === 0 ? "None yet" : `${n} ${n === 1 ? singular : plural}`);
+
 const newId = () => crypto.randomUUID();
 const PROFICIENCY = ["Beginner", "Basic", "Intermediate", "Advanced", "Expert"];
 
@@ -76,17 +85,47 @@ export function AboutEditor({ initial, savedAt }: { initial: AboutFormValues; sa
   const { values, patch, errors } = form;
   const err = (path: string) => errors[path];
 
+  const sections = useCollapsibleSections(SECTION_KEYS);
+  const sectionsWithErrors = useMemo(
+    () => SECTION_KEYS.filter((key) => Object.keys(errors).some((path) => path === key || path.startsWith(`${key}.`))),
+    [errors]
+  );
+  // A failed save must never hide the fields that need fixing.
+  const { reveal } = sections;
+  useEffect(() => reveal(sectionsWithErrors), [reveal, sectionsWithErrors]);
+
+  const summaries: Record<SectionKey, string> = {
+    biography: values.biography.trim() ? `${values.biography.trim().split(/\s+/).length} words` : "Empty",
+    skills: countLabel(values.skills.length, "skill"),
+    experience: countLabel(values.experience.length, "role"),
+    education: countLabel(values.education.length, "entry", "entries"),
+    certifications: countLabel(values.certifications.length, "certification"),
+    awards: countLabel(values.awards.length, "award"),
+  };
+
   return (
     <ContentEditor
       title="About"
       description="Biography, skills, experience, education, certifications and awards on the About page."
       form={form}
     >
+      <div className={styles.toolbar}>
+        <Button variant="ghost" size="sm" icon="chevrons-down" onClick={() => sections.setAll(true)} disabled={sections.allOpen}>
+          Expand all
+        </Button>
+        <Button variant="ghost" size="sm" icon="chevrons-up" onClick={() => sections.setAll(false)} disabled={sections.allClosed}>
+          Collapse all
+        </Button>
+      </div>
       <div className={styles.sections}>
-        <section className={styles.section} aria-labelledby="ab-bio-h">
-          <h2 id="ab-bio-h" className={styles.heading}>
-            Biography
-          </h2>
+        <CollapsibleSection
+          id="ab-bio"
+          title="Biography"
+          open={sections.isOpen("biography")}
+          onToggle={() => sections.toggle("biography")}
+          summary={summaries.biography}
+          hasErrors={sectionsWithErrors.includes("biography")}
+        >
           <Field
             label="Biography"
             id="ab-bio"
@@ -101,12 +140,16 @@ export function AboutEditor({ initial, savedAt }: { initial: AboutFormValues; sa
               placeholder="Write a professional biography…"
             />
           </Field>
-        </section>
+        </CollapsibleSection>
 
-        <section className={styles.section} aria-labelledby="ab-skills-h">
-          <h2 id="ab-skills-h" className={styles.heading}>
-            Skills
-          </h2>
+        <CollapsibleSection
+          id="ab-skills"
+          title="Skills"
+          open={sections.isOpen("skills")}
+          onToggle={() => sections.toggle("skills")}
+          summary={summaries.skills}
+          hasErrors={sectionsWithErrors.includes("skills")}
+        >
           <p className={styles.hint}>Skills are grouped by category on the public page.</p>
           <RepeatableList
             items={values.skills}
@@ -137,12 +180,19 @@ export function AboutEditor({ initial, savedAt }: { initial: AboutFormValues; sa
               </div>
             )}
           />
-        </section>
+        </CollapsibleSection>
 
-        <section className={styles.section} aria-labelledby="ab-exp-h">
-          <h2 id="ab-exp-h" className={styles.heading}>
-            Experience
-          </h2>
+        <CollapsibleSection
+          id="ab-exp"
+          title="Experience"
+          open={sections.isOpen("experience")}
+          onToggle={() => sections.toggle("experience")}
+          summary={summaries.experience}
+          hasErrors={sectionsWithErrors.includes("experience")}
+        >
+          <p className={styles.hint}>
+            The About page lists roles newest first — current roles, then by end date — whatever the order here.
+          </p>
           <RepeatableList
             items={values.experience}
             onChange={(experience) => patch({ experience })}
@@ -203,12 +253,16 @@ export function AboutEditor({ initial, savedAt }: { initial: AboutFormValues; sa
               </div>
             )}
           />
-        </section>
+        </CollapsibleSection>
 
-        <section className={styles.section} aria-labelledby="ab-edu-h">
-          <h2 id="ab-edu-h" className={styles.heading}>
-            Education
-          </h2>
+        <CollapsibleSection
+          id="ab-edu"
+          title="Education"
+          open={sections.isOpen("education")}
+          onToggle={() => sections.toggle("education")}
+          summary={summaries.education}
+          hasErrors={sectionsWithErrors.includes("education")}
+        >
           <RepeatableList
             items={values.education}
             onChange={(education) => patch({ education })}
@@ -241,12 +295,16 @@ export function AboutEditor({ initial, savedAt }: { initial: AboutFormValues; sa
               </div>
             )}
           />
-        </section>
+        </CollapsibleSection>
 
-        <section className={styles.section} aria-labelledby="ab-cert-h">
-          <h2 id="ab-cert-h" className={styles.heading}>
-            Certifications
-          </h2>
+        <CollapsibleSection
+          id="ab-cert"
+          title="Certifications"
+          open={sections.isOpen("certifications")}
+          onToggle={() => sections.toggle("certifications")}
+          summary={summaries.certifications}
+          hasErrors={sectionsWithErrors.includes("certifications")}
+        >
           <RepeatableList
             items={values.certifications}
             onChange={(certifications) => patch({ certifications })}
@@ -276,12 +334,16 @@ export function AboutEditor({ initial, savedAt }: { initial: AboutFormValues; sa
               </div>
             )}
           />
-        </section>
+        </CollapsibleSection>
 
-        <section className={styles.section} aria-labelledby="ab-awd-h">
-          <h2 id="ab-awd-h" className={styles.heading}>
-            Awards
-          </h2>
+        <CollapsibleSection
+          id="ab-awd"
+          title="Awards"
+          open={sections.isOpen("awards")}
+          onToggle={() => sections.toggle("awards")}
+          summary={summaries.awards}
+          hasErrors={sectionsWithErrors.includes("awards")}
+        >
           <RepeatableList
             items={values.awards}
             onChange={(awards) => patch({ awards })}
@@ -308,7 +370,7 @@ export function AboutEditor({ initial, savedAt }: { initial: AboutFormValues; sa
               </div>
             )}
           />
-        </section>
+        </CollapsibleSection>
       </div>
     </ContentEditor>
   );

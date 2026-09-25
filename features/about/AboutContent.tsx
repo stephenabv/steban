@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/icons/Icon";
 import type { IconName } from "@/components/icons/Icon";
+import { sortExperienceNewestFirst } from "@/lib/about/chronology";
 import { SectionNav } from "./SectionNav";
 import type { SectionNavItem } from "./SectionNav";
 import styles from "./AboutContent.module.less";
@@ -114,7 +115,7 @@ export function AboutContent({ about }: Props) {
         <AboutSection id="experience" title="Experience" icon="briefcase">
           {about.experience.length > 0 ? (
             <ol className={styles.timeline} role="list">
-              {about.experience.map((exp) => (
+              {sortExperienceNewestFirst(about.experience).map((exp) => (
                 <li key={exp.id} className={styles.timelineItem}>
                   <p className={styles.timelineDate}>{formatDateRange(exp.startDate, exp.endDate, exp.current)}</p>
                   <h3 className={styles.timelineTitle}>{exp.role}</h3>
