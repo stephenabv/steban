@@ -2,176 +2,115 @@
 @import "styles/mixins.less";
 
 .section {
-  padding: @space-24 0;
+  .container();
+  .section-spacing();
+  scroll-margin-top: @nav-height;
 }
 
 .header {
-  .container();
-  margin-bottom: @space-12;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: @space-4;
+  margin-bottom: @space-10;
 }
 
-.eyebrow {
-  font-size: @fs-xs;
-  font-weight: @fw-semibold;
-  color: @color-accent;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: @space-3;
+.stage {
+  position: relative;
 }
 
-.heading {
-  font-size: clamp(@fs-3xl, 4vw, @fs-5xl);
-  font-weight: @fw-extrabold;
-  letter-spacing: -0.03em;
-}
-
-.viewAll {
-  font-size: @fs-sm;
-  font-weight: @fw-semibold;
-  color: @color-accent;
-  display: flex;
-  align-items: center;
-  gap: @space-1;
-  transition: gap @transition-fast;
-  .focus-ring();
-
-  &:hover {
-    gap: @space-3;
-  }
-}
-
-.track {
-  .container();
-  display: flex;
-  gap: @space-6;
-  overflow: hidden;
-}
-
-.slide {
-  min-width: 0;
-  flex: 0 0 100%;
-}
-
-.controls {
-  .container();
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: @space-6;
-  margin-top: @space-10;
-}
-
-.dots {
-  display: flex;
-  gap: @space-2;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: @radius-full;
-  background: @color-border;
-  border: none;
-  cursor: pointer;
-  transition: all @transition-normal;
-  .focus-ring();
-
-  &.active {
-    width: 24px;
-    background: @color-accent;
-  }
-}
-
-.arrowBtn {
-  width: 44px;
-  height: 44px;
-  border-radius: @radius-full;
-  background: @color-bg-card;
-  border: 1px solid @color-border;
-  color: @color-text-secondary;
-  cursor: pointer;
-  .flex-center();
-  transition: all @transition-fast;
-  .focus-ring();
-
-  &:hover:not(:disabled) {
-    border-color: @color-accent;
-    color: @color-accent;
-  }
-
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-}
-
-// ─── Project Card ─────────────────────────────────────────────────────────────
 .card {
-  .card();
+  .surface();
   display: grid;
   overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   @media (min-width: @bp-lg) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    min-height: 460px;
   }
 }
 
-.cardImage {
-  aspect-ratio: 16 / 10;
+.media {
   position: relative;
+  aspect-ratio: 16 / 10;
   background: @color-bg-elevated;
   overflow: hidden;
 
   @media (min-width: @bp-lg) {
     aspect-ratio: auto;
-    min-height: 400px;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 70%, fade(@color-bg-card, 60%));
+    pointer-events: none;
+
+    @media (max-width: (@bp-lg - 1px)) {
+      background: linear-gradient(180deg, transparent 70%, fade(@color-bg-card, 60%));
+    }
   }
 }
 
-.cardImagePlaceholder {
+.image {
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, @color-bg-elevated 0%, @color-bg-card 100%);
   .flex-center();
+  color: @color-border-strong;
+  background:
+    radial-gradient(circle at 30% 30%, fade(@color-accent, 14%), transparent 60%),
+    @color-bg-elevated;
+}
 
-  svg {
-    width: 60px;
-    height: 60px;
-    color: @color-border;
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: @space-5;
+  padding: @space-6;
+
+  @media (min-width: @bp-md) {
+    padding: @space-10;
   }
 }
 
-.cardBody {
-  padding: @space-8 @space-10;
-  display: flex;
-  flex-direction: column;
-  gap: @space-5;
-  justify-content: center;
-}
-
-.cardLabel {
+.counter {
+  font-family: @font-mono;
   font-size: @fs-xs;
-  font-weight: @fw-semibold;
-  color: @color-accent;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  color: @color-text-muted;
+
+  span {
+    color: @color-accent-light;
+  }
 }
 
-.cardTitle {
+.title {
   font-size: clamp(@fs-2xl, 3vw, @fs-4xl);
-  font-weight: @fw-bold;
   letter-spacing: -0.02em;
 }
 
-.cardSummary {
+.titleLink {
+  border-radius: @radius-xs;
+  transition: color @transition-fast;
+  .focus-ring();
+
+  &:hover {
+    color: @color-accent-lighter;
+  }
+}
+
+.summary {
   font-size: @fs-base;
-  color: @color-text-secondary;
-  line-height: @lh-relaxed;
+  .line-clamp(4);
 }
 
 .techList {
@@ -180,28 +119,120 @@
   gap: @space-2;
 }
 
-.techBadge {
-  padding: @space-1 @space-3;
-  background: @color-bg-elevated;
-  border: 1px solid @color-border;
+.tech {
+  padding: 4px 10px;
   border-radius: @radius-full;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid @color-border;
   font-size: @fs-xs;
   font-weight: @fw-medium;
   color: @color-text-secondary;
 }
 
-.cardLinks {
+.links {
   display: flex;
   flex-wrap: wrap;
   gap: @space-3;
   margin-top: @space-2;
 }
 
-.cardLinkPrimary {
-  .btn-primary();
+// ─── Controls ─────────────────────────────────────────────────────────────────
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: @space-5;
+  margin-top: @space-8;
 }
 
-.cardLinkOutline {
-  .btn-outline();
-  font-size: @fs-sm;
+.arrowBtn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: @radius-full;
+  background: @color-bg-card;
+  border: 1px solid @color-border-hover;
+  color: @color-text-secondary;
+  cursor: pointer;
+  transition:
+    border-color @transition-fast,
+    color @transition-fast,
+    background @transition-fast;
+  .focus-ring();
+
+  &:hover {
+    border-color: @color-accent-light;
+    color: @color-text-primary;
+    background: @color-accent-soft;
+  }
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: @space-1;
+}
+
+// 24px hit area around an 8px visual dot.
+.dot {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: @radius-full;
+  transition: width @transition-normal;
+  .focus-ring();
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    bottom: 8px;
+    border-radius: @radius-full;
+    background: @color-border-strong;
+    transition: background @transition-fast;
+  }
+
+  &:hover::before {
+    background: @color-text-muted;
+  }
+}
+
+.dotActive {
+  width: 48px;
+
+  &::before {
+    background: fade(@color-accent, 40%);
+  }
+}
+
+.dotProgress {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: calc(100% - 16px);
+  border-radius: @radius-full;
+  background: @color-accent-light;
+  transform-origin: left center;
+  animation: progress linear forwards;
+}
+
+.dotActive:not(:has(.dotProgress))::before {
+  background: @color-accent-light;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }

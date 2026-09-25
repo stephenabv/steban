@@ -1,58 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/ToastProvider";
-import styles from "@/features/admin/AdminPage.module.less";
+import { Field, Input } from "@/components/ui/Field";
+import { formLayout } from "@/components/ui/formLayout";
+import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
 
 export default function AdminContactInfoPage() {
-  const toast = useToast();
   const [email, setEmail] = useState("");
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [facebook, setFacebook] = useState("");
-  const [resumeUrl, setResumeUrl] = useState("");
-
-  async function onSave(e: React.FormEvent) {
-    e.preventDefault();
-    // TODO: save via ContactService when DB is wired up
-    toast.success("Contact info saved.");
-  }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Contact Information</h1>
-        <p className={styles.subtitle}>Update contact details and social links shown on the Contact page.</p>
+    <PlaceholderEditor
+      title="Contact information"
+      description="Contact details and profile links shown on the Contact page."
+      sectionTitle="Contact details"
+    >
+      <div className={formLayout.grid}>
+        <Field label="Email address" id="ci-email" className={formLayout.span2}>
+          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+        </Field>
+        <Field label="GitHub URL" id="ci-github" className={formLayout.span2}>
+          <Input type="url" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="https://github.com/…" />
+        </Field>
+        <Field label="LinkedIn URL" id="ci-linkedin">
+          <Input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/…" />
+        </Field>
+        <Field label="Facebook URL" id="ci-facebook">
+          <Input type="url" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="https://facebook.com/…" />
+        </Field>
       </div>
-
-      <form className={styles.card} onSubmit={onSave}>
-        <h2 className={styles.cardTitle}>Contact Details</h2>
-        <div className={styles.form}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="ci-email">Email Address</label>
-            <input id="ci-email" type="email" className={styles.input} value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="ci-github">GitHub URL</label>
-            <input id="ci-github" type="url" className={styles.input} value={github} onChange={e => setGithub(e.target.value)} placeholder="https://github.com/..." />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="ci-linkedin">LinkedIn URL</label>
-            <input id="ci-linkedin" type="url" className={styles.input} value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/..." />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="ci-facebook">Facebook URL</label>
-            <input id="ci-facebook" type="url" className={styles.input} value={facebook} onChange={e => setFacebook(e.target.value)} placeholder="https://facebook.com/..." />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="ci-resume">Resume URL</label>
-            <input id="ci-resume" type="url" className={styles.input} value={resumeUrl} onChange={e => setResumeUrl(e.target.value)} placeholder="/resume.pdf or https://..." />
-          </div>
-          <div className={styles.actions}>
-            <button type="submit" className={styles.btnSave}>Save Changes</button>
-          </div>
-        </div>
-      </form>
-    </div>
+    </PlaceholderEditor>
   );
 }

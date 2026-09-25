@@ -234,8 +234,9 @@ Navigate to `/admin` (redirects to `/admin/login` when not authenticated).
 
 | Section | Route | What you can edit |
 |---|---|---|
-| Dashboard | `/admin` | Overview stats + quick links |
-| Hero | `/admin/hero` | Name, title, introduction, profile photo, resume link |
+| Dashboard | `/admin` | Live counts (projects, featured, messages, unread) + recent activity |
+| Hero | `/admin/hero` | Name, title, introduction, profile photo |
+| Resume | `/admin/resume` | Upload, view, download and replace the resume PDF served at `/resume.pdf` |
 | About | `/admin/about` | Biography, skills, experience, education, certifications |
 | Projects | `/admin/projects` | Create, edit, delete projects |
 | Featured | `/admin/featured` | Choose which projects appear in the home carousel and their order |
@@ -330,6 +331,8 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for a step-by-step production check
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, data flow, layer responsibilities |
 | [docs/API.md](docs/API.md) | Complete API endpoint reference |
 | [docs/COMPONENTS.md](docs/COMPONENTS.md) | Component and feature module reference |
+| [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Design tokens, UI primitives and interaction patterns |
+| [docs/UI_REDESIGN.md](docs/UI_REDESIGN.md) | 2026-09 UI/UX redesign: findings, plan and outcomes |
 | [docs/DATABASE.md](docs/DATABASE.md) | Entity schemas and database integration guide |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Full production deployment checklist |
 | [docs/SECURITY.md](docs/SECURITY.md) | Security architecture deep-dive |

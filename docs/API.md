@@ -147,6 +147,38 @@ Content-Type: application/json
 
 ---
 
+## Resume
+
+### POST /api/admin/resume
+
+Uploads a resume PDF and makes it the active resume. **Admin session required.**
+
+| | |
+|---|---|
+| Auth | `steban_session` cookie with `isAdmin`; `Origin` must match the host |
+| Body | `multipart/form-data` with a single `file` field |
+| Limits | PDF only (validated by content: `%PDF-` header and `%%EOF` trailer), max 4 MB |
+
+The swap is atomic: if validation or storage fails, the current resume stays active.
+
+| Status | Meaning |
+|---|---|
+| `200` | `{ "ok": true, "resume": { id, fileName, sizeBytes, sha256, uploadedAt } }` |
+| `400` | No file / unreadable form data |
+| `401` / `403` | Not signed in / cross-origin request |
+| `413` | File larger than 4 MB |
+| `422` | Not a PDF, empty, or truncated/corrupted |
+| `500` | Storage failed — `"Your current resume is unchanged."` |
+
+### GET /resume.pdf
+
+Public. Streams the active resume (`Content-Type: application/pdf`, `inline`; add `?download=1`
+for `attachment`). Responses carry an `ETag` (SHA-256) with `Cache-Control: public, max-age=0,
+must-revalidate`, so a replaced resume is served immediately and unchanged files return `304`.
+Returns `404` when no resume has been uploaded.
+
+---
+
 ## Error Responses
 
 All error responses follow this shape:

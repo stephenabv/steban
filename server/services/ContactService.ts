@@ -50,6 +50,14 @@ export class ContactService {
     }
   }
 
+  async getUnreadCount(): Promise<Result<number>> {
+    try {
+      return ok(await this.messageRepo.countUnread());
+    } catch (e) {
+      return err(e instanceof Error ? e : new Error(String(e)));
+    }
+  }
+
   async markAsRead(id: string): Promise<Result<boolean>> {
     try {
       return ok(await this.messageRepo.markAsRead(id));

@@ -1,63 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/ToastProvider";
+import { Field, Input, Textarea } from "@/components/ui/Field";
+import { formLayout } from "@/components/ui/formLayout";
+import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export default function AdminHeroPage() {
-  const toast = useToast();
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [introduction, setIntroduction] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
-  const [resumeUrl, setResumeUrl] = useState("");
-
-  async function onSave(e: React.FormEvent) {
-    e.preventDefault();
-    // TODO: call Server Action / API when DB is wired up
-    toast.success("Hero content saved successfully.");
-  }
+  const hasPreview = /^https?:\/\//.test(photoUrl.trim());
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Hero Section</h1>
-        <p className={styles.subtitle}>Edit your name, title, introduction, and photo shown in the hero.</p>
-      </div>
-
-      <form className={styles.card} onSubmit={onSave}>
-        <h2 className={styles.cardTitle}>Hero Content</h2>
-        <div className={styles.form}>
-          <div className={styles.row}>
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="h-name">Display Name</label>
-              <input id="h-name" type="text" className={styles.input} value={name} onChange={e => setName(e.target.value)} placeholder="Stephen Abueva" />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="h-title">Professional Title</label>
-              <input id="h-title" type="text" className={styles.input} value={title} onChange={e => setTitle(e.target.value)} placeholder="Computer Engineer" />
-            </div>
-          </div>
-          <div className={styles.fieldFull}>
-            <label className={styles.label} htmlFor="h-intro">Introduction</label>
-            <textarea id="h-intro" className={styles.textarea} value={introduction} onChange={e => setIntroduction(e.target.value)} placeholder="Short professional introduction..." rows={4} />
-          </div>
-          <div className={styles.row}>
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="h-photo">Profile Photo URL</label>
-              <input id="h-photo" type="url" className={styles.input} value={photoUrl} onChange={e => setPhotoUrl(e.target.value)} placeholder="https://..." />
-              <span className={styles.hint}>Upload to Vercel Blob and paste the URL here.</span>
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="h-resume">Resume URL</label>
-              <input id="h-resume" type="url" className={styles.input} value={resumeUrl} onChange={e => setResumeUrl(e.target.value)} placeholder="/resume.pdf or https://..." />
-            </div>
-          </div>
-          <div className={styles.actions}>
-            <button type="submit" className={styles.btnSave}>Save Changes</button>
-          </div>
+    <PlaceholderEditor
+      title="Hero section"
+      description="Your name, title, introduction and photo at the top of the home page."
+      sectionTitle="Hero content"
+    >
+      <div className={formLayout.grid}>
+        <Field label="Display name" id="h-name">
+          <Input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Stephen Abueva" />
+        </Field>
+        <Field label="Professional title" id="h-title">
+          <Input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Computer Engineer" />
+        </Field>
+        <Field label="Introduction" id="h-intro" className={formLayout.span2}>
+          <Textarea
+            value={introduction}
+            onChange={(e) => setIntroduction(e.target.value)}
+            placeholder="Short professional introduction…"
+            rows={4}
+          />
+        </Field>
+        <Field label="Profile photo URL" id="h-photo" hint="Upload to Vercel Blob and paste the URL here.">
+          <Input type="url" value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} placeholder="https://…" />
+        </Field>
+        <div className={styles.imagePreview} aria-hidden="true">
+          {hasPreview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photoUrl.trim()} alt="" />
+          ) : (
+            "Photo preview"
+          )}
         </div>
-      </form>
-    </div>
+      </div>
+    </PlaceholderEditor>
   );
 }

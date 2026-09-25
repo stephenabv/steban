@@ -1,92 +1,49 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import styles from "@/features/admin/AdminPage.module.less";
-import { ProjectRowActions } from "@/features/admin/ProjectRowActions";
 import { getProjectService } from "@/server/services";
 import { getAdminBasePath } from "@/lib/adminRoute";
+import { AdminPageHeader } from "@/features/admin/AdminPageHeader";
+import { ProjectsTable } from "@/features/admin/ProjectsTable";
+import { toAdminProjectRow } from "@/features/admin/projects/toAdminProjectRow";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import styles from "@/features/admin/AdminPage.module.less";
 
 export const metadata: Metadata = { title: "Projects" };
 
+/** Rows loaded into the client-side table (search/filter/sort run in the browser). */
+const PAGE_LIMIT = 100;
+
 export default async function AdminProjectsPage() {
   const basePath = getAdminBasePath();
-  const result = await getProjectService().getAll({ pageSize: 100 });
-  const projects = result.ok ? result.value.items : [];
+  const result = await getProjectService().getAll({ pageSize: PAGE_LIMIT });
+  const projects = result.ok ? result.value.items.map(toAdminProjectRow) : [];
+  const total = result.ok ? result.value.total : 0;
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Projects</h1>
-        <p className={styles.subtitle}>Manage all portfolio projects.</p>
-      </div>
+      <AdminPageHeader
+        title="Projects"
+        description="Create, edit and remove the projects shown on your portfolio."
+        actions={
+          <Button href={`${basePath}/projects/new`} icon="plus">
+            New project
+          </Button>
+        }
+      />
 
-      {!result.ok && (
-        <div className={styles.errorBanner} role="alert">
-          Failed to load projects: {result.error.message}
-        </div>
+      {result.ok && total > projects.length && (
+        <Alert tone="info" title={`Showing the ${projects.length} most recent of ${total} projects`}>
+          Older projects aren&apos;t listed here yet; they remain published on the site.
+        </Alert>
       )}
 
-      <div className={styles.card}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-          <h2 className={styles.cardTitle} style={{ margin: 0, borderBottom: "none", paddingBottom: 0 }}>All Projects</h2>
-          <Link href={`${basePath}/projects/new`} className={styles.btnSave} style={{ textDecoration: "none" }}>
-            + New Project
-          </Link>
-        </div>
-
-        {projects.length === 0 ? (
-          <p style={{ color: "var(--color-text-muted, #606075)", textAlign: "center", padding: "3rem" }}>
-            No projects yet. Click &ldquo;New Project&rdquo; to add your first one.
-          </p>
-        ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th className={styles.th}>Title</th>
-                  <th className={styles.th}>Slug</th>
-                  <th className={styles.th}>Featured</th>
-                  <th className={styles.th}>Published</th>
-                  <th className={styles.th}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.map((p) => (
-                  <tr key={p.id}>
-                    <td className={styles.td}>{p.title}</td>
-                    <td className={styles.td}>{p.slug}</td>
-                    <td className={styles.td}>
-                      <span className={`${styles.tableBadge} ${p.featured ? styles.active : styles.inactive}`}>
-                        {p.featured ? "Yes" : "No"}
-                      </span>
-                    </td>
-                    <td className={styles.td}>
-                      {new Date(p.publishedAt).toLocaleDateString()}
-                    </td>
-                    <td className={styles.td}>
-                      <ProjectRowActions
-                        project={{
-                          id: p.id,
-                          slug: p.slug,
-                          title: p.title,
-                          summary: p.summary,
-                          description: p.description,
-                          coverImage: p.coverImage,
-                          technologies: p.technologies,
-                          features: p.features,
-                          githubUrl: p.githubUrl,
-                          liveUrl: p.liveUrl,
-                          featured: p.featured,
-                          publishedAt: p.publishedAt.toISOString(),
-                        }}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {result.ok ? (
+        <ProjectsTable projects={projects} newHref={`${basePath}/projects/new`} />
+      ) : (
+        <Alert tone="danger" title="Failed to load projects">
+          {result.error.message}
+        </Alert>
+      )}
     </div>
   );
 }

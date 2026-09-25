@@ -7,6 +7,9 @@ import { getAdminBasePath } from "@/lib/adminRoute";
 
 const ADMIN_INTERNAL_BASE = "/admin";
 const API_BASE = "/api";
+// A PDF response is not an HTML document, so a CSP adds no protection — but
+// `object-src 'none'` on it makes Chrome's built-in viewer render blank.
+const CSP_EXEMPT_PATHS = new Set(["/resume.pdf"]);
 
 export async function proxy(request: NextRequest) {
   const nonce = randomBytes(16).toString("base64");
@@ -20,7 +23,9 @@ export async function proxy(request: NextRequest) {
   });
 
   function applySecurityHeaders(res: NextResponse) {
-    res.headers.set("Content-Security-Policy", csp);
+    if (!CSP_EXEMPT_PATHS.has(pathname)) {
+      res.headers.set("Content-Security-Policy", csp);
+    }
     for (const { key, value } of securityHeaders) {
       res.headers.set(key, value);
     }

@@ -1,0 +1,58 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.wrap {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: @space-4;
+  min-height: 70dvh;
+  padding: calc(@nav-height + @space-12) @space-6 @space-16;
+  text-align: center;
+  overflow: hidden;
+}
+
+.fullScreen {
+  min-height: 100dvh;
+  padding-top: @space-16;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 50% 35%, fade(@color-accent, 16%) 0%, transparent 45%),
+    linear-gradient(@color-border 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, @color-border 1px, transparent 1px) 0 0 / 48px 48px;
+  mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 65%);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 65%);
+}
+
+.code {
+  font-family: @font-display;
+  font-size: clamp(@fs-6xl, 16vw, 9rem);
+  font-weight: @fw-extrabold;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  .accent-text();
+}
+
+.title {
+  font-size: clamp(@fs-2xl, 4vw, @fs-4xl);
+}
+
+.description {
+  max-width: 480px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: @space-3;
+  margin-top: @space-4;
+}

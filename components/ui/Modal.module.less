@@ -4,60 +4,108 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 150;
+  z-index: @z-modal;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: @space-5;
+
+  @media (min-width: @bp-sm) {
+    align-items: center;
+    padding: @space-6;
+  }
 }
 
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(4, 4, 8, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border: none;
   cursor: pointer;
-  animation: modal-fade @transition-fast ease;
 }
 
 .dialog {
   position: relative;
   width: 100%;
-  max-width: 560px;
-  max-height: calc(100dvh - @space-10);
+  max-height: calc(100dvh - @space-8);
   display: flex;
   flex-direction: column;
   background: @color-bg-card;
-  border: 1px solid @color-border;
-  border-radius: @radius-lg;
-  box-shadow: @shadow-lg;
-  animation: modal-in @transition-normal ease;
-  .focus-ring();
+  border: 1px solid @color-border-hover;
+  border-radius: @radius-xl @radius-xl 0 0;
+  box-shadow: @shadow-lg, @shadow-inset-highlight;
+  outline: none;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  @media (min-width: @bp-sm) {
+    border-radius: @radius-xl;
+    max-height: calc(100dvh - @space-12);
+    padding-bottom: 0;
+  }
 }
 
-.dialogHeader {
+.sm {
+  @media (min-width: @bp-sm) {
+    max-width: 440px;
+  }
+}
+
+.md {
+  @media (min-width: @bp-sm) {
+    max-width: 560px;
+  }
+}
+
+.lg {
+  @media (min-width: @bp-sm) {
+    max-width: 760px;
+  }
+}
+
+// Drag handle hint for the mobile bottom-sheet presentation.
+.grabber {
+  width: 36px;
+  height: 4px;
+  border-radius: @radius-full;
+  background: @color-border-strong;
+  margin: @space-2 auto 0;
+
+  @media (min-width: @bp-sm) {
+    display: none;
+  }
+}
+
+.header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: @space-4;
-  padding: @space-5 @space-6;
-  border-bottom: 1px solid @color-border;
+  padding: @space-5 @space-6 @space-4;
   flex-shrink: 0;
 }
 
-.dialogTitle {
+.title {
   font-size: @fs-lg;
   font-weight: @fw-semibold;
-  color: @color-text-primary;
+  line-height: @lh-snug;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  font-size: @fs-sm;
+  color: @color-text-muted;
+  margin-top: @space-1;
+  line-height: @lh-normal;
 }
 
 .closeBtn {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: -4px -8px 0 0;
   border-radius: @radius-sm;
   border: none;
   background: transparent;
@@ -65,73 +113,46 @@
   cursor: pointer;
   .focus-ring();
 
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
   &:hover {
     color: @color-text-primary;
-    background: @color-bg-elevated;
+    background: rgba(255, 255, 255, 0.06);
   }
 }
 
-.dialogBody {
-  padding: @space-6;
+.body {
+  padding: 0 @space-6 @space-6;
   overflow-y: auto;
+  overscroll-behavior: contain;
   color: @color-text-secondary;
   font-size: @fs-sm;
   line-height: @lh-relaxed;
 }
 
-.dialogFooter {
+.footer {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: @space-3;
-  padding: @space-5 @space-6;
+  padding: @space-4 @space-6;
   border-top: 1px solid @color-border;
+  background: fade(@color-bg-subtle, 60%);
+  border-radius: 0 0 @radius-xl @radius-xl;
   flex-shrink: 0;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
+
+  @media (max-width: (@bp-sm - 1px)) {
+    border-radius: 0;
+
+    > * {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+.footerStart {
+  margin-right: auto;
 }
 
 .confirmMessage {
   color: @color-text-secondary;
-}
-
-.btnPrimary {
-  .btn-primary();
-}
-
-.btnCancel {
-  .btn-outline();
-}
-
-.btnDanger {
-  .btn-base();
-  background: @color-error;
-  color: #fff;
-
-  &:hover {
-    background: darken(@color-error, 8%);
-  }
-}
-
-@keyframes modal-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes modal-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }

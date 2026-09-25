@@ -1,0 +1,58 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: @space-3;
+  margin-top: @space-4;
+}
+
+.info {
+  font-size: @fs-sm;
+  color: @color-text-muted;
+
+  strong {
+    color: @color-text-secondary;
+    font-weight: @fw-semibold;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: @space-2;
+}
+
+.page {
+  font-size: @fs-sm;
+  color: @color-text-secondary;
+  padding-inline: @space-2;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: @radius-md;
+  border: 1px solid @color-border-hover;
+  background: @color-bg-card;
+  color: @color-text-secondary;
+  cursor: pointer;
+  .focus-ring();
+
+  &:hover:not(:disabled) {
+    color: @color-text-primary;
+    border-color: @color-accent-light;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

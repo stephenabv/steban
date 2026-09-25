@@ -1,5 +1,29 @@
 @import "./variables.less";
+@import "./mixins.less";
 
+// ─── Runtime tokens (mirrors of variables.less) ───────────────────────────────
+:root {
+  color-scheme: dark;
+
+  --color-bg: @color-bg;
+  --color-bg-card: @color-bg-card;
+  --color-bg-elevated: @color-bg-elevated;
+  --color-border: @color-border;
+  --color-text-primary: @color-text-primary;
+  --color-text-secondary: @color-text-secondary;
+  --color-text-muted: @color-text-muted;
+  --color-accent: @color-accent;
+  --color-accent-light: @color-accent-light;
+  --color-success: @color-success;
+  --color-warning: @color-warning;
+  --color-error: @color-error;
+
+  --ease-out: @ease-out;
+  --duration-page: @duration-page;
+  --nav-height: @nav-height;
+}
+
+// ─── Reset ────────────────────────────────────────────────────────────────────
 *,
 *::before,
 *::after {
@@ -11,8 +35,13 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  scroll-padding-top: calc(@nav-height + @space-4);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -26,10 +55,18 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 #main-content {
   flex: 1;
+  // Clip decorative glows that bleed past the viewport. `clip` (unlike `hidden`)
+  // creates no scroll container, so position: sticky keeps working inside.
+  overflow-x: clip;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 // Lists used purely for layout (nav menus, card grids) opt out of bullets.
@@ -45,8 +82,14 @@ a {
 }
 
 img,
-video {
+video,
+svg {
+  display: block;
   max-width: 100%;
+}
+
+img,
+video {
   height: auto;
 }
 
@@ -55,54 +98,102 @@ textarea,
 select,
 button {
   font: inherit;
+  color: inherit;
 }
 
-h1, h2, h3, h4, h5, h6 {
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: @font-display;
+  letter-spacing: -0.02em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   line-height: @lh-tight;
   font-weight: @fw-bold;
   color: @color-text-primary;
+  text-wrap: balance;
 }
 
 p {
   color: @color-text-secondary;
   line-height: @lh-relaxed;
+  text-wrap: pretty;
+}
+
+code {
+  font-family: @font-mono;
+  font-size: 0.9em;
 }
 
 :focus-visible {
-  outline: 2px solid @color-accent;
+  outline: 2px solid @color-accent-light;
   outline-offset: 3px;
 }
 
 ::selection {
   background: @color-accent-glow;
-  color: @color-accent-light;
+  color: @color-text-primary;
+}
+
+// Thin, unobtrusive scrollbars that match the dark surface.
+* {
+  scrollbar-width: thin;
+  scrollbar-color: @color-border-hover transparent;
 }
 
 #skip-nav {
-  position: absolute;
-  left: -9999px;
-  top: @space-4;
-  z-index: 9999;
+  position: fixed;
+  left: 50%;
+  top: @space-3;
+  z-index: @z-loader + 1;
   padding: @space-3 @space-6;
   background: @color-accent;
   color: #fff;
-  border-radius: 0 0 @radius-sm @radius-sm;
+  border-radius: @radius-full;
   font-weight: @fw-semibold;
+  font-size: @fs-sm;
+  transform: translate(-50%, -200%);
+  transition: transform @transition-fast;
 
   &:focus {
-    left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, 0);
   }
 }
 
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  .visually-hidden();
+}
+
+// ─── Route transitions (see app/**/template.tsx) ─────────────────────────────
+.route-page {
+  animation: route-page-enter @duration-page @ease-out both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes route-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    // `none` (not translateY(0)) so fixed/sticky descendants aren't trapped
+    // in a transformed containing block once the animation settles.
+    transform: none;
+  }
 }

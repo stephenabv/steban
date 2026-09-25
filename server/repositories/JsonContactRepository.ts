@@ -92,6 +92,10 @@ export class JsonContactMessageRepository extends ContactMessageRepository {
     return (await this.update(id, { read: true })) !== null;
   }
 
+  async countUnread(): Promise<number> {
+    return (await this.read()).filter((m) => !m.read).length;
+  }
+
   async delete(id: string): Promise<boolean> {
     const all = await this.read();
     const remaining = all.filter((m) => m.id !== id);

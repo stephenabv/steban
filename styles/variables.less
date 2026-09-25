@@ -1,26 +1,43 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Design tokens — single source of truth.
+// LESS variables are compile-time (usable inside colour functions like fade()).
+// The same values are mirrored to runtime CSS custom properties in globals.less
+// so portal-mounted UI and inline SVG can consume them too.
+// ─────────────────────────────────────────────────────────────────────────────
+
 // ─── Color Palette ────────────────────────────────────────────────────────────
 @color-bg:           #0a0a0f;
+@color-bg-subtle:    #0d0d14;
 @color-bg-card:      #111118;
 @color-bg-elevated:  #16161f;
+@color-bg-hover:     #1c1c27;
 @color-border:       rgba(255, 255, 255, 0.08);
 @color-border-hover: rgba(255, 255, 255, 0.18);
+@color-border-strong: rgba(255, 255, 255, 0.24);
 
 @color-text-primary:   #f0f0f5;
-@color-text-secondary: #9090a8;
-@color-text-muted:     #606075;
+@color-text-secondary: #a1a1b5;
+@color-text-muted:     #6e6e85;
 
 @color-accent:         #6366f1;   // Indigo
 @color-accent-light:   #818cf8;
+@color-accent-lighter: #c7d2fe;
 @color-accent-dark:    #4f46e5;
 @color-accent-glow:    rgba(99, 102, 241, 0.25);
+@color-accent-soft:    rgba(99, 102, 241, 0.12);
+@color-accent-2:       #22d3ee;   // Cyan — secondary highlight for gradients only
 
 @color-success: #22c55e;
 @color-warning: #f59e0b;
 @color-error:   #ef4444;
+@color-info:    #38bdf8;
+
+@gradient-accent: linear-gradient(90deg, @color-accent 0%, @color-accent-light 55%, @color-accent-2 100%);
 
 // ─── Typography ───────────────────────────────────────────────────────────────
-@font-sans:  var(--font-sans);
-@font-mono:  var(--font-mono);
+@font-sans:    var(--font-sans);
+@font-display: var(--font-display);
+@font-mono:    var(--font-mono);
 
 @fs-xs:   0.75rem;
 @fs-sm:   0.875rem;
@@ -33,9 +50,11 @@
 @fs-5xl:  3rem;
 @fs-6xl:  3.75rem;
 @fs-7xl:  4.5rem;
+@fs-8xl:  5.5rem;
 
-@lh-tight:  1.25;
-@lh-normal: 1.5;
+@lh-tight:   1.15;
+@lh-snug:    1.3;
+@lh-normal:  1.5;
 @lh-relaxed: 1.75;
 
 @fw-normal:    400;
@@ -43,6 +62,9 @@
 @fw-semibold:  600;
 @fw-bold:      700;
 @fw-extrabold: 800;
+
+@tracking-tight: -0.03em;
+@tracking-wide:  0.12em;
 
 // ─── Spacing ──────────────────────────────────────────────────────────────────
 @space-1:  0.25rem;
@@ -60,8 +82,15 @@
 @space-32: 8rem;
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
-@container-max: 1280px;
-@nav-height:    72px;
+@container-max:  1280px;
+@container-prose: 760px;
+@nav-offset:     16px;   // floating navbar distance from the viewport top
+@nav-pill-height: 64px;
+@nav-height:     (@nav-offset + @nav-pill-height); // total space reserved above content
+
+@admin-topbar-height:     60px;
+@admin-sidebar-width:     248px;
+@admin-sidebar-collapsed: 72px;
 
 // ─── Breakpoints ──────────────────────────────────────────────────────────────
 @bp-sm:  640px;
@@ -71,19 +100,37 @@
 @bp-2xl: 1536px;
 
 // ─── Borders & Radii ──────────────────────────────────────────────────────────
+@radius-xs:   4px;
 @radius-sm:   6px;
-@radius-md:   12px;
-@radius-lg:   20px;
-@radius-xl:   28px;
+@radius-md:   10px;
+@radius-lg:   16px;
+@radius-xl:   24px;
 @radius-full: 9999px;
 
 // ─── Shadows ──────────────────────────────────────────────────────────────────
-@shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.4);
-@shadow-md:  0 4px 16px rgba(0, 0, 0, 0.5);
-@shadow-lg:  0 10px 40px rgba(0, 0, 0, 0.6);
-@shadow-glow: 0 0 40px @color-accent-glow;
+@shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.4);
+@shadow-md:  0 6px 20px rgba(0, 0, 0, 0.45);
+@shadow-lg:  0 18px 50px rgba(0, 0, 0, 0.55);
+@shadow-glow: 0 8px 28px @color-accent-glow;
+@shadow-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
-// ─── Transitions ──────────────────────────────────────────────────────────────
-@transition-fast:   150ms ease;
-@transition-normal: 250ms ease;
-@transition-slow:   400ms ease;
+// ─── Motion ───────────────────────────────────────────────────────────────────
+@ease-out:    cubic-bezier(0.22, 1, 0.36, 1);   // shared with Framer Motion (lib/motion.ts)
+@ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+@duration-fast:   150ms;
+@duration-normal: 250ms;
+@duration-slow:   400ms;
+@duration-page:   420ms;
+
+@transition-fast:   @duration-fast @ease-in-out;
+@transition-normal: @duration-normal @ease-in-out;
+@transition-slow:   @duration-slow @ease-out;
+
+// ─── Z-index scale ────────────────────────────────────────────────────────────
+@z-sticky:   40;
+@z-drawer:   60;
+@z-nav:      100;
+@z-modal:    150;
+@z-toast:    200;
+@z-loader:   300;

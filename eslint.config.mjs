@@ -8,9 +8,13 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    plugins: { "jsx-a11y": jsxA11y },
+    // eslint-config-next already registers the jsx-a11y plugin; only extend its rules here
+    // (re-registering the plugin makes ESLint refuse to load the config).
     rules: {
       ...jsxA11y.configs.recommended.rules,
+      // role="list" is deliberate on unstyled lists: Safari/VoiceOver drops list
+      // semantics when `list-style: none` is applied.
+      "jsx-a11y/no-redundant-roles": ["error", { ul: ["list"], ol: ["list"] }],
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
       "no-console": ["warn", { allow: ["warn", "error"] }],

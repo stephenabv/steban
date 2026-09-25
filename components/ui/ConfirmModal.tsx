@@ -1,6 +1,7 @@
 "use client";
 
 import { Modal } from "./Modal";
+import { Button } from "./Button";
 import styles from "./Modal.module.less";
 
 export interface ConfirmModalProps {
@@ -31,20 +32,22 @@ export function ConfirmModal({
       open={open}
       onClose={onCancel}
       title={title}
+      size="sm"
+      dismissible={!busy}
       footer={
         <>
-          <button type="button" className={styles.btnCancel} onClick={onCancel} disabled={busy}>
+          <Button variant="secondary" onClick={onCancel} disabled={busy}>
             {cancelLabel}
-          </button>
-          <button
-            type="button"
-            className={danger ? styles.btnDanger : styles.btnPrimary}
+          </Button>
+          <Button
+            variant={danger ? "dangerSolid" : "primary"}
+            icon={danger ? "trash" : undefined}
             onClick={onConfirm}
-            disabled={busy}
-            aria-busy={busy}
+            loading={busy}
+            loadingText="Working…"
           >
-            {busy ? "Working…" : confirmLabel}
-          </button>
+            {confirmLabel}
+          </Button>
         </>
       }
     >

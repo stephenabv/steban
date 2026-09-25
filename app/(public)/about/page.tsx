@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { AboutContent } from "@/features/about/AboutContent";
+import { PageShell } from "@/features/shared/PageShell";
+import { CtaBand } from "@/features/shared/CtaBand";
 import { siteConfig, siteUrl } from "@/config/site";
-import styles from "./about.module.less";
 
 export const metadata: Metadata = {
   title: "About",
@@ -14,17 +15,15 @@ const about = null;
 
 export default function AboutPage() {
   return (
-    <div className={styles.page}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.heading}>About Me</h1>
-        <p className={styles.subheading}>
-          Computer Engineer with a passion for building scalable, secure, and beautiful
-          digital experiences.
-        </p>
-      </div>
-      <div className={styles.content}>
+    <>
+      <PageShell
+        eyebrow="About"
+        title="About me"
+        description="Computer Engineer with a passion for building scalable, secure, and beautiful digital experiences."
+      >
         <AboutContent about={about} />
-      </div>
-    </div>
+      </PageShell>
+      <CtaBand />
+    </>
   );
 }

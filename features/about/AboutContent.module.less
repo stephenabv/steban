@@ -1,76 +1,129 @@
 @import "styles/variables.less";
 @import "styles/mixins.less";
 
-.page {
-  padding-top: @nav-height;
+.layout {
+  display: grid;
+  gap: @space-10;
+
+  @media (min-width: @bp-lg) {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: @space-16;
+    align-items: start;
+  }
 }
 
-.pageHeader {
-  .container();
-  padding-top: @space-20;
-  padding-bottom: @space-12;
+// ─── In-page navigation ───────────────────────────────────────────────────────
+.aside {
+  display: none;
+
+  @media (min-width: @bp-lg) {
+    display: block;
+    position: sticky;
+    top: calc(@nav-height + @space-8);
+  }
 }
 
-.heading {
-  font-size: clamp(@fs-4xl, 6vw, @fs-6xl);
-  font-weight: @fw-extrabold;
-  letter-spacing: -0.03em;
-  .gradient-text();
+.sectionNavTitle {
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  letter-spacing: @tracking-wide;
+  text-transform: uppercase;
+  color: @color-text-muted;
+  margin-bottom: @space-3;
 }
 
-.subheading {
-  font-size: @fs-lg;
-  color: @color-text-secondary;
-  margin-top: @space-4;
-  max-width: 600px;
-  line-height: @lh-relaxed;
-}
-
-.content {
-  .container();
-  padding-bottom: @space-24;
+.sectionNav ul {
   display: flex;
   flex-direction: column;
-  gap: @space-20;
+  border-left: 1px solid @color-border;
+}
+
+.sectionNavLink {
+  position: relative;
+  display: block;
+  padding: @space-2 @space-4;
+  margin-left: -1px;
+  border-left: 2px solid transparent;
+  font-size: @fs-sm;
+  color: @color-text-muted;
+  transition:
+    color @transition-fast,
+    border-color @transition-fast;
+  .focus-ring-inset();
+
+  &:hover {
+    color: @color-text-primary;
+  }
+}
+
+.sectionNavActive {
+  color: @color-accent-lighter;
+  border-left-color: @color-accent-light;
+}
+
+// ─── Sections ─────────────────────────────────────────────────────────────────
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: @space-16;
+  min-width: 0;
 }
 
 .section {
-  display: flex;
-  flex-direction: column;
-  gap: @space-8;
+  min-width: 0;
 }
 
 .sectionTitle {
-  font-size: @fs-2xl;
-  font-weight: @fw-bold;
-  letter-spacing: -0.02em;
-  padding-bottom: @space-4;
-  border-bottom: 1px solid @color-border;
+  display: flex;
+  align-items: center;
+  gap: @space-3;
+  font-size: clamp(@fs-2xl, 3vw, @fs-3xl);
+  margin-bottom: @space-6;
+}
+
+.sectionIcon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: @radius-md;
+  background: @color-accent-soft;
+  color: @color-accent-light;
+  flex-shrink: 0;
 }
 
 .bio {
   font-size: @fs-lg;
-  color: @color-text-secondary;
-  line-height: @lh-relaxed;
-  max-width: 760px;
   white-space: pre-line;
+  max-width: 72ch;
 }
 
-// Skills
+.empty {
+  color: @color-text-muted;
+  font-style: italic;
+}
+
+// ─── Skills ───────────────────────────────────────────────────────────────────
 .skillCategories {
-  display: flex;
-  flex-direction: column;
-  gap: @space-6;
+  display: grid;
+  gap: @space-4;
+
+  @media (min-width: @bp-sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: @bp-xl) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .skillCategory {
+  .surface();
+  padding: @space-5;
+
   h3 {
-    font-size: @fs-sm;
-    font-weight: @fw-semibold;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: @color-text-muted;
-    margin-bottom: @space-3;
+    font-size: @fs-base;
+    margin-bottom: @space-4;
   }
 }
 
@@ -81,123 +134,113 @@
 }
 
 .skillBadge {
-  padding: @space-2 @space-4;
-  background: @color-bg-card;
-  border: 1px solid @color-border;
+  padding: 4px 10px;
   border-radius: @radius-full;
-  font-size: @fs-sm;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid @color-border;
+  font-size: @fs-xs;
+  font-weight: @fw-medium;
   color: @color-text-secondary;
-  transition: all @transition-fast;
-
-  &:hover {
-    border-color: @color-accent;
-    color: @color-accent;
-    background: @color-accent-glow;
-  }
 }
 
-// Experience & Education
+// ─── Timeline ─────────────────────────────────────────────────────────────────
 .timeline {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: @space-8;
-  position: relative;
+  padding-left: @space-8;
 
   &::before {
     content: "";
     position: absolute;
-    left: 0;
-    top: 10px;
-    bottom: 0;
-    width: 1px;
-    background: @color-border;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, @color-accent-light, @color-border 80%);
   }
 }
 
 .timelineItem {
-  padding-left: @space-8;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: @space-1;
 
   &::before {
     content: "";
     position: absolute;
-    left: -5px;
-    top: 8px;
-    width: 10px;
-    height: 10px;
-    border-radius: @radius-full;
-    background: @color-accent;
-    box-shadow: 0 0 0 3px @color-bg, 0 0 0 4px @color-accent;
+    left: -@space-8;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: @color-bg;
+    border: 2px solid @color-accent-light;
+    box-shadow: 0 0 0 4px @color-bg;
   }
 }
 
 .timelineDate {
+  font-family: @font-mono;
   font-size: @fs-xs;
-  font-weight: @fw-semibold;
-  color: @color-accent;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: @space-1;
+  color: @color-accent-light;
 }
 
 .timelineTitle {
   font-size: @fs-lg;
-  font-weight: @fw-semibold;
-  margin-bottom: @space-1;
 }
 
 .timelineSubtitle {
-  font-size: @fs-base;
-  color: @color-text-secondary;
-  margin-bottom: @space-3;
+  font-size: @fs-sm;
+  font-weight: @fw-medium;
+  color: @color-text-primary;
+  opacity: 0.8;
 }
 
 .timelineDescription {
   font-size: @fs-sm;
-  color: @color-text-secondary;
-  line-height: @lh-relaxed;
+  margin-top: @space-2;
+  max-width: 72ch;
 }
 
 .timelineTechs {
   display: flex;
   flex-wrap: wrap;
-  gap: @space-1;
+  gap: 6px;
   margin-top: @space-3;
 }
 
 .timelineTech {
-  padding: @space-1 @space-2;
-  background: @color-bg-elevated;
+  padding: 2px 8px;
+  border-radius: @radius-full;
   border: 1px solid @color-border;
-  border-radius: @radius-sm;
   font-size: @fs-xs;
   color: @color-text-muted;
 }
 
-// Certifications & Awards
+// ─── Certifications & awards ──────────────────────────────────────────────────
 .certsGrid {
   display: grid;
   gap: @space-4;
-  grid-template-columns: 1fr;
 
-  @media (min-width: @bp-md) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: @bp-lg) {
-    grid-template-columns: repeat(3, 1fr);
+  @media (min-width: @bp-sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 .certCard {
   .card();
+  display: flex;
+  flex-direction: column;
+  gap: @space-1;
   padding: @space-5;
 }
 
 .certName {
   font-size: @fs-base;
-  font-weight: @fw-semibold;
-  margin-bottom: @space-1;
 }
 
 .certIssuer {
@@ -206,12 +249,22 @@
 }
 
 .certDate {
+  font-family: @font-mono;
   font-size: @fs-xs;
   color: @color-text-muted;
-  margin-top: @space-2;
 }
 
-.empty {
-  color: @color-text-muted;
-  font-style: italic;
+.certLink {
+  display: inline-flex;
+  align-items: center;
+  gap: @space-1;
+  margin-top: @space-2;
+  font-size: @fs-sm;
+  color: @color-accent-light;
+  border-radius: @radius-xs;
+  .focus-ring();
+
+  &:hover {
+    color: @color-accent-lighter;
+  }
 }

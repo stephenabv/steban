@@ -1,0 +1,79 @@
+@import "styles/variables.less";
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: @radius-full;
+  border: 1px solid transparent;
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.pulse .dot {
+  box-shadow: 0 0 0 0 currentColor;
+  animation: pulse 2s ease-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 fade(@color-success, 55%);
+  }
+  70% {
+    box-shadow: 0 0 0 7px fade(@color-success, 0%);
+  }
+  100% {
+    box-shadow: 0 0 0 0 fade(@color-success, 0%);
+  }
+}
+
+.neutral {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: @color-border;
+  color: @color-text-secondary;
+}
+
+.accent {
+  background: @color-accent-soft;
+  border-color: fade(@color-accent, 30%);
+  color: @color-accent-lighter;
+}
+
+.success {
+  background: fade(@color-success, 12%);
+  border-color: fade(@color-success, 28%);
+  color: lighten(@color-success, 12%);
+}
+
+.warning {
+  background: fade(@color-warning, 12%);
+  border-color: fade(@color-warning, 28%);
+  color: lighten(@color-warning, 10%);
+}
+
+.danger {
+  background: fade(@color-error, 12%);
+  border-color: fade(@color-error, 28%);
+  color: lighten(@color-error, 12%);
+}
+
+.info {
+  background: fade(@color-info, 12%);
+  border-color: fade(@color-info, 28%);
+  color: lighten(@color-info, 8%);
+}

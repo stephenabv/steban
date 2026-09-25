@@ -324,13 +324,18 @@ Every client-facing surface editable: Hero · About · Skills · Projects · Fea
 None. Next step requires Vercel environment setup (Postgres, Blob).
 
 ## Technical debt
-- Admin editor forms POST to placeholder handlers (TODO comments). Wire up when DB is available.
+- Admin editor forms (Hero, About, SEO, Social, Contact Info, Footer) are not persisted yet. Since the
+  2026-09-25 redesign they share `PlaceholderEditor`, show a "Not connected yet" notice, and no longer
+  report a false "saved" success. Wire up when their repositories exist.
 - AuditService logs to console only; needs Postgres table.
 - Rate limiter uses in-memory store; should use Vercel KV for multi-instance production.
-- Carousel touch/swipe: pointer events handled, but a dedicated swipe hook would improve DX.
+- Featured carousel order can't be edited from the admin: `featuredOrder` isn't part of the project
+  Server Action schema. Needs a backward-compatible schema addition before drag-to-reorder UI.
 
 ## Known issues
-None.
+- Dev server only: the CSP (`'strict-dynamic'` + nonce) blocks Turbopack's lazily loaded `loading.tsx`
+  chunks for admin routes ("Refused to load the script …"). Reproduces on the pre-redesign code too and
+  does not occur with `next build && next start`.
 
 ## Architecture Decision Records (ADRs)
 ```
@@ -364,10 +369,61 @@ Decision: Use iron-session for admin session management.
 Reason:   Stateless, encrypted, HttpOnly cookie sessions with no database dependency.
           Scales trivially on Vercel Edge without a session store.
 Status:   Accepted.
+
+ADR-006
+Decision: Runtime design tokens + shared UI primitives (components/ui, components/data).
+Reason:   Pages had drifted into one-off styles and inline hex values. LESS variables stay the
+          compile-time source of truth and are mirrored to CSS custom properties; every page composes
+          the same Button/Field/Card/Modal/DataTable primitives. See docs/DESIGN_SYSTEM.md.
+Status:   Accepted.
+
+ADR-007
+Decision: Motion is progressive enhancement.
+Reason:   Framer Motion's whileInView writes opacity:0 into server HTML, hiding content from no-JS
+          visitors and crawlers. Scroll reveals now hide only below-the-fold elements after hydration;
+          a global MotionConfig honours prefers-reduced-motion without branching rendered output
+          (which caused hydration mismatches).
+Status:   Accepted.
+
+ADR-008
+Decision: Client-side list querying for admin tables via a ListQuery engine.
+Reason:   Admin datasets are small (services already return up to 100 rows). Filters and sorts are
+          strategy objects, so search/filter/sort/pagination needs no API change. Revisit with
+          server-side pagination if volumes grow.
+Status:   Accepted.
 ```
 
 ## Changelog
 ```
+## 2026-09-25 — Admin fixes and resume upload
+### Fixed
+- Dashboard cards showed 0: on main they were hard-coded literals. Counts now come from exact
+  queries (project/message COUNT(*), featured query, new unread COUNT) instead of the length of a
+  100-row page, and a failed query renders "—" rather than a misleading 0.
+- Page became unscrollable after deleting a message from inside the message dialog: stacked
+  dialogs each saved/restored body overflow, and closing both in one render restored "hidden".
+  Replaced with a reference-counted scroll lock (lib/dom/scrollLock.ts).
+### Changed
+- Resume is now an uploaded PDF (Admin → Resume) stored in Postgres (resume_files) and served at
+  the unchanged public URL /resume.pdf. The URL-based fields (Hero.resumeUrl, ContactInfo.resumeUrl,
+  siteConfig.resumeUrl) are removed; contact_info.resume_url is kept but unused (no destructive
+  migration). The home Resume button is hidden until a resume exists.
+
+## 2026-09-25 — UI/UX redesign (presentation layer only)
+### Added
+- Design system: runtime tokens, Outfit display face, icon registry, Button/Badge/Card/Alert/
+  EmptyState/Skeleton/Field/Switch/Modal/Toast/Reveal/SectionHeading primitives.
+- Public: floating pill navbar, route transitions, new hero, swipeable featured carousel, CTA band,
+  project search + technology filter, about section nav, contact channel cards, error boundary.
+- Admin: top bar + collapsible sidebar + mobile drawer, dashboard with live counts and recent activity,
+  DataTable (search/filter/sort/pagination, card layout on phones), shared ProjectForm, working
+  Featured manager, skeleton loading, error boundary, confirmation dialogs with context.
+### Changed
+- Placeholder admin editors now state they are not persisted instead of reporting success.
+- ESLint config loads again (jsx-a11y plugin was registered twice).
+### Unchanged
+- Database schema, repositories, services, Server Actions, API routes, proxy, auth, validation.
+
 ## 2026-06-30
 ### Added
 - Complete Next.js 16 project scaffold (App Router, Turbopack, TypeScript strict)

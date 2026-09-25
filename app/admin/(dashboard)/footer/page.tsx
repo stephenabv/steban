@@ -1,42 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/ToastProvider";
-import styles from "@/features/admin/AdminPage.module.less";
+import { Field, Input } from "@/components/ui/Field";
+import { formLayout } from "@/components/ui/formLayout";
+import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
 
 export default function AdminFooterPage() {
-  const toast = useToast();
   const [privacyUrl, setPrivacyUrl] = useState("/privacy");
   const [termsUrl, setTermsUrl] = useState("/terms");
 
-  async function onSave(e: React.FormEvent) {
-    e.preventDefault();
-    toast.success("Footer settings saved.");
-  }
-
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Footer</h1>
-        <p className={styles.subtitle}>Manage footer legal links.</p>
+    <PlaceholderEditor
+      title="Footer"
+      description="Legal links shown at the bottom of every public page."
+      sectionTitle="Legal links"
+      saveLabel="Save footer"
+    >
+      <div className={formLayout.grid}>
+        <Field label="Privacy policy URL" id="f-privacy">
+          <Input type="text" value={privacyUrl} onChange={(e) => setPrivacyUrl(e.target.value)} />
+        </Field>
+        <Field label="Terms & conditions URL" id="f-terms">
+          <Input type="text" value={termsUrl} onChange={(e) => setTermsUrl(e.target.value)} />
+        </Field>
       </div>
-
-      <form className={styles.card} onSubmit={onSave}>
-        <h2 className={styles.cardTitle}>Legal Links</h2>
-        <div className={styles.form}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="f-privacy">Privacy Policy URL</label>
-            <input id="f-privacy" type="text" className={styles.input} value={privacyUrl} onChange={e => setPrivacyUrl(e.target.value)} />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="f-terms">Terms &amp; Conditions URL</label>
-            <input id="f-terms" type="text" className={styles.input} value={termsUrl} onChange={e => setTermsUrl(e.target.value)} />
-          </div>
-          <div className={styles.actions}>
-            <button type="submit" className={styles.btnSave}>Save</button>
-          </div>
-        </div>
-      </form>
-    </div>
+    </PlaceholderEditor>
   );
 }

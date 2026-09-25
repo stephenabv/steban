@@ -92,7 +92,20 @@ interface Hero {
   introduction: string;       // Short introductory paragraph
   photoUrl: string;           // Profile photo URL
   photoAlt: string;           // Alt text for the photo
-  resumeUrl: string;          // Link to resume PDF
+}
+```
+
+The resume is not a URL field: it is an uploaded file stored in `resume_files` (see below)
+and served at `/resume.pdf`.
+
+```ts
+interface ResumeFile {
+  id: string;
+  fileName: string;           // Sanitised original name, used for display and download
+  contentType: string;        // Always application/pdf
+  sizeBytes: number;          // Max 4 MB (config/resume.ts)
+  sha256: string;             // HTTP ETag and cache-busting key
+  uploadedAt: Date;
 }
 ```
 
@@ -297,9 +310,26 @@ CREATE TABLE hero (
   introduction  TEXT NOT NULL,
   photo_url     TEXT NOT NULL,
   photo_alt     TEXT NOT NULL,
-  resume_url    TEXT NOT NULL,
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Resume (created automatically by PostgresResumeRepository)
+-- Replacing runs INSERT → switch active → DELETE old in one transaction, so a failed
+-- upload never replaces the live file and old files never accumulate.
+CREATE TABLE resume_files (
+  id            TEXT PRIMARY KEY,
+  file_name     TEXT NOT NULL,
+  content_type  TEXT NOT NULL,
+  size_bytes    INT NOT NULL,
+  sha256        TEXT NOT NULL,
+  content       BYTEA NOT NULL,
+  is_active     BOOLEAN NOT NULL DEFAULT FALSE,
+  uploaded_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE UNIQUE INDEX uq_resume_files_active ON resume_files (is_active) WHERE is_active;
+
+-- Note: contact_info.resume_url still exists in databases created before the resume
+-- upload feature. It is deprecated and never read or written; drop it at leisure.
 
 -- About (single row)
 CREATE TABLE about (

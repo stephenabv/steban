@@ -159,7 +159,7 @@ Before going live, verify each item:
 ### Content
 
 - [ ] Profile photo loads at the correct URL.
-- [ ] Resume PDF link (`/resume.pdf` or external URL) is accessible.
+- [ ] A resume is uploaded in Admin → Resume, and `/resume.pdf` opens it (the home Resume button is hidden until then).
 - [ ] All project links (GitHub, live demo) are correct.
 - [ ] Contact form submits successfully.
 

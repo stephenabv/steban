@@ -1,0 +1,70 @@
+@import "styles/variables.less";
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: @space-3;
+  padding: @space-3 @space-4;
+  border-radius: @radius-md;
+  border: 1px solid transparent;
+  font-size: @fs-sm;
+  line-height: @lh-normal;
+
+  > svg {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  color: @color-text-secondary;
+}
+
+.title {
+  font-weight: @fw-semibold;
+  color: @color-text-primary;
+  margin-bottom: 2px;
+}
+
+.action {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.info {
+  background: fade(@color-info, 8%);
+  border-color: fade(@color-info, 25%);
+
+  > svg {
+    color: @color-info;
+  }
+}
+
+.success {
+  background: fade(@color-success, 8%);
+  border-color: fade(@color-success, 25%);
+
+  > svg {
+    color: @color-success;
+  }
+}
+
+.warning {
+  background: fade(@color-warning, 8%);
+  border-color: fade(@color-warning, 25%);
+
+  > svg {
+    color: @color-warning;
+  }
+}
+
+.danger {
+  background: fade(@color-error, 8%);
+  border-color: fade(@color-error, 28%);
+
+  > svg {
+    color: @color-error;
+  }
+}
