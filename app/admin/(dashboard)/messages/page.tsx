@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getContactService } from "@/server/services";
 import { MessagesInbox } from "@/features/admin/MessagesInbox";
 import type { InboxMessage } from "@/features/admin/MessagesInbox";
+import { AdminPageHeader } from "@/features/admin/AdminPageHeader";
+import { Alert } from "@/components/ui/Alert";
 import styles from "@/features/admin/AdminPage.module.less";
 
 export const metadata: Metadata = { title: "Messages" };
@@ -23,23 +25,26 @@ export default async function AdminMessagesPage() {
         read: m.read,
       }))
     : [];
+  const unread = messages.filter((m) => !m.read).length;
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Messages</h1>
-        <p className={styles.subtitle}>Contact form submissions from visitors.</p>
-      </div>
+      <AdminPageHeader
+        title="Messages"
+        description={
+          result.ok
+            ? `Contact form submissions from visitors${unread > 0 ? ` · ${unread} unread` : ""}.`
+            : "Contact form submissions from visitors."
+        }
+      />
 
-      <div className={styles.card}>
-        <h2 className={styles.cardTitle}>Inbox</h2>
-        {!result.ok && (
-          <p className={styles.errorBanner} role="alert">
-            Could not load messages. Please refresh.
-          </p>
-        )}
+      {result.ok ? (
         <MessagesInbox messages={messages} />
-      </div>
+      ) : (
+        <Alert tone="danger" title="Could not load messages">
+          Please refresh the page. If this keeps happening, check the database connection.
+        </Alert>
+      )}
     </div>
   );
 }

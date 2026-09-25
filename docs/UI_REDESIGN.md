@@ -94,3 +94,19 @@ nonce-based CSP makes an anti-flash inline script non-trivial and PLAN.md is dar
 **None.** No schema, repository, service, action, route handler, proxy, or auth change.
 The admin dashboard and Featured page only *read* through existing services, and featured
 toggles call the existing `updateProjectAction` with the project's current values.
+
+## 6. Outcome & follow-ups
+
+Implemented as planned; verified with `tsc`, ESLint, `next build`, and Playwright flows covering
+login (including wrong password and callback redirect), project search/filter/sort, edit, create,
+delete, featured toggles, inbox open/mark-read/delete, placeholder editors, mobile drawer,
+sidebar collapse persistence, sign-out, and a production contact-form submission.
+
+Findings outside the scope of a presentation change (not modified):
+
+| Finding | Why not changed here | Suggested fix |
+|---|---|---|
+| Featured order isn't editable | `featuredOrder` isn't in the project Server Action schema | Add an optional `featuredOrder` to the Zod schema (backward-compatible), then a reorder UI. |
+| Resume button 404s | No `public/resume.pdf` in the repo | Add the file, or point `siteConfig.resumeUrl` at hosted storage. |
+| Dev-only CSP block of admin `loading` chunks | Pre-existing; security configuration; absent in production builds | Investigate Turbopack dev chunk loading under `'strict-dynamic'`. |
+| Placeholder editors don't persist | Repositories for Hero/About/SEO/etc. don't exist yet | Implement repositories + Server Actions; `PlaceholderEditor` has a single TODO hook point. |

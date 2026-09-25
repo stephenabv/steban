@@ -1,47 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/ToastProvider";
-import styles from "@/features/admin/AdminPage.module.less";
+import { Field, Input } from "@/components/ui/Field";
+import { formLayout } from "@/components/ui/formLayout";
+import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
 
 export default function AdminSocialPage() {
-  const toast = useToast();
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [facebook, setFacebook] = useState("");
 
-  async function onSave(e: React.FormEvent) {
-    e.preventDefault();
-    toast.success("Social links saved.");
-  }
-
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Social Links</h1>
-        <p className={styles.subtitle}>Manage social profile URLs shown in the footer and contact page.</p>
+    <PlaceholderEditor
+      title="Social links"
+      description="Profile URLs shown in the footer and on the contact page."
+      sectionTitle="Social profiles"
+      saveLabel="Save links"
+    >
+      <div className={formLayout.grid}>
+        <Field label="GitHub" id="s-github" className={formLayout.span2}>
+          <Input type="url" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="https://github.com/…" />
+        </Field>
+        <Field label="LinkedIn" id="s-linkedin">
+          <Input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/…" />
+        </Field>
+        <Field label="Facebook" id="s-facebook">
+          <Input type="url" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="https://facebook.com/…" />
+        </Field>
       </div>
-
-      <form className={styles.card} onSubmit={onSave}>
-        <h2 className={styles.cardTitle}>Social Profiles</h2>
-        <div className={styles.form}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="s-github">GitHub</label>
-            <input id="s-github" type="url" className={styles.input} value={github} onChange={e => setGithub(e.target.value)} placeholder="https://github.com/..." />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="s-linkedin">LinkedIn</label>
-            <input id="s-linkedin" type="url" className={styles.input} value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/..." />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="s-facebook">Facebook</label>
-            <input id="s-facebook" type="url" className={styles.input} value={facebook} onChange={e => setFacebook(e.target.value)} placeholder="https://facebook.com/..." />
-          </div>
-          <div className={styles.actions}>
-            <button type="submit" className={styles.btnSave}>Save</button>
-          </div>
-        </div>
-      </form>
-    </div>
+    </PlaceholderEditor>
   );
 }

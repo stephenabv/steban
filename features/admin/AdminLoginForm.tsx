@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { Logo } from "@/components/layout/Logo";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { Field, Input } from "@/components/ui/Field";
+import { Icon } from "@/components/icons/Icon";
 import styles from "./AdminLoginForm.module.less";
 
 export function AdminLoginForm({ basePath }: { basePath: string }) {
@@ -12,6 +15,7 @@ export function AdminLoginForm({ basePath }: { basePath: string }) {
   const searchParams = useSearchParams();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -49,68 +53,61 @@ export function AdminLoginForm({ basePath }: { basePath: string }) {
     }
   }
 
-  const [first, last] = siteConfig.name.split(" ");
-
   return (
-    <div className={styles.page}>
+    <main id="main-content" className={styles.page} tabIndex={-1}>
+      <div className={styles.backdrop} aria-hidden="true" />
       <div className={styles.card}>
         <div className={styles.header}>
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
-            <Logo size={48} />
-          </div>
-          <p className={styles.logo}>
-            {first} <span>{last}</span>
-          </p>
-          <p className={styles.subtitle}>Admin Dashboard</p>
+          <Logo size={48} decorative />
+          <h1 className={styles.title}>Sign in</h1>
+          <p className={styles.subtitle}>{siteConfig.name} · Admin dashboard</p>
         </div>
 
         <form className={styles.form} onSubmit={onSubmit} aria-label="Admin login">
-          {error && (
-            <div className={styles.error} role="alert">
-              {error}
-            </div>
-          )}
+          {error && <Alert tone="danger">{error}</Alert>}
 
-          <div className={styles.field}>
-            <label htmlFor="username" className={styles.label}>Username</label>
-            <input
-              id="username"
+          <Field label="Username" id="username">
+            <Input
               type="text"
               autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
               required
-              className={styles.input}
-              placeholder="admin"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
-          </div>
+          </Field>
 
-          <div className={styles.field}>
-            <label htmlFor="password" className={styles.label}>Password</label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className={styles.input}
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <Field label="Password" id="password">
+            <div className={styles.passwordWrap}>
+              <Input
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.reveal}
+                onClick={() => setShowPassword((s) => !s)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                <Icon name={showPassword ? "eye-off" : "eye"} size={16} />
+              </button>
+            </div>
+          </Field>
 
-          <button type="submit" className={styles.submit} disabled={loading} aria-busy={loading}>
-            {loading ? "Signing in…" : "Sign In"}
-          </button>
+          <Button type="submit" size="lg" fullWidth loading={loading} loadingText="Signing in…">
+            Sign in
+          </Button>
         </form>
 
-        <Link href="/" className={styles.backLink}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
+        <Button href="/" variant="ghost" size="sm" icon="arrow-left" className={styles.backLink}>
           Back to site
-        </Link>
+        </Button>
       </div>
-    </div>
+    </main>
   );
 }

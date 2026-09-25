@@ -127,6 +127,7 @@ export function Button(props: ButtonProps) {
     <button
       type={type}
       className={classes}
+      data-icon-only={iconOnly || undefined}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       {...buttonRest}
