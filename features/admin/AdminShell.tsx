@@ -8,6 +8,7 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import { Logo } from "@/components/layout/Logo";
 import { Icon } from "@/components/icons/Icon";
 import { useLocalPreference } from "@/lib/hooks/useLocalPreference";
+import { acquireScrollLock } from "@/lib/dom/scrollLock";
 import { AdminSidebar } from "./AdminSidebar";
 import styles from "./AdminShell.module.less";
 
@@ -23,11 +24,10 @@ export function AdminShell({ basePath, children }: { basePath: string; children:
   useEffect(() => {
     if (!drawerOpen) return;
     const onKeyDown = (e: KeyboardEvent) => e.key === "Escape" && setDrawerOpenedAt(null);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const releaseScroll = acquireScrollLock();
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      releaseScroll();
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [drawerOpen]);

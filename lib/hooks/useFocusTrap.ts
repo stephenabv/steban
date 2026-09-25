@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
+import { acquireScrollLock } from "@/lib/dom/scrollLock";
 
 const FOCUSABLE = [
   "a[href]",
@@ -39,8 +40,7 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>, { active, onEsc
     );
     (firstField ?? container).focus({ preventScroll: true });
 
-    const previousOverflow = document.body.style.overflow;
-    if (lockScroll) document.body.style.overflow = "hidden";
+    const releaseScroll = lockScroll ? acquireScrollLock() : undefined;
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape" && onEscapeRef.current) {
@@ -71,7 +71,7 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>, { active, onEsc
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      if (lockScroll) document.body.style.overflow = previousOverflow;
+      releaseScroll?.();
       previouslyFocused?.focus?.({ preventScroll: true });
     };
   }, [active, ref, lockScroll]);
