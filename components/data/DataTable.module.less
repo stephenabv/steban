@@ -1,0 +1,169 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.wrap {
+  width: 100%;
+  border: 1px solid @color-border;
+  border-radius: @radius-lg;
+  background: @color-bg-card;
+  overflow: hidden;
+
+  @media (max-width: (@bp-md - 1px)) {
+    border: none;
+    background: none;
+    overflow: visible;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: @fs-sm;
+
+  thead tr {
+    background: fade(@color-bg-elevated, 70%);
+  }
+
+  th {
+    padding: @space-3 @space-4;
+    text-align: left;
+    font-size: @fs-xs;
+    font-weight: @fw-semibold;
+    color: @color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    border-bottom: 1px solid @color-border;
+  }
+
+  td {
+    padding: @space-3 @space-4;
+    color: @color-text-secondary;
+    border-bottom: 1px solid @color-border;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background @transition-fast;
+
+    &:last-child td {
+      border-bottom: none;
+    }
+
+    &:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  .alignEnd {
+    text-align: right;
+  }
+}
+
+.sortBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: @space-1;
+  margin: -4px -6px;
+  padding: 4px 6px;
+  border: none;
+  border-radius: @radius-xs;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  .focus-ring();
+
+  svg {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    color: @color-text-primary;
+  }
+}
+
+.sortActive {
+  color: @color-accent-lighter;
+
+  svg {
+    opacity: 1;
+  }
+}
+
+// ─── Mobile: each row becomes a card ──────────────────────────────────────────
+@media (max-width: (@bp-md - 1px)) {
+  .table {
+    thead {
+      .visually-hidden();
+    }
+
+    tbody {
+      display: flex;
+      flex-direction: column;
+      gap: @space-3;
+    }
+
+    tbody tr {
+      display: flex;
+      flex-direction: column;
+      gap: @space-2;
+      padding: @space-4;
+      border: 1px solid @color-border;
+      border-radius: @radius-lg;
+      background: @color-bg-card;
+
+      &:hover td {
+        background: none;
+      }
+    }
+
+    td {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: @space-4;
+      padding: 0;
+      border: none;
+      text-align: right;
+
+      &::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-size: @fs-xs;
+        font-weight: @fw-medium;
+        color: @color-text-muted;
+        text-align: left;
+      }
+    }
+
+    .mobilePrimary {
+      display: block;
+      text-align: left;
+      padding-bottom: @space-2;
+      margin-bottom: @space-1;
+      border-bottom: 1px solid @color-border;
+
+      &::before {
+        content: none;
+      }
+    }
+
+    .mobileActions {
+      display: block;
+      padding-top: @space-3;
+      margin-top: @space-1;
+      border-top: 1px solid @color-border;
+
+      &::before {
+        content: none;
+      }
+    }
+
+    .mobileHidden {
+      display: none;
+    }
+  }
+}
