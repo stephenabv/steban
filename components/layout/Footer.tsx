@@ -88,12 +88,6 @@ export async function Footer() {
                 )}
               </li>
             ))}
-            <li>
-              <a href="#main-content" className={styles.backToTop}>
-                Back to top
-                <Icon name="arrow-up" size={14} />
-              </a>
-            </li>
           </ul>
         </div>
       </div>

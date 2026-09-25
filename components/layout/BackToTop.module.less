@@ -1,0 +1,76 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+// Kept well clear of the viewport edge (and of notches / home indicators).
+@inset-mobile: @space-5;
+@inset-desktop: @space-8;
+
+.button {
+  position: fixed;
+  right: calc(@inset-mobile + env(safe-area-inset-right));
+  bottom: calc(@inset-mobile + env(safe-area-inset-bottom));
+  z-index: @z-sticky;
+  .flex-center();
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  .glass();
+  color: @color-text-primary;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.92);
+  transition:
+    opacity @duration-normal @ease-out,
+    transform @duration-normal @ease-out,
+    visibility 0s linear @duration-normal,
+    background @transition-fast,
+    border-color @transition-fast,
+    box-shadow @transition-fast;
+  .focus-ring();
+
+  @media (min-width: @bp-md) {
+    right: calc(@inset-desktop + env(safe-area-inset-right));
+    bottom: calc(@inset-desktop + env(safe-area-inset-bottom));
+    width: 52px;
+    height: 52px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: @color-accent;
+      border-color: @color-accent-light;
+      box-shadow: @shadow-glow;
+      transform: translateY(-2px);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+    transition:
+      opacity @duration-fast linear,
+      visibility 0s linear @duration-fast;
+
+    &:hover,
+    &:active {
+      transform: none;
+    }
+  }
+}
+
+.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity @duration-normal @ease-out,
+    transform @duration-normal @ease-out,
+    visibility 0s,
+    background @transition-fast,
+    border-color @transition-fast,
+    box-shadow @transition-fast;
+}
