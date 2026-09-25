@@ -237,11 +237,11 @@ Navigate to `/admin` (redirects to `/admin/login` when not authenticated).
 | Dashboard | `/admin` | Live counts (projects, featured, messages, unread) + recent activity |
 | Hero | `/admin/hero` | Name, title, introduction, profile photo |
 | Resume | `/admin/resume` | Upload, view, download and replace the resume PDF served at `/resume.pdf` |
-| About | `/admin/about` | Biography, skills, experience, education, certifications |
+| About | `/admin/about` | Biography, skills, experience, education, certifications, awards |
 | Projects | `/admin/projects` | Create, edit, delete projects |
 | Featured | `/admin/featured` | Choose which projects appear in the home carousel and their order |
-| Contact Info | `/admin/contact-info` | Email, phone, social links |
-| SEO | `/admin/seo` | Per-page title, description, OG image, noindex flag |
+| Contact Info | `/admin/contact-info` | Public contact email |
+| SEO | `/admin/seo` | Per-page title, description, keywords, share image, noindex flag |
 | Analytics | `/admin/analytics` | View GA4 configuration status |
 | Social Links | `/admin/social` | GitHub, LinkedIn, Facebook URLs |
 | Footer | `/admin/footer` | Footer link URLs (privacy, terms) |

@@ -33,3 +33,23 @@ export const defaultSeo = {
 };
 
 export type SeoConfig = typeof defaultSeo;
+
+/**
+ * Per-page defaults, used when no admin SEO override is saved (or a field is
+ * left empty). The admin SEO editor shows these as placeholders.
+ */
+export const pageSeoDefaults = {
+  home: { title: siteConfig.title, description: siteConfig.description },
+  projects: {
+    title: "Projects",
+    description: `A showcase of software projects built by ${siteConfig.name}.`,
+  },
+  about: {
+    title: "About",
+    description: `Learn more about ${siteConfig.name} — skills, experience, education, and background.`,
+  },
+  contact: {
+    title: "Get in Touch",
+    description: `Contact ${siteConfig.name} for collaboration, job opportunities, or general inquiries.`,
+  },
+} as const;

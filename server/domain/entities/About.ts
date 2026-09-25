@@ -56,3 +56,6 @@ export interface About {
 }
 
 export type UpdateAboutInput = Partial<Omit<About, "id" | "updatedAt">>;
+
+/** Editable about fields (the singleton's identity and timestamp are managed by storage). */
+export type AboutContent = Omit<About, "id" | "updatedAt">;

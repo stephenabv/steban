@@ -4,14 +4,18 @@ import type { ProjectCardData } from "@/features/projects/types";
 import { PageShell } from "@/features/shared/PageShell";
 import { CtaBand } from "@/features/shared/CtaBand";
 import { Alert } from "@/components/ui/Alert";
-import { siteConfig, siteUrl } from "@/config/site";
+import { siteUrl } from "@/config/site";
+import { getPageMetadata } from "@/lib/content/publicContent";
+import { pageSeoDefaults } from "@/config/seo";
 import { getProjectService } from "@/server/services";
 
-export const metadata: Metadata = {
-  title: "Projects",
-  description: `A showcase of software projects built by ${siteConfig.name}.`,
-  alternates: { canonical: siteUrl("/projects") },
-};
+export function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("projects", {
+    title: pageSeoDefaults.projects.title,
+    description: pageSeoDefaults.projects.description,
+    alternates: { canonical: siteUrl("/projects") },
+  });
+}
 
 export default async function ProjectsPage() {
   const result = await getProjectService().getAll({ pageSize: 100 });

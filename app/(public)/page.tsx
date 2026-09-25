@@ -3,23 +3,25 @@ import { HeroSection } from "@/features/home/HeroSection";
 import { FeaturedCarousel } from "@/features/home/FeaturedCarousel";
 import { CtaBand } from "@/features/shared/CtaBand";
 import { siteConfig } from "@/config/site";
-import { personSchema, websiteSchema } from "@/lib/structuredData";
+import { jsonLd, personSchema, websiteSchema } from "@/lib/structuredData";
+import { getHeroContent, getPageMetadata, getPublicContact } from "@/lib/content/publicContent";
 import { getProjectService, getResumeService } from "@/server/services";
 
-export const metadata: Metadata = {
-  title: { absolute: siteConfig.title },
-  alternates: { canonical: siteConfig.url },
-};
-
-// TODO: replace hero with real data from HeroService when it's wired up
-const mockHero = null;
+export function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("home", {
+    title: { absolute: siteConfig.title },
+    alternates: { canonical: siteConfig.url },
+  });
+}
 
 const FEATURED_SECTION_ID = "featured";
 
 export default async function HomePage() {
-  const [featuredResult, resumeResult] = await Promise.all([
+  const [featuredResult, resumeResult, hero, contact] = await Promise.all([
     getProjectService().getFeatured(),
     getResumeService().getActive(),
+    getHeroContent(),
+    getPublicContact(),
   ]);
   const featured = featuredResult.ok ? featuredResult.value : [];
   // Metadata only — the file itself is streamed by /resume.pdf on demand.
@@ -31,13 +33,22 @@ export default async function HomePage() {
           where non-JS crawlers can read it. Data blocks are exempt from CSP script-src. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema()) }}
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            personSchema({
+              name: hero?.name,
+              jobTitle: hero?.title,
+              email: contact.email,
+              sameAs: contact.profiles.map((p) => p.url),
+            })
+          ),
+        }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema()) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(websiteSchema()) }}
       />
-      <HeroSection hero={mockHero} resumeAvailable={resumeAvailable} nextSectionId={featured.length > 0 ? FEATURED_SECTION_ID : undefined} />
+      <HeroSection hero={hero} resumeAvailable={resumeAvailable} nextSectionId={featured.length > 0 ? FEATURED_SECTION_ID : undefined} />
       <FeaturedCarousel id={FEATURED_SECTION_ID} projects={featured} />
       <CtaBand />
     </>

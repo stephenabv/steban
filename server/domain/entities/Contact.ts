@@ -24,3 +24,6 @@ export type CreateContactMessageInput = Pick<
 >;
 
 export type UpdateContactInfoInput = Partial<Omit<ContactInfo, "id" | "updatedAt">>;
+
+/** Editable contact-info fields (the singleton's identity and timestamp are managed by storage). */
+export type ContactInfoContent = Omit<ContactInfo, "id" | "updatedAt">;

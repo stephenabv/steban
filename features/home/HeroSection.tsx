@@ -47,15 +47,15 @@ export function HeroSection({ hero, resumeAvailable, nextSectionId }: Props) {
           </motion.div>
 
           <motion.h1 id="hero-heading" variants={item(1)} className={styles.name}>
-            {hero?.name ?? siteConfig.name}
+            {hero?.name || siteConfig.name}
           </motion.h1>
 
           <motion.p variants={item(2)} className={styles.title}>
-            {hero?.title ?? "Computer Engineer"}
+            {hero?.title || "Computer Engineer"}
           </motion.p>
 
           <motion.p variants={item(3)} className={styles.intro}>
-            {hero?.introduction ?? DEFAULT_INTRO}
+            {hero?.introduction || DEFAULT_INTRO}
           </motion.p>
 
           <motion.div variants={item(4)} className={styles.actions}>

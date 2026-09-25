@@ -1,14 +1,22 @@
 import { siteConfig, siteUrl } from "@/config/site";
-import { socialLinks } from "@/config/social";
 
-export function personSchema() {
+/**
+ * Serialises JSON-LD for an inline <script>. JSON.stringify leaves "<" as-is,
+ * so content containing "</script>" could close the tag; \u003c is decoded
+ * identically by JSON parsers.
+ */
+export function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+export function personSchema(person: { name?: string; jobTitle?: string; email: string; sameAs: string[] }) {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: siteConfig.name,
+    name: person.name || siteConfig.name,
     url: siteConfig.url,
-    jobTitle: "Computer Engineer",
-    email: `mailto:${siteConfig.author.email}`,
+    jobTitle: person.jobTitle || "Computer Engineer",
+    ...(person.email ? { email: `mailto:${person.email}` } : {}),
     image: siteUrl("/opengraph-image"),
     knowsAbout: [
       "Computer Engineering",
@@ -16,11 +24,7 @@ export function personSchema() {
       "Cloud Architecture",
       "Scalable Systems",
     ],
-    sameAs: [
-      socialLinks.github.url,
-      socialLinks.linkedin.url,
-      socialLinks.facebook.url,
-    ],
+    sameAs: person.sameAs,
   };
 }
 

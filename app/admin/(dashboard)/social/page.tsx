@@ -1,33 +1,29 @@
-"use client";
+import type { Metadata } from "next";
+import { getContactService } from "@/server/services";
+import { socialLinks } from "@/config/social";
+import { SocialLinksEditor } from "@/features/admin/content/SocialLinksEditor";
+import { LoadError } from "@/features/admin/content/LoadError";
 
-import { useState } from "react";
-import { Field, Input } from "@/components/ui/Field";
-import { formLayout } from "@/components/ui/formLayout";
-import { PlaceholderEditor } from "@/features/admin/PlaceholderEditor";
+export const metadata: Metadata = { title: "Social Links" };
+export const dynamic = "force-dynamic";
 
-export default function AdminSocialPage() {
-  const [github, setGithub] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-  const [facebook, setFacebook] = useState("");
+export default async function AdminSocialPage() {
+  const result = await getContactService().getContactInfo();
+  if (!result.ok) return <LoadError title="Social links" />;
+  const info = result.value;
 
   return (
-    <PlaceholderEditor
-      title="Social links"
-      description="Profile URLs shown in the footer and on the contact page."
-      sectionTitle="Social profiles"
-      saveLabel="Save links"
-    >
-      <div className={formLayout.grid}>
-        <Field label="GitHub" id="s-github" className={formLayout.span2}>
-          <Input type="url" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="https://github.com/…" />
-        </Field>
-        <Field label="LinkedIn" id="s-linkedin">
-          <Input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/…" />
-        </Field>
-        <Field label="Facebook" id="s-facebook">
-          <Input type="url" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="https://facebook.com/…" />
-        </Field>
-      </div>
-    </PlaceholderEditor>
+    <SocialLinksEditor
+      savedAt={info?.updatedAt.toISOString() ?? null}
+      initial={
+        info
+          ? { githubUrl: info.githubUrl, linkedinUrl: info.linkedinUrl, facebookUrl: info.facebookUrl }
+          : {
+              githubUrl: socialLinks.github.url,
+              linkedinUrl: socialLinks.linkedin.url,
+              facebookUrl: socialLinks.facebook.url,
+            }
+      }
+    />
   );
 }

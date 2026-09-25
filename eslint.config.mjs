@@ -15,7 +15,7 @@ const eslintConfig = defineConfig([
       // role="list" is deliberate on unstyled lists: Safari/VoiceOver drops list
       // semantics when `list-style: none` is applied.
       "jsx-a11y/no-redundant-roles": ["error", { ul: ["list"], ol: ["list"] }],
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", ignoreRestSiblings: true }],
       "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
       "no-console": ["warn", { allow: ["warn", "error"] }],
       "prefer-const": "error",

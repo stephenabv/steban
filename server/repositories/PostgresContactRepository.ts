@@ -1,7 +1,9 @@
 import { randomUUID } from "crypto";
 import { getPool } from "@/server/db/pool";
+import { ensureOnce } from "@/server/db/ensureOnce";
 import type {
   ContactInfo,
+  ContactInfoContent,
   ContactMessage,
   CreateContactMessageInput,
   UpdateContactInfoInput,
@@ -37,12 +39,9 @@ function toMessage(row: ContactMessageRow): ContactMessage {
   };
 }
 
-let messageTableReady: Promise<void> | null = null;
-
-function ensureMessageTable(): Promise<void> {
-  messageTableReady ??= getPool()
-    .query(
-      `CREATE TABLE IF NOT EXISTS contact_messages (
+const ensureMessageTable = ensureOnce(() =>
+  getPool().query(
+    `CREATE TABLE IF NOT EXISTS contact_messages (
         id         TEXT PRIMARY KEY,
         name       TEXT NOT NULL,
         email      TEXT NOT NULL,
@@ -54,10 +53,8 @@ function ensureMessageTable(): Promise<void> {
       );
       CREATE INDEX IF NOT EXISTS idx_contact_messages_read
         ON contact_messages (read, created_at DESC);`
-    )
-    .then(() => undefined);
-  return messageTableReady;
-}
+  )
+);
 
 /** Production repository for contact messages, backed by standard Postgres. */
 export class PostgresContactMessageRepository extends ContactMessageRepository {
@@ -159,12 +156,9 @@ function toContactInfo(row: ContactInfoRow): ContactInfo {
   };
 }
 
-let infoTableReady: Promise<void> | null = null;
-
-function ensureInfoTable(): Promise<void> {
-  infoTableReady ??= getPool()
-    .query(
-      `CREATE TABLE IF NOT EXISTS contact_info (
+const ensureInfoTable = ensureOnce(() =>
+  getPool().query(
+    `CREATE TABLE IF NOT EXISTS contact_info (
         id           TEXT PRIMARY KEY,
         email        TEXT NOT NULL DEFAULT '',
         github_url   TEXT NOT NULL DEFAULT '',
@@ -175,10 +169,8 @@ function ensureInfoTable(): Promise<void> {
         resume_url   TEXT NOT NULL DEFAULT '',
         updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )`
-    )
-    .then(() => undefined);
-  return infoTableReady;
-}
+  )
+);
 
 /** Production repository for the single contact-info settings row. */
 export class PostgresContactInfoRepository extends ContactInfoRepository {
@@ -188,6 +180,20 @@ export class PostgresContactInfoRepository extends ContactInfoRepository {
       "SELECT * FROM contact_info ORDER BY updated_at DESC LIMIT 1"
     );
     return rows[0] ? toContactInfo(rows[0]) : null;
+  }
+
+  async save(content: ContactInfoContent): Promise<ContactInfo> {
+    const existing = await this.getContactInfo();
+    if (existing) {
+      return (await this.update(existing.id, content)) as ContactInfo;
+    }
+    const { rows } = await getPool().query<ContactInfoRow>(
+      `INSERT INTO contact_info (id, email, github_url, linkedin_url, facebook_url)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [randomUUID(), content.email, content.githubUrl, content.linkedinUrl, content.facebookUrl]
+    );
+    return toContactInfo(rows[0]);
   }
 
   async findById(id: string): Promise<ContactInfo | null> {

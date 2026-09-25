@@ -257,16 +257,16 @@ Access is protected at the middleware level (`proxy.ts`) — unauthenticated req
 |---|---|---|
 | `/admin` | `app/admin/page.tsx` | Dashboard: exact counts (projects, featured, messages, unread — from `COUNT(*)` queries) + recent activity. |
 | `/admin/login` | `app/admin/login/page.tsx` | Login page using `AdminLoginForm`. |
-| `/admin/hero` | `app/admin/hero/page.tsx` | Form to edit name, title, introduction, photo URL. |
+| `/admin/hero` | `app/admin/(dashboard)/hero/page.tsx` | `HeroEditor`: name, title, introduction, photo URL + alt text (saved; drives the home hero and JSON-LD). |
 | `/admin/resume` | `app/admin/(dashboard)/resume/page.tsx` | Resume management: view current PDF and metadata, upload or replace (`ResumeManager`). |
-| `/admin/about` | `app/admin/about/page.tsx` | Form to edit bio, skills, experience, education, certifications. |
+| `/admin/about` | `app/admin/(dashboard)/about/page.tsx` | `AboutEditor`: biography plus reorderable skills, experience, education, certifications and awards. |
 | `/admin/projects` | `app/admin/projects/page.tsx` | Project list with create / edit / delete controls. |
 | `/admin/featured` | `app/admin/featured/page.tsx` | Drag-and-drop or ordered selection of featured projects for the carousel. |
-| `/admin/contact-info` | `app/admin/contact-info/page.tsx` | Form to edit email, phone, address, and social links. |
-| `/admin/seo` | `app/admin/seo/page.tsx` | Per-page SEO fields: title, description, OG image, noindex toggle. |
+| `/admin/contact-info` | `app/admin/(dashboard)/contact-info/page.tsx` | `ContactEmailEditor`: public contact email (empty hides email links). |
+| `/admin/seo` | `app/admin/(dashboard)/seo/page.tsx` | `SeoEditor`: per-page title, description, keywords, share image, noindex, with defaults and a search preview. |
 | `/admin/analytics` | `app/admin/analytics/page.tsx` | Displays current GA4 configuration status. |
-| `/admin/social` | `app/admin/social/page.tsx` | Form to edit GitHub, LinkedIn, Facebook URLs. |
-| `/admin/footer` | `app/admin/footer/page.tsx` | Form to edit footer link URLs (privacy, terms). |
+| `/admin/social` | `app/admin/(dashboard)/social/page.tsx` | `SocialLinksEditor`: GitHub, LinkedIn, Facebook URLs (empty hides a profile). |
+| `/admin/footer` | `app/admin/(dashboard)/footer/page.tsx` | `FooterEditor`: privacy and terms links (site path or https URL). |
 | `/admin/messages` | `app/admin/messages/page.tsx` | Table of contact form submissions with read/unread status. |
 
 ---

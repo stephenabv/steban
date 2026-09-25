@@ -2,17 +2,21 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/features/contact/ContactForm";
 import { ContactChannels } from "@/features/contact/ContactChannels";
 import { PageShell } from "@/features/shared/PageShell";
-import { getSocialItems } from "@/components/layout/SocialLinks";
-import { siteConfig, siteUrl } from "@/config/site";
+import { getPageMetadata, getPublicContact } from "@/lib/content/publicContent";
+import { pageSeoDefaults } from "@/config/seo";
+import { siteUrl } from "@/config/site";
 import styles from "./contact.module.less";
 
-export const metadata: Metadata = {
-  title: "Get in Touch",
-  description: `Contact ${siteConfig.name} for collaboration, job opportunities, or general inquiries.`,
-  alternates: { canonical: siteUrl("/contact") },
-};
+export function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("contact", {
+    title: pageSeoDefaults.contact.title,
+    description: pageSeoDefaults.contact.description,
+    alternates: { canonical: siteUrl("/contact") },
+  });
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const contact = await getPublicContact();
   return (
     <PageShell
       eyebrow="Contact"
@@ -26,7 +30,7 @@ export default function ContactPage() {
             Whether you&apos;re looking for a senior engineer to join your team, want to collaborate on an
             open-source project, or just want to connect — feel free to reach out.
           </p>
-          <ContactChannels email={siteConfig.author.email} channels={getSocialItems(["github", "linkedin"])} />
+          <ContactChannels email={contact.email} channels={contact.profiles} />
         </div>
 
         <ContactForm />
