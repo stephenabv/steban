@@ -53,7 +53,7 @@ Depending on where you live (for example, under the Philippine Data Privacy Act 
 
 ## Links to other websites
 
-Project pages may link to external websites and repositories. Their privacy practices are their own; please review their policies.
+Project pages may link to external websites, repositories and live demos, including demos of my own personal projects. Each of those is a separate website or application with its own privacy practices; this policy covers only this portfolio site, so please review their policies before using them.
 
 ## Children
 
@@ -71,20 +71,38 @@ const TERMS = `These Terms & Conditions govern your use of this portfolio websit
 
 ## Purpose of this site
 
-This website is a personal portfolio. It describes my professional experience, skills and the projects I have contributed to. It is provided for general information only.
+This website is a personal portfolio. It describes my professional experience, skills, the projects I have contributed to for employers and clients, and my own personal projects. It is provided for general information only.
 
 ## Ownership of the projects and code shown
 
-**I do not own, and do not claim, any intellectual property rights in the code, software, designs or other work shown in this portfolio.**
+This portfolio shows two kinds of work, and ownership differs between them. Each project's description explains the context in which it was built; if you are unsure which category a project falls into, please [ask me](/contact).
 
-- The projects presented here were created in the course of employment, client or freelance engagements, academic work or collaboration with others. All rights in them, including copyright and any other intellectual property rights, belong to their respective owners, such as employers, clients, collaborators or original authors.
-- Projects are shown solely to describe my role and experience. Descriptions, screenshots and code excerpts may be simplified, and confidential details are intentionally left out.
+### Work for employers, clients and collaborators
+
+**I do not own, and do not claim, any intellectual property rights in work I created for employers or clients, or together with others.**
+
+- These projects were created in the course of employment, client or freelance engagements, academic work or collaboration. All rights in them, including copyright and any other intellectual property rights, belong to their respective owners, such as employers, clients, collaborators or original authors.
+- They are shown solely to describe my role and experience. Descriptions, screenshots and code excerpts may be simplified, and confidential details are intentionally left out.
+
+### My personal projects
+
+- Projects I designed and built independently, outside any employment or client engagement, are my own work. Unless a project states otherwise, I retain all rights in them, including copyright.
+- Where a personal project's source code is published under an open-source license, you may use that code under the terms of that license.
+- The content and design of this website are also my own work unless stated otherwise.
+
+### Third-party names and open-source software
+
 - Product names, company names, logos and trademarks belong to their respective owners. Their appearance on this site does not imply ownership, endorsement or affiliation.
-- Open-source projects linked from this site are governed by their own licenses, as published by their authors.
+- Third-party libraries, frameworks and open-source projects used in or linked from these projects remain the property of their authors and are governed by their own licenses.
 
-## No license granted
+## Using the materials shown
 
-Nothing on this site grants you a license or any other right to use, copy, modify, distribute or commercially exploit the projects, code or materials shown. If you would like to use any of them, please contact the relevant rights holder directly.
+Nothing on this site grants you a license or any other right to use, copy, modify, distribute or commercially exploit the projects, code or materials shown, except where a published open-source license says otherwise.
+
+- For work done for employers, clients or collaborators, please contact the relevant rights holder directly.
+- For my personal projects, please [contact me](/contact) to ask for permission.
+
+You may share links to this site and quote brief excerpts with attribution for personal, non-commercial purposes.
 
 ## Requests from rights holders
 
