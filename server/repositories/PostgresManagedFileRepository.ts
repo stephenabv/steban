@@ -18,13 +18,14 @@ interface FileRow {
   size_bytes: number;
   sha256: string;
   uploaded_at: string;
+  is_published: boolean;
 }
 
 interface FileContentRow extends FileRow {
   content: Buffer;
 }
 
-const META_COLUMNS = "id, file_name, content_type, size_bytes, sha256, uploaded_at";
+const META_COLUMNS = "id, file_name, content_type, size_bytes, sha256, uploaded_at, is_published";
 
 function toManagedFile(row: FileRow): ManagedFile {
   return {
@@ -34,6 +35,7 @@ function toManagedFile(row: FileRow): ManagedFile {
     sizeBytes: Number(row.size_bytes),
     sha256: row.sha256,
     uploadedAt: new Date(row.uploaded_at),
+    published: row.is_published,
   };
 }
 
@@ -57,7 +59,9 @@ function ensureTable(table: ManagedFileTable): Promise<void> {
           uploaded_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
         CREATE UNIQUE INDEX IF NOT EXISTS uq_${table}_active
-          ON ${table} (is_active) WHERE is_active;`
+          ON ${table} (is_active) WHERE is_active;
+        -- Added after launch; existing files were public, so they default to published.
+        ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS is_published BOOLEAN NOT NULL DEFAULT TRUE;`
       )
     );
     setupByTable.set(table, setup);
@@ -101,11 +105,16 @@ export class PostgresManagedFileRepository extends ManagedFileRepository {
     try {
       await client.query("BEGIN");
       const id = randomUUID();
+      // Lock the current file so a concurrent publish toggle can't be lost in the swap.
+      const { rows: current } = await client.query<{ is_published: boolean }>(
+        `SELECT is_published FROM ${this.table} WHERE is_active FOR UPDATE`
+      );
+      const published = current[0]?.is_published ?? true;
       const { rows } = await client.query<FileRow>(
-        `INSERT INTO ${this.table} (id, file_name, content_type, size_bytes, sha256, content, is_active)
-         VALUES ($1, $2, $3, $4, $5, $6, FALSE)
+        `INSERT INTO ${this.table} (id, file_name, content_type, size_bytes, sha256, content, is_active, is_published)
+         VALUES ($1, $2, $3, $4, $5, $6, FALSE, $7)
          RETURNING ${META_COLUMNS}`,
-        [id, input.fileName, input.contentType, input.content.length, input.sha256, input.content]
+        [id, input.fileName, input.contentType, input.content.length, input.sha256, input.content, published]
       );
       await client.query(`UPDATE ${this.table} SET is_active = FALSE WHERE is_active`);
       await client.query(`UPDATE ${this.table} SET is_active = TRUE WHERE id = $1`, [id]);
@@ -118,6 +127,15 @@ export class PostgresManagedFileRepository extends ManagedFileRepository {
     } finally {
       client.release();
     }
+  }
+
+  async setPublished(published: boolean): Promise<ManagedFile | null> {
+    await ensureTable(this.table);
+    const { rows } = await getPool().query<FileRow>(
+      `UPDATE ${this.table} SET is_published = $1 WHERE is_active RETURNING ${META_COLUMNS}`,
+      [published]
+    );
+    return rows[0] ? toManagedFile(rows[0]) : null;
   }
 
   async clearActive(): Promise<boolean> {

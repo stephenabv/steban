@@ -161,3 +161,23 @@
     object-fit: cover;
   }
 }
+
+.notice {
+  margin-top: @space-4;
+}
+
+.manageActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: @space-3;
+  margin-top: @space-5;
+  padding-top: @space-5;
+  border-top: 1px solid @color-border;
+
+  @media (max-width: (@bp-sm - 1px)) {
+    > * {
+      flex: 1 1 0;
+    }
+  }
+}

@@ -5,7 +5,9 @@ export type CachePolicy =
   /** Revalidate every request: the URL is stable while the content changes. */
   | "revalidate"
   /** Cache forever: the URL changes whenever the content does. */
-  | "immutable";
+  | "immutable"
+  /** Never stored by shared caches or the browser (e.g. an admin previewing an unpublished file). */
+  | "private";
 
 export interface ManagedFileResponseOptions {
   cache: CachePolicy;
@@ -15,6 +17,7 @@ export interface ManagedFileResponseOptions {
 const CACHE_CONTROL: Record<CachePolicy, string> = {
   revalidate: "public, max-age=0, must-revalidate",
   immutable: "public, max-age=31536000, immutable",
+  private: "private, no-store",
 };
 
 const TEXT_HEADERS = { "Content-Type": "text/plain; charset=utf-8" };

@@ -10,7 +10,8 @@ import { ManagedFileRepository } from "./ManagedFileRepository";
  */
 export type ManagedFileDir = "resume" | "profile-photo";
 
-type StoredMeta = Omit<ManagedFile, "uploadedAt"> & { uploadedAt: string };
+/** `published` is absent in files stored before publishing existed; those were public. */
+type StoredMeta = Omit<ManagedFile, "uploadedAt" | "published"> & { uploadedAt: string; published?: boolean };
 
 export class JsonManagedFileRepository extends ManagedFileRepository {
   private readonly dir: string;
@@ -29,7 +30,7 @@ export class JsonManagedFileRepository extends ManagedFileRepository {
   async findActive(): Promise<ManagedFile | null> {
     try {
       const meta = JSON.parse(await fs.readFile(this.metaFile, "utf-8")) as StoredMeta;
-      return { ...meta, uploadedAt: new Date(meta.uploadedAt) };
+      return { ...meta, uploadedAt: new Date(meta.uploadedAt), published: meta.published ?? true };
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code === "ENOENT") return null;
       throw e;
@@ -53,13 +54,27 @@ export class JsonManagedFileRepository extends ManagedFileRepository {
       sizeBytes: input.content.length,
       sha256: input.sha256,
       uploadedAt: new Date(),
+      published: previous?.published ?? true,
     };
     await fs.writeFile(this.contentPath(meta.id), input.content);
-    const tmp = `${this.metaFile}.${meta.id}.tmp`;
-    await fs.writeFile(tmp, JSON.stringify({ ...meta, uploadedAt: meta.uploadedAt.toISOString() }, null, 2));
-    await fs.rename(tmp, this.metaFile);
+    await this.writeMeta(meta);
     if (previous) await fs.rm(this.contentPath(previous.id), { force: true });
     return meta;
+  }
+
+  async setPublished(published: boolean): Promise<ManagedFile | null> {
+    const current = await this.findActive();
+    if (!current) return null;
+    const meta = { ...current, published };
+    await this.writeMeta(meta);
+    return meta;
+  }
+
+  /** Replaces the metadata atomically (write to a temp file, then rename). */
+  private async writeMeta(meta: ManagedFile): Promise<void> {
+    const tmp = `${this.metaFile}.${randomUUID()}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify({ ...meta, uploadedAt: meta.uploadedAt.toISOString() }, null, 2));
+    await fs.rename(tmp, this.metaFile);
   }
 
   async clearActive(): Promise<boolean> {

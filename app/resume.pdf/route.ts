@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { getSession } from "@/server/auth/session";
 import { getResumeService } from "@/server/services";
 import { ManagedFileResponse } from "@/server/http/ManagedFileResponse";
 
@@ -13,12 +14,18 @@ export async function GET(request: NextRequest) {
     console.error("[resume] read failed:", result.error);
     return ManagedFileResponse.unavailable("The resume is temporarily unavailable.");
   }
-  if (!result.value) return ManagedFileResponse.notFound("No resume has been published yet.");
+  const resume = result.value;
+  // An unpublished resume is visible only to the signed-in admin (for preview),
+  // and never cached; everyone else gets the same 404 as when none exists.
+  const adminPreview = resume !== null && !resume.published && (await getSession()).isAdmin === true;
+  if (!resume || (!resume.published && !adminPreview)) {
+    return ManagedFileResponse.notFound("No resume has been published yet.");
+  }
 
-  // Revalidate on every request so a replaced resume is served immediately,
-  // while unchanged files cost only a 304.
-  return ManagedFileResponse.file(request, result.value, {
-    cache: "revalidate",
+  // Published: revalidate on every request so a replaced or unpublished resume
+  // takes effect immediately, while unchanged files cost only a 304.
+  return ManagedFileResponse.file(request, resume, {
+    cache: adminPreview ? "private" : "revalidate",
     disposition: request.nextUrl.searchParams.has("download") ? "attachment" : "inline",
   });
 }

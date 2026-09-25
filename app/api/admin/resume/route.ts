@@ -16,3 +16,11 @@ const endpoint = new ManagedFileAdminEndpoint({
 export function POST(request: NextRequest) {
   return endpoint.upload(request);
 }
+
+export function PATCH(request: NextRequest) {
+  return endpoint.setPublished(request);
+}
+
+export function DELETE(request: NextRequest) {
+  return endpoint.remove(request);
+}

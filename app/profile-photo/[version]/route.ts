@@ -18,7 +18,7 @@ export async function GET(request: Request, ctx: { params: Promise<{ version: st
     return ManagedFileResponse.unavailable("The profile photo is temporarily unavailable.");
   }
   const photo = result.value;
-  if (!photo) return ManagedFileResponse.notFound("No profile photo has been published.");
+  if (!photo || !photo.published) return ManagedFileResponse.notFound("No profile photo has been published.");
 
   return ManagedFileResponse.file(request, photo, {
     cache: version === ProfilePhotoService.version(photo) ? "immutable" : "revalidate",

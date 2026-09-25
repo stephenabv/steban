@@ -18,7 +18,8 @@ export function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
-  const result = await getProjectService().getAll({ pageSize: 100 });
+  // Featured projects lead the list, in the same order as the home carousel.
+  const result = await getProjectService().getAll({ pageSize: 100, order: "featuredFirst" });
   const projects: ProjectCardData[] = result.ok
     ? result.value.items.map((p) => ({
         id: p.id,

@@ -108,6 +108,7 @@ interface ManagedFile {
   sizeBytes: number;          // Max 4 MB (config/uploads.ts)
   sha256: string;             // HTTP ETag and URL version
   uploadedAt: Date;
+  published: boolean;         // Public site serves it only when true
 }
 ```
 
@@ -326,6 +327,7 @@ CREATE TABLE resume_files (
   sha256        TEXT NOT NULL,
   content       BYTEA NOT NULL,
   is_active     BOOLEAN NOT NULL DEFAULT FALSE,
+  is_published  BOOLEAN NOT NULL DEFAULT TRUE,  -- added with ALTER TABLE … IF NOT EXISTS
   uploaded_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX uq_resume_files_active ON resume_files (is_active) WHERE is_active;
@@ -340,6 +342,7 @@ CREATE TABLE profile_photos (
   sha256        TEXT NOT NULL,
   content       BYTEA NOT NULL,
   is_active     BOOLEAN NOT NULL DEFAULT FALSE,
+  is_published  BOOLEAN NOT NULL DEFAULT TRUE,
   uploaded_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX uq_profile_photos_active ON profile_photos (is_active) WHERE is_active;

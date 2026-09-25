@@ -19,8 +19,8 @@ const FEATURED_SECTION_ID = "featured";
 export default async function HomePage() {
   const [featuredResult, resumeResult, photoResult, hero, contact] = await Promise.all([
     getProjectService().getFeatured(),
-    getResumeService().getActive(),
-    getProfilePhotoService().getActive(),
+    getResumeService().getPublished(),
+    getProfilePhotoService().getPublished(),
     getHeroContent(),
     getPublicContact(),
   ]);

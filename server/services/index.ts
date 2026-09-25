@@ -5,7 +5,7 @@ export { AboutService } from "./AboutService";
 export { ContactService } from "./ContactService";
 export { getContactService } from "./contactService.instance";
 export { SeoService } from "./SeoService";
-export { ManagedFileService, FileValidationError } from "./ManagedFileService";
+export { ManagedFileService, ManagedFileError, FileValidationError, ManagedFileMissingError } from "./ManagedFileService";
 export { ResumeService } from "./ResumeService";
 export { ProfilePhotoService } from "./ProfilePhotoService";
 export { getResumeService, getProfilePhotoService } from "./fileServices.instance";

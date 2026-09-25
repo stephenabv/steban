@@ -4,8 +4,14 @@ import { ok, err } from "@/server/domain/types";
 import type { ManagedFileRepository } from "@/server/repositories";
 import type { FilePolicy } from "@/server/security/files";
 
-/** Thrown for uploads rejected by policy — safe to show to the admin. */
-export class FileValidationError extends Error {}
+/** A rule violation whose message is safe to show to the admin. */
+export class ManagedFileError extends Error {}
+
+/** An upload rejected by policy. */
+export class FileValidationError extends ManagedFileError {}
+
+/** An action that needs a file when none is uploaded. */
+export class ManagedFileMissingError extends ManagedFileError {}
 
 function toError(e: unknown): Error {
   return e instanceof Error ? e : new Error(String(e));
@@ -32,6 +38,21 @@ export abstract class ManagedFileService {
   async getActiveContent(): Promise<Result<ManagedFileContent | null>> {
     try {
       return ok(await this.repo.findActiveContent());
+    } catch (e) {
+      return err(toError(e));
+    }
+  }
+
+  /** The active file only if it is published — what the public site may use. */
+  async getPublished(): Promise<Result<ManagedFile | null>> {
+    const result = await this.getActive();
+    return result.ok && result.value && !result.value.published ? ok(null) : result;
+  }
+
+  async setPublished(published: boolean): Promise<Result<ManagedFile>> {
+    try {
+      const file = await this.repo.setPublished(published);
+      return file ? ok(file) : err(new ManagedFileMissingError("There is no uploaded file to change."));
     } catch (e) {
       return err(toError(e));
     }

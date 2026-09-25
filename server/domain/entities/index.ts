@@ -1,4 +1,4 @@
-export type { Project, CreateProjectInput, UpdateProjectInput } from "./Project";
+export type { Project, CreateProjectInput, UpdateProjectInput, ProjectListOrder, ProjectListParams } from "./Project";
 export type {
   About,
   Skill,
