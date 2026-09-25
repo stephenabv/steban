@@ -1,13 +1,16 @@
 import "server-only";
+import { cache } from "react";
 import type { Metadata } from "next";
-import type { About, Hero, SeoPageKey } from "@/server/domain/entities";
+import type { About, Hero, LegalDocumentKind, SeoPageKey } from "@/server/domain/entities";
 import {
   getAboutService,
   getContactService,
   getFooterService,
   getHeroService,
+  getLegalDocumentService,
   getSeoService,
 } from "@/server/services";
+import { LEGAL_DEFAULTS } from "@/config/legalDefaults";
 import { siteConfig } from "@/config/site";
 import { socialLinks } from "@/config/social";
 import { legalNav } from "@/config/navigation";
@@ -72,6 +75,33 @@ export async function getLegalLinks(): Promise<NavLink[]> {
     { href: footer.termsUrl, label: "Terms & Conditions" },
   ];
 }
+
+export interface PublicLegalDocument {
+  title: string;
+  body: string;
+  effectiveDate: Date;
+  /** Null when the built-in wording is shown (nothing published). */
+  versionNumber: number | null;
+}
+
+/**
+ * The published version of a legal document, or the built-in wording when no
+ * version is published (or storage is unavailable), so the page always exists.
+ * Cached per request so metadata and page share one read.
+ */
+export const getLegalDocument = cache(async (kind: LegalDocumentKind): Promise<PublicLegalDocument> => {
+  const published = await orFallback(`legal ${kind}`, () => getLegalDocumentService().getPublished(kind), null);
+  if (published?.publishedAt) {
+    return {
+      title: published.title,
+      body: published.body,
+      effectiveDate: published.publishedAt,
+      versionNumber: published.versionNumber,
+    };
+  }
+  const fallback = LEGAL_DEFAULTS[kind];
+  return { title: fallback.title, body: fallback.body, effectiveDate: new Date(fallback.effectiveDate), versionNumber: null };
+});
 
 /**
  * Page metadata with admin SEO overrides applied over the page's defaults.

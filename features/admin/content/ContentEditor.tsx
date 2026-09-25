@@ -5,7 +5,7 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { adminLoginHref } from "@/lib/admin/sessionProbe";
 import { Card, CardHeader } from "@/components/ui/Card";
-import { AdminPageHeader } from "../AdminPageHeader";
+import { AdminPageHeader, type AdminPageHeaderProps } from "../AdminPageHeader";
 import type { ContentForm } from "./useContentForm";
 import styles from "../AdminPage.module.less";
 
@@ -17,6 +17,9 @@ interface Props<T> {
   sectionTitle?: string;
   sectionDescription?: ReactNode;
   saveLabel?: string;
+  /** Header extras for nested editors. */
+  back?: AdminPageHeaderProps["back"];
+  headerActions?: ReactNode;
   /** Rendered between the header and the form (e.g. a page switcher or an upload card). */
   beforeForm?: ReactNode;
   form: ContentForm<T>;
@@ -30,6 +33,8 @@ export function ContentEditor<T>({
   sectionTitle,
   sectionDescription,
   saveLabel = "Save changes",
+  back,
+  headerActions,
   beforeForm,
   form,
   children,
@@ -38,7 +43,7 @@ export function ContentEditor<T>({
 
   return (
     <div className={`${styles.page} ${styles.narrow}`}>
-      <AdminPageHeader title={title} description={description} />
+      <AdminPageHeader title={title} description={description} back={back} actions={headerActions} />
       {beforeForm}
 
       {form.formError && (

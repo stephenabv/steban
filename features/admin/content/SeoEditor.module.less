@@ -1,45 +1,6 @@
 @import "styles/variables.less";
 @import "styles/mixins.less";
 
-.tabs {
-  display: inline-flex;
-  align-self: flex-start;
-  gap: 2px;
-  padding: 3px;
-  max-width: 100%;
-  overflow-x: auto;
-  border-radius: @radius-md;
-  border: 1px solid @color-border;
-  background: @color-bg-subtle;
-}
-
-.tab {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 0 @space-4;
-  border: none;
-  border-radius: calc(@radius-md - 3px);
-  background: transparent;
-  color: @color-text-secondary;
-  font-size: @fs-sm;
-  font-weight: @fw-medium;
-  cursor: pointer;
-  .focus-ring-inset();
-
-  &:hover {
-    color: @color-text-primary;
-  }
-}
-
-.tabActive {
-  background: @color-bg-hover;
-  color: @color-text-primary;
-  box-shadow: @shadow-sm, @shadow-inset-highlight;
-}
-
 .customised {
   width: 6px;
   height: 6px;

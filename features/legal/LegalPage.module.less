@@ -32,3 +32,36 @@
   font-size: @fs-sm;
   color: @color-text-muted;
 }
+
+.contents {
+  padding: @space-4 @space-5;
+  border-radius: @radius-md;
+  border: 1px solid @color-border;
+  background: @color-bg-subtle;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: @space-2 @space-4;
+  }
+
+  a {
+    font-size: @fs-sm;
+    text-decoration: none;
+    color: @color-text-secondary;
+
+    &:hover {
+      color: @color-accent-light;
+      text-decoration: underline;
+    }
+  }
+}
+
+.contentsTitle {
+  margin-bottom: @space-2;
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  letter-spacing: @tracking-wide;
+  text-transform: uppercase;
+  color: @color-text-muted;
+}

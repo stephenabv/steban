@@ -13,3 +13,6 @@ export { AuditService } from "./AuditService";
 export type { AuditAction, AuditEntry } from "./AuditService";
 export { FooterService } from "./FooterService";
 export { getHeroService, getAboutService, getSeoService, getFooterService } from "./contentServices.instance";
+export { LegalDocumentService, LegalDocumentError } from "./LegalDocumentService";
+export type { LegalDraftSource } from "./LegalDocumentService";
+export { getLegalDocumentService } from "./legalService.instance";

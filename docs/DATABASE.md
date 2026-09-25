@@ -344,6 +344,28 @@ CREATE TABLE profile_photos (
 );
 CREATE UNIQUE INDEX uq_profile_photos_active ON profile_photos (is_active) WHERE is_active;
 
+-- Legal page versions (created automatically by PostgresLegalDocumentRepository).
+-- Lifecycle: draft -> published -> unpublished (see LegalVersionLifecycle). Only drafts are
+-- editable; publishing unpublishes the previous version in the same transaction, and the
+-- partial unique index guarantees at most one published version per document.
+CREATE TABLE legal_document_versions (
+  id              TEXT PRIMARY KEY,
+  kind            TEXT NOT NULL CHECK (kind IN ('privacy', 'terms')),
+  version_number  INT NOT NULL,
+  title           TEXT NOT NULL,
+  body            TEXT NOT NULL,          -- lightweight Markdown (lib/markup/Markup.ts)
+  change_note     TEXT NOT NULL DEFAULT '',
+  status          TEXT NOT NULL CHECK (status IN ('draft', 'published', 'unpublished')),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  published_at    TIMESTAMPTZ,
+  unpublished_at  TIMESTAMPTZ,
+  UNIQUE (kind, version_number)
+);
+CREATE UNIQUE INDEX uq_legal_document_versions_published
+  ON legal_document_versions (kind) WHERE status = 'published';
+-- With no published version, /privacy and /terms show the built-in wording in config/legalDefaults.ts.
+
 -- Editable site content (created automatically by PostgresDocumentStore).
 -- One JSONB document per key: 'hero', 'about', 'seo' (map of page -> metadata), 'footer'.
 CREATE TABLE site_content (

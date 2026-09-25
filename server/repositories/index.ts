@@ -13,3 +13,4 @@ export { JsonContactInfoRepository, JsonContactMessageRepository } from "./JsonC
 export { SeoRepository } from "./SeoRepository";
 export { ManagedFileRepository } from "./ManagedFileRepository";
 export { FooterRepository } from "./FooterRepository";
+export { LegalDocumentRepository } from "./LegalDocumentRepository";
