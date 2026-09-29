@@ -43,7 +43,7 @@
 }
 
 .neutral {
-  background: rgba(255, 255, 255, 0.05);
+  background: @tint-5;
   border-color: @color-border;
   color: @color-text-secondary;
 }
@@ -57,23 +57,23 @@
 .success {
   background: fade(@color-success, 12%);
   border-color: fade(@color-success, 28%);
-  color: lighten(@color-success, 12%);
+  color: @color-success-fg;
 }
 
 .warning {
   background: fade(@color-warning, 12%);
   border-color: fade(@color-warning, 28%);
-  color: lighten(@color-warning, 10%);
+  color: @color-warning-fg;
 }
 
 .danger {
   background: fade(@color-error, 12%);
   border-color: fade(@color-error, 28%);
-  color: lighten(@color-error, 12%);
+  color: @color-error-fg;
 }
 
 .info {
   background: fade(@color-info, 12%);
   border-color: fade(@color-info, 28%);
-  color: lighten(@color-info, 8%);
+  color: @color-info-fg;
 }

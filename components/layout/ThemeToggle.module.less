@@ -1,0 +1,67 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.toggle {
+  .icon-button();
+  flex-shrink: 0;
+  overflow: hidden;
+
+  // Match the compact CTA beside it once the desktop nav is showing.
+  @media (min-width: @bp-md) {
+    width: 38px;
+    height: 38px;
+    border-radius: @radius-full;
+  }
+}
+
+// Both glyphs share one cell and swap with a rotate/scale cross-fade.
+.glyph {
+  grid-area: 1 / 1;
+  transition:
+    transform @duration-slow @ease-out,
+    opacity @duration-normal @ease-in-out;
+  .reduced-motion();
+}
+
+.hidden() {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+.shown() {
+  opacity: 1;
+  transform: none;
+}
+
+// Dark (default): moon.
+.sun {
+  .hidden();
+  color: @color-warning-fg;
+}
+
+.moon {
+  .shown();
+  color: @color-accent-light;
+}
+
+// Light, explicit or inherited from the OS: sun.
+.light() {
+  .sun {
+    .shown();
+  }
+
+  .moon {
+    .hidden();
+    transform: rotate(90deg) scale(0.5);
+  }
+}
+
+:global(:root[data-theme="light"]) {
+  .light();
+}
+
+@media (prefers-color-scheme: light) {
+  :global(:root:not([data-theme])) {
+    .light();
+  }
+}

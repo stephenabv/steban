@@ -88,7 +88,7 @@
   left: @space-3;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: fade(@color-bg, 70%);
+  background: color-mix(in srgb, @color-bg 70%, transparent);
 }
 
 .body {
@@ -141,7 +141,7 @@
 .tech {
   padding: 2px 8px;
   border-radius: @radius-full;
-  background: rgba(255, 255, 255, 0.04);
+  background: @tint-4;
   border: 1px solid @color-border;
   font-size: @fs-xs;
   color: @color-text-secondary;

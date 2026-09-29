@@ -30,7 +30,7 @@
   padding: 0 @space-3 0 @space-4;
   border-radius: @radius-xl;
   .glass();
-  background-color: fade(@color-bg, 35%);
+  background-color: color-mix(in srgb, @color-bg 35%, transparent);
   transition:
     background-color @transition-normal,
     box-shadow @transition-normal;
@@ -41,7 +41,7 @@
   }
 
   &.scrolled {
-    background-color: fade(@color-bg, 78%);
+    background-color: color-mix(in srgb, @color-bg 78%, transparent);
   }
 }
 
@@ -78,7 +78,7 @@
   gap: @space-1;
   padding: 4px;
   border-radius: @radius-full;
-  background: rgba(255, 255, 255, 0.03);
+  background: @tint-3;
   border: 1px solid @color-border;
 
   @media (min-width: @bp-md) {
@@ -148,21 +148,7 @@
 }
 
 .menuBtn {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: @radius-md;
-  border: 1px solid @color-border;
-  background: rgba(255, 255, 255, 0.04);
-  color: @color-text-primary;
-  cursor: pointer;
-  transition: background @transition-fast;
-  .focus-ring();
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
+  .icon-button();
 
   @media (min-width: @bp-md) {
     display: none;
@@ -176,7 +162,7 @@
   padding: @space-2;
   border-radius: @radius-xl;
   .glass();
-  background-color: fade(@color-bg-card, 94%);
+  background-color: color-mix(in srgb, @color-bg-card 94%, transparent);
   transform-origin: top center;
 
   @media (min-width: @bp-md) {
@@ -210,7 +196,7 @@
   &:hover,
   &.active {
     color: @color-text-primary;
-    background: rgba(255, 255, 255, 0.05);
+    background: @tint-5;
 
     svg {
       opacity: 1;

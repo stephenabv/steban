@@ -11,6 +11,7 @@ import { Icon } from "@/components/icons/Icon";
 import { EASE_OUT, springSnappy } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import styles from "./Navbar.module.less";
 
 const MOBILE_LINKS = [...primaryNav, contactNav];
@@ -92,6 +93,8 @@ export function Navbar() {
         </ul>
 
         <div className={styles.actions}>
+          <ThemeToggle />
+
           <Button
             href={contactNav.href}
             size="sm"

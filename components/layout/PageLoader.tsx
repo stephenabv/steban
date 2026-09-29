@@ -1,30 +1,20 @@
 "use client";
 
-import { createPortal } from "react-dom";
-import { useIsClient } from "@/lib/hooks/useIsClient";
-import { Logo } from "./Logo";
-import styles from "./PageLoader.module.less";
+import { useLayoutEffect } from "react";
+import { navigationProgress } from "@/lib/navigation/NavigationProgress";
+import { LoaderOverlay } from "./LoaderOverlay";
 
 /**
- * Route-transition fallback rendered by loading.tsx files: a branded,
- * full-viewport splash. Portalled to <body> so the route-enter animation on
- * the page wrapper can't reposition it, and faded in after a short delay so
- * fast navigations never flash it.
+ * Route loading fallback rendered by loading.tsx files.
+ *
+ * Rendered in place (no portal, no client-only gate) so it is part of the
+ * server HTML and paints on the very first frame of a hard load, and it is
+ * visible immediately — no fade-in delay that would let content win the race.
+ * Registering in a layout effect hands the overlay over from NavigationLoader
+ * before the browser paints, so the two never stack.
  */
 export function PageLoader() {
-  const isClient = useIsClient();
-  if (!isClient) return null;
+  useLayoutEffect(() => navigationProgress.register(), []);
 
-  return createPortal(
-    <div className={styles.overlay} role="status" aria-live="polite">
-      <div className={styles.topBar} aria-hidden="true">
-        <div className={styles.topBarProgress} />
-      </div>
-      <div className={styles.mark} aria-hidden="true">
-        <Logo size={44} decorative />
-      </div>
-      <p className={styles.text}>Loading…</p>
-    </div>,
-    document.body
-  );
+  return <LoaderOverlay routeFallback />;
 }

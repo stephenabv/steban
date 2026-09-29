@@ -17,7 +17,7 @@
   height: @admin-topbar-height;
   padding: 0 @space-4;
   border-bottom: 1px solid @color-border;
-  background: fade(@color-bg-subtle, 88%);
+  background: color-mix(in srgb, @color-bg-subtle 88%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 
@@ -52,8 +52,15 @@
 
   &:hover {
     color: @color-text-primary;
-    background: rgba(255, 255, 255, 0.05);
+    background: @tint-5;
   }
+}
+
+// Doubled class beats ThemeToggle's own sizing regardless of stylesheet order.
+.themeToggle.themeToggle {
+  width: 36px;
+  height: 36px;
+  border-radius: @radius-md;
 }
 
 .brand {
@@ -104,7 +111,7 @@
 
   &:hover {
     color: @color-text-primary;
-    background: rgba(255, 255, 255, 0.05);
+    background: @tint-5;
   }
 
   @media (max-width: (@bp-sm - 1px)) {
@@ -251,7 +258,7 @@
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: @tint-4;
     color: @color-text-primary;
 
     svg {
@@ -301,7 +308,7 @@
 }
 
 .signOut:hover {
-  color: lighten(@color-error, 10%);
+  color: @color-error-fg;
   background: fade(@color-error, 8%);
 }
 
@@ -310,7 +317,7 @@
   inset: @admin-topbar-height 0 0 0;
   z-index: @z-drawer - 1;
   border: none;
-  background: rgba(4, 4, 8, 0.6);
+  background: @color-scrim;
   cursor: pointer;
 
   @media (min-width: @bp-lg) {

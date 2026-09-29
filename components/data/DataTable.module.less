@@ -21,7 +21,7 @@
   font-size: @fs-sm;
 
   thead tr {
-    background: fade(@color-bg-elevated, 70%);
+    background: color-mix(in srgb, @color-bg-elevated 70%, transparent);
   }
 
   th {
@@ -51,7 +51,7 @@
     }
 
     &:hover td {
-      background: rgba(255, 255, 255, 0.02);
+      background: @tint-2;
     }
   }
 
