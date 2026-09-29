@@ -136,7 +136,7 @@
   aspect-ratio: 4 / 5;
   border-radius: @radius-xl;
   padding: 1px;
-  background: linear-gradient(160deg, fade(@color-accent-light, 70%), fade(@color-accent, 10%) 40%, fade(@color-accent-2, 40%));
+  background: linear-gradient(160deg, color-mix(in srgb, @color-accent-light 70%, transparent), fade(@color-accent, 10%) 40%, fade(@color-accent-2, 40%));
   box-shadow: 0 30px 80px -20px fade(@color-accent, 45%);
 
   @media (max-width: (@bp-lg - 1px)) {

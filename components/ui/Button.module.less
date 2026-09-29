@@ -96,7 +96,7 @@
 }
 
 .secondary {
-  background: rgba(255, 255, 255, 0.04);
+  background: @tint-4;
   color: @color-text-primary;
   border-color: @color-border-hover;
 
@@ -111,14 +111,14 @@
   color: @color-text-secondary;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: @tint-6;
     color: @color-text-primary;
   }
 }
 
 .danger {
   background: fade(@color-error, 14%);
-  color: lighten(@color-error, 12%);
+  color: @color-error-fg;
   border-color: fade(@color-error, 30%);
 
   &:hover {

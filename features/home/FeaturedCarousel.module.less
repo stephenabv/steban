@@ -46,11 +46,11 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent 70%, fade(@color-bg-card, 60%));
+    background: linear-gradient(90deg, transparent 70%, color-mix(in srgb, @color-bg-card 60%, transparent));
     pointer-events: none;
 
     @media (max-width: (@bp-lg - 1px)) {
-      background: linear-gradient(180deg, transparent 70%, fade(@color-bg-card, 60%));
+      background: linear-gradient(180deg, transparent 70%, color-mix(in srgb, @color-bg-card 60%, transparent));
     }
   }
 }
@@ -122,7 +122,7 @@
 .tech {
   padding: 4px 10px;
   border-radius: @radius-full;
-  background: rgba(255, 255, 255, 0.04);
+  background: @tint-4;
   border: 1px solid @color-border;
   font-size: @fs-xs;
   font-weight: @fw-medium;

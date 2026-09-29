@@ -17,7 +17,7 @@
   border-radius: @radius-xl;
   border: 1px solid fade(@color-accent, 30%);
   background:
-    linear-gradient(135deg, fade(@color-accent, 16%) 0%, fade(@color-bg-card, 90%) 55%),
+    linear-gradient(135deg, fade(@color-accent, 16%) 0%, color-mix(in srgb, @color-bg-card 90%, transparent) 55%),
     @color-bg-card;
 
   @media (min-width: @bp-md) {
@@ -39,7 +39,7 @@
   width: 520px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, fade(@color-accent-light, 22%), transparent 65%);
+  background: radial-gradient(circle, color-mix(in srgb, @color-accent-light 22%, transparent), transparent 65%);
 }
 
 .text {

@@ -18,7 +18,7 @@
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(4, 4, 8, 0.7);
+  background: @color-scrim;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border: none;
@@ -115,7 +115,7 @@
 
   &:hover {
     color: @color-text-primary;
-    background: rgba(255, 255, 255, 0.06);
+    background: @tint-6;
   }
 }
 
@@ -135,7 +135,7 @@
   gap: @space-3;
   padding: @space-4 @space-6;
   border-top: 1px solid @color-border;
-  background: fade(@color-bg-subtle, 60%);
+  background: color-mix(in srgb, @color-bg-subtle 60%, transparent);
   border-radius: 0 0 @radius-xl @radius-xl;
   flex-shrink: 0;
   flex-wrap: wrap-reverse;

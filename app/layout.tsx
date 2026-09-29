@@ -6,6 +6,8 @@ import { defaultSeo } from "@/config/seo";
 import { FirebaseAnalytics } from "@/components/layout/FirebaseAnalytics";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { analyticsConfig } from "@/config/analytics";
+import { THEME_COLORS } from "@/lib/theme/theme";
+import { getServerTheme } from "@/lib/theme/getServerTheme";
 import "@/styles/globals.less";
 
 const inter = Inter({
@@ -27,10 +29,21 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const viewport: Viewport = {
-  themeColor: "#0a0a0f",
-  colorScheme: "dark",
-};
+export async function generateViewport(): Promise<Viewport> {
+  const theme = await getServerTheme();
+
+  if (theme) {
+    return { themeColor: THEME_COLORS[theme], colorScheme: theme };
+  }
+
+  return {
+    themeColor: [
+      { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
+      { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
+    ],
+    colorScheme: "dark light",
+  };
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -60,9 +73,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Forces dynamic rendering so Next.js applies the per-request nonce
   // (set by proxy.ts) to all inline scripts it generates — required for nonce-based CSP.
   await connection();
+  // Rendered server-side so the stored theme is painted on the first frame.
+  const theme = await getServerTheme();
 
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}
+      data-theme={theme ?? undefined}
+    >
       <body>
         <a href="#main-content" id="skip-nav">
           Skip to main content

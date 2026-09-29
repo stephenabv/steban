@@ -1,19 +1,11 @@
 @import "./variables.less";
 @import "./mixins.less";
+@import "./themes.less";
 
-// ─── Runtime tokens (mirrors of variables.less) ───────────────────────────────
+// ─── Runtime tokens (theme-invariant mirrors of variables.less) ───────────────
+// Themed colours are declared per palette in themes.less.
 :root {
-  color-scheme: dark;
-
-  --color-bg: @color-bg;
-  --color-bg-card: @color-bg-card;
-  --color-bg-elevated: @color-bg-elevated;
-  --color-border: @color-border;
-  --color-text-primary: @color-text-primary;
-  --color-text-secondary: @color-text-secondary;
-  --color-text-muted: @color-text-muted;
   --color-accent: @color-accent;
-  --color-accent-light: @color-accent-light;
   --color-success: @color-success;
   --color-warning: @color-warning;
   --color-error: @color-error;
@@ -56,6 +48,24 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+// Cross-fade surfaces while the theme flips (html.theme-transition is set for
+// one frame pair by the theme service). Never applied on first paint.
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color @duration-normal @ease-in-out,
+    border-color @duration-normal @ease-in-out,
+    color @duration-normal @ease-in-out,
+    fill @duration-normal @ease-in-out,
+    stroke @duration-normal @ease-in-out !important;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
 }
 
 #main-content {
@@ -146,7 +156,7 @@ code {
   color: @color-text-primary;
 }
 
-// Thin, unobtrusive scrollbars that match the dark surface.
+// Thin, unobtrusive scrollbars that match the active surface.
 * {
   scrollbar-width: thin;
   scrollbar-color: @color-border-hover transparent;
@@ -182,6 +192,14 @@ code {
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+}
+
+// While a route's loading fallback is the only child, hold the wrapper still:
+// the loader must paint instantly (not fade in with the page) and a transform
+// here would re-anchor its position: fixed overlay to this wrapper. The enter
+// animation then starts the moment real content replaces the fallback.
+.route-page:has(> [data-route-loader]) {
+  animation: none;
 }
 
 @keyframes route-page-enter {

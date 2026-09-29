@@ -1,6 +1,8 @@
 @import "styles/variables.less";
 
 // Full-viewport splash overlay above navbars, drawers, modals and toasts.
+// Opaque from the first frame on purpose: any fade-in or delay lets the page
+// underneath show through before the loader, which reads as a glitch.
 .overlay {
   position: fixed;
   inset: 0;
@@ -10,17 +12,9 @@
   align-items: center;
   justify-content: center;
   gap: @space-4;
-  background: fade(@color-bg, 92%);
+  background: color-mix(in srgb, @color-bg 96%, transparent);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  opacity: 0;
-  animation: appear @duration-normal ease 150ms forwards;
-}
-
-@keyframes appear {
-  to {
-    opacity: 1;
-  }
 }
 
 .topBar {
@@ -73,11 +67,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .overlay {
-    animation: none;
-    opacity: 1;
-  }
-
   .mark,
   .topBarProgress {
     animation: none;

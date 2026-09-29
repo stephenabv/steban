@@ -1,31 +1,57 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Design tokens — single source of truth.
-// LESS variables are compile-time (usable inside colour functions like fade()).
-// The same values are mirrored to runtime CSS custom properties in globals.less
-// so portal-mounted UI and inline SVG can consume them too.
+//
+// Theme-dependent colours (surfaces, text, borders, shadows) resolve to runtime
+// CSS custom properties whose values live in styles/themes.less, so they switch
+// with `data-theme` on <html>. They are NOT usable in LESS colour functions —
+// derive translucent variants with color-mix() instead of fade().
+// Brand and status colours are theme-invariant literals and keep working with
+// fade()/darken().
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ─── Color Palette ────────────────────────────────────────────────────────────
-@color-bg:           #0a0a0f;
-@color-bg-subtle:    #0d0d14;
-@color-bg-card:      #111118;
-@color-bg-elevated:  #16161f;
-@color-bg-hover:     #1c1c27;
-@color-border:       rgba(255, 255, 255, 0.08);
-@color-border-hover: rgba(255, 255, 255, 0.18);
-@color-border-strong: rgba(255, 255, 255, 0.24);
+// ─── Color Palette: themed (runtime) ──────────────────────────────────────────
+@color-bg:            var(--color-bg);
+@color-bg-subtle:     var(--color-bg-subtle);
+@color-bg-card:       var(--color-bg-card);
+@color-bg-elevated:   var(--color-bg-elevated);
+@color-bg-hover:      var(--color-bg-hover);
+@color-border:        var(--color-border);
+@color-border-hover:  var(--color-border-hover);
+@color-border-strong: var(--color-border-strong);
 
-@color-text-primary:   #f0f0f5;
-@color-text-secondary: #a1a1b5;
-@color-text-muted:     #6e6e85;
+@color-text-primary:   var(--color-text-primary);
+@color-text-secondary: var(--color-text-secondary);
+@color-text-muted:     var(--color-text-muted);
 
-@color-accent:         #6366f1;   // Indigo
-@color-accent-light:   #818cf8;
-@color-accent-lighter: #c7d2fe;
-@color-accent-dark:    #4f46e5;
-@color-accent-glow:    rgba(99, 102, 241, 0.25);
-@color-accent-soft:    rgba(99, 102, 241, 0.12);
-@color-accent-2:       #22d3ee;   // Cyan — secondary highlight for gradients only
+// Accent tints used as foregrounds must keep contrast on either surface.
+@color-accent-light:   var(--color-accent-light);
+@color-accent-lighter: var(--color-accent-lighter);
+
+// Status foregrounds (badge/alert/field text) — lighter on dark, deeper on light.
+@color-success-fg: var(--color-success-fg);
+@color-warning-fg: var(--color-warning-fg);
+@color-error-fg:   var(--color-error-fg);
+@color-info-fg:    var(--color-info-fg);
+
+// Neutral wash: white on dark, ink on light. Use via @tint-* for hover fills.
+@color-tint: var(--color-tint);
+@tint-2:  color-mix(in srgb, @color-tint 2%, transparent);
+@tint-3:  color-mix(in srgb, @color-tint 3%, transparent);
+@tint-4:  color-mix(in srgb, @color-tint 4%, transparent);
+@tint-5:  color-mix(in srgb, @color-tint 5%, transparent);
+@tint-6:  color-mix(in srgb, @color-tint 6%, transparent);
+@tint-8:  color-mix(in srgb, @color-tint 8%, transparent);
+@tint-9:  color-mix(in srgb, @color-tint 9%, transparent);
+@tint-12: color-mix(in srgb, @color-tint 12%, transparent);
+
+@color-scrim: var(--color-scrim);
+
+// ─── Color Palette: theme-invariant (compile-time) ────────────────────────────
+@color-accent:      #6366f1;   // Indigo
+@color-accent-dark: #4f46e5;
+@color-accent-glow: rgba(99, 102, 241, 0.25);
+@color-accent-soft: rgba(99, 102, 241, 0.12);
+@color-accent-2:    #22d3ee;   // Cyan — secondary highlight for gradients only
 
 @color-success: #22c55e;
 @color-warning: #f59e0b;
@@ -108,11 +134,11 @@
 @radius-full: 9999px;
 
 // ─── Shadows ──────────────────────────────────────────────────────────────────
-@shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.4);
-@shadow-md:  0 6px 20px rgba(0, 0, 0, 0.45);
-@shadow-lg:  0 18px 50px rgba(0, 0, 0, 0.55);
+@shadow-sm:  var(--shadow-sm);
+@shadow-md:  var(--shadow-md);
+@shadow-lg:  var(--shadow-lg);
 @shadow-glow: 0 8px 28px @color-accent-glow;
-@shadow-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+@shadow-inset-highlight: var(--shadow-inset-highlight);
 
 // ─── Motion ───────────────────────────────────────────────────────────────────
 @ease-out:    cubic-bezier(0.22, 1, 0.36, 1);   // shared with Framer Motion (lib/motion.ts)
