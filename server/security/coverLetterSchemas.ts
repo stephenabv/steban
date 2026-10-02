@@ -105,6 +105,13 @@ export const coverLetterEditSchema = z.strictObject({
 export const coverLetterIdSchema = z.uuid();
 export const exportFormatSchema = z.enum(EXPORT_FORMATS);
 
+/** First message per dotted field path, e.g. "application.companyName". */
+export function fieldErrorsOf(error: z.ZodError): Record<string, string> {
+  const errors: Record<string, string> = {};
+  for (const issue of error.issues) errors[issue.path.join(".")] ??= issue.message;
+  return errors;
+}
+
 export type JobApplicationFormInput = z.input<typeof jobApplicationSchema>;
 export type GenerateCoverLetterInput = z.input<typeof generateCoverLetterSchema>;
 export type RegenerateCoverLetterInput = z.input<typeof regenerateCoverLetterSchema>;

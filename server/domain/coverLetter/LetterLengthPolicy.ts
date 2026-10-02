@@ -1,5 +1,7 @@
 import type { LetterLength } from "./JobApplication";
 
+export type LengthFit = "under" | "within" | "over";
+
 export interface WordBand {
   min: number;
   max: number;
@@ -16,12 +18,10 @@ export class LetterLengthPolicy {
     return BANDS[length];
   }
 
-  static isOver(length: LetterLength, words: number): boolean {
-    return words > BANDS[length].max;
-  }
-
-  static isWithin(length: LetterLength, words: number): boolean {
+  /** Where a body word count falls relative to the target band. */
+  static assess(length: LetterLength, words: number): LengthFit {
     const { min, max } = BANDS[length];
-    return words >= min && words <= max;
+    if (words < min) return "under";
+    return words > max ? "over" : "within";
   }
 }

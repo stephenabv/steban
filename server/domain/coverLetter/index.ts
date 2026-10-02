@@ -59,7 +59,7 @@ export { TechnologyLexicon } from "./TechnologyLexicon";
 export { SoftSkillCatalog } from "./SoftSkillCatalog";
 export { ProfileVocabulary } from "./ProfileVocabulary";
 export { LetterText } from "./LetterText";
-export type { WordBand } from "./LetterLengthPolicy";
+export type { LengthFit, WordBand } from "./LetterLengthPolicy";
 export { LetterLengthPolicy } from "./LetterLengthPolicy";
 export type { CoverLetterAction } from "./CoverLetterLifecycle";
 export { CoverLetterLifecycle } from "./CoverLetterLifecycle";
