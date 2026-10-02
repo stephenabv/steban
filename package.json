@@ -13,16 +13,20 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "docx": "^9.8.1",
     "firebase": "^12.15.0",
     "framer-motion": "^12.42.0",
     "iron-session": "^8.0.4",
     "next": "16.2.9",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
@@ -34,6 +38,7 @@
     "less": "^4.6.7",
     "less-loader": "^13.0.0",
     "prettier": "^3.9.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }
