@@ -6,6 +6,10 @@ export type CoverLetterStatus = (typeof COVER_LETTER_STATUSES)[number];
 export const GENERATOR_STRATEGIES = ["template", "ai"] as const;
 export type GeneratorStrategy = (typeof GENERATOR_STRATEGIES)[number];
 
+/** Download formats offered for a letter. */
+export const EXPORT_FORMATS = ["pdf", "docx", "txt"] as const;
+export type ExportFormat = (typeof EXPORT_FORMATS)[number];
+
 export const CLOSING_LINES = ["Thank you for your time and consideration.", "Sincerely,"] as const;
 
 /** A span of letter text. Bold is the only formatting a letter may carry. */

@@ -3,6 +3,7 @@ import type {
   CoverLetterAction,
   CoverLetterContent,
   CoverLetterEdit,
+  ExportFormat,
   GeneratorStrategy,
   JobApplicationContent,
   RegenerationOptions,
@@ -24,7 +25,7 @@ import type {
   CoverLetterSummary,
 } from "@/server/repositories/coverLetter/CoverLetterRepository";
 import type { Clock } from "./Clock";
-import type { ExportFormat, ExportedFile } from "./exporters/CoverLetterExporter";
+import type { ExportedFile } from "./exporters/CoverLetterExporter";
 import type { CoverLetterExporterRegistry } from "./exporters/CoverLetterExporterRegistry";
 import type { CoverLetterGeneratorFactory } from "./generators/CoverLetterGeneratorFactory";
 import type { HonestyGuard } from "./generators/HonestyGuard";

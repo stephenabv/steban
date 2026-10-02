@@ -1,4 +1,5 @@
-import type { CoverLetterExporter, ExportFormat } from "./CoverLetterExporter";
+import type { ExportFormat } from "@/server/domain/coverLetter";
+import type { CoverLetterExporter } from "./CoverLetterExporter";
 
 /** Looks up the exporter for a requested format. */
 export class CoverLetterExporterRegistry {

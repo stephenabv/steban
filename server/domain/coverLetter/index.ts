@@ -31,11 +31,17 @@ export type {
   CoverLetterEdit,
   CoverLetterSections,
   CoverLetterStatus,
+  ExportFormat,
   GeneratorStrategy,
   Paragraph,
   TextRun,
 } from "./CoverLetter";
-export { CLOSING_LINES, COVER_LETTER_STATUSES, GENERATOR_STRATEGIES } from "./CoverLetter";
+export {
+  CLOSING_LINES,
+  COVER_LETTER_STATUSES,
+  EXPORT_FORMATS,
+  GENERATOR_STRATEGIES,
+} from "./CoverLetter";
 export type {
   Evidence,
   EvidenceSource,

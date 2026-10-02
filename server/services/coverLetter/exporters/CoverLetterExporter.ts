@@ -1,7 +1,4 @@
-import type { CoverLetterSections } from "@/server/domain/coverLetter";
-
-export const EXPORT_FORMATS = ["pdf", "docx", "txt"] as const;
-export type ExportFormat = (typeof EXPORT_FORMATS)[number];
+import type { CoverLetterSections, ExportFormat } from "@/server/domain/coverLetter";
 
 export interface ExportableLetter {
   sections: CoverLetterSections;

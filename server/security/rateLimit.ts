@@ -40,4 +40,5 @@ export const rateLimitPolicies = {
   contactForm: { windowMs: 60 * 60 * 1000, max: 5 },  // 5 per hour
   adminLogin: { windowMs: 15 * 60 * 1000, max: 10 },  // 10 per 15 min
   api: { windowMs: 60 * 1000, max: 60 },              // 60 per min
+  coverLetterGeneration: { windowMs: 60 * 60 * 1000, max: 20 }, // 20 per hour per admin
 } as const;
