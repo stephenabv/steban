@@ -37,6 +37,9 @@ export abstract class LetterPhrasebook {
         sentence([`My work as ${withArticle(profile.title)} has prepared me well for this role.`])
       );
     }
+    if (outline.additionalTechnologies.length > 0) {
+      sentences.push(this.alsoWith(outline.additionalTechnologies));
+    }
     if (application.industryContext?.trim()) {
       sentences.push(
         sentence(
@@ -52,7 +55,9 @@ export abstract class LetterPhrasebook {
   closing(outline: LetterOutline): DraftSentence[] {
     const { application, profile } = outline.request;
     return [
-      ...(outline.softSkills.length > 0 ? [this.workingStyle(outline.softSkills)] : []),
+      outline.softSkills.length > 0
+        ? this.workingStyle(outline.softSkills)
+        : this.generalWorkingStyle(),
       this.arrangement(application.workArrangement, application.companyLocation),
       sentence([`You can see more of my work at ${profile.contact.portfolioUrl}.`]),
       this.callToAction(application.companyName),
@@ -99,6 +104,10 @@ export abstract class LetterPhrasebook {
   protected abstract fit(technologies: readonly string[]): DraftSentence;
   protected abstract generalFit(): DraftSentence;
   protected abstract workingStyle(softSkills: readonly string[]): DraftSentence;
+  /** Used when the job names no soft skill the profile shows; claims no specific skill. */
+  protected abstract generalWorkingStyle(): DraftSentence;
+  /** Matched technologies the earlier sentences left out. */
+  protected abstract alsoWith(technologies: readonly string[]): DraftSentence;
   protected abstract callToAction(company: string): DraftSentence;
 }
 
@@ -121,6 +130,17 @@ export class ProfessionalPhrasebook extends LetterPhrasebook {
 
   protected workingStyle(softSkills: readonly string[]): DraftSentence {
     return sentence([`In my work I put a strong emphasis on ${softSkills.join(" and ")}.`], true);
+  }
+
+  protected generalWorkingStyle(): DraftSentence {
+    return sentence(["I aim to keep my work clear, tested and easy for others to build on."], true);
+  }
+
+  protected alsoWith(technologies: readonly string[]): DraftSentence {
+    return sentence(
+      ["I also work with ", ...boldList(technologies), ", which this role calls for."],
+      true
+    );
   }
 
   protected callToAction(company: string): DraftSentence {
@@ -147,6 +167,20 @@ export class WarmPhrasebook extends LetterPhrasebook {
 
   protected workingStyle(softSkills: readonly string[]): DraftSentence {
     return sentence([`People I work with can count on ${softSkills.join(" and ")} from me.`], true);
+  }
+
+  protected generalWorkingStyle(): DraftSentence {
+    return sentence(
+      ["I like leaving code a little clearer than I found it, for whoever works on it next."],
+      true
+    );
+  }
+
+  protected alsoWith(technologies: readonly string[]): DraftSentence {
+    return sentence(
+      ["I'm also comfortable with ", ...boldList(technologies), ", which your team uses."],
+      true
+    );
   }
 
   protected callToAction(company: string): DraftSentence {

@@ -35,11 +35,12 @@ export interface GeneratorDependencies {
 
 const BODY_PARAGRAPHS = 3;
 const FIT_TECHNOLOGIES = 3;
+const ADDITIONAL_TECHNOLOGIES = 4;
 const HIGHLIGHT_TECHNOLOGIES = 3;
 const SOFT_SKILLS = 2;
 const MAX_DETAIL_LENGTH = 220;
 const HIGHLIGHTS: Record<LetterLength, number> = { concise: 2, standard: 3 };
-const DETAILS_PER_HIGHLIGHT: Record<LetterLength, number> = { concise: 1, standard: 2 };
+const DETAILS_PER_HIGHLIGHT: Record<LetterLength, number> = { concise: 2, standard: 3 };
 /** Irregular past-tense verbs that commonly open a role description. */
 const PAST_TENSE_VERBS = new Set(
   "Built Led Wrote Made Ran Drove Grew Set Took Taught Brought Won Kept Found Rebuilt Rewrote Oversaw Began".split(
@@ -74,14 +75,25 @@ export abstract class CoverLetterGenerator {
     const sections = this.deps.sectionRenderer.render(request.profile, request.application, body);
     this.deps.honestyGuard.verify(sections.body, honesty);
 
+    const wordCount = LetterText.bodyWordCount(sections.body);
     return {
       strategy: this.strategy,
       sections,
       plainText: LetterText.toPlainText(sections),
-      wordCount: LetterText.bodyWordCount(sections.body),
+      wordCount,
       removedTerms,
-      notices: [],
+      notices: CoverLetterGenerator.lengthNotices(request.application.length, wordCount),
     };
+  }
+
+  /** Short letters are not padded with invented content; the admin is told why instead. */
+  private static lengthNotices(length: LetterLength, wordCount: number): string[] {
+    if (LetterLengthPolicy.assess(length, wordCount) !== "under") return [];
+    const { min, max } = LetterLengthPolicy.band(length);
+    return [
+      `This letter is ${wordCount} words, below the ${min}–${max} target, because your profile has ` +
+        "little detail that matches this job. Fuller role and project descriptions give it more to draw on.",
+    ];
   }
 
   /** Writes the three body paragraphs from the outline. */
@@ -105,14 +117,20 @@ export abstract class CoverLetterGenerator {
   protected buildOutline(request: GenerationRequest): LetterOutline {
     const { profile, application, report } = request;
     const current = profile.experiences.find((experience) => experience.current);
+    const technologies = report.matches
+      .filter(({ requirement }) => requirement.kind === "skill" || requirement.kind === "tool")
+      .map(({ requirement }) => requirement.term);
+    const fitTechnologies = technologies.slice(0, FIT_TECHNOLOGIES);
+    const highlights = this.selectHighlights(profile, report.highlights, application.length);
+    const named = new Set([...fitTechnologies, ...highlights.flatMap((h) => h.technologies)]);
     return {
       request,
       currentRole: current ? { role: current.role, company: current.company } : null,
-      fitTechnologies: report.matches
-        .filter(({ requirement }) => requirement.kind === "skill" || requirement.kind === "tool")
-        .slice(0, FIT_TECHNOLOGIES)
-        .map(({ requirement }) => requirement.term),
-      highlights: this.selectHighlights(profile, report.highlights, application.length),
+      fitTechnologies,
+      highlights,
+      additionalTechnologies: technologies
+        .filter((term) => !named.has(term))
+        .slice(0, ADDITIONAL_TECHNOLOGIES),
       softSkills: report.matches
         .filter(({ requirement }) => requirement.kind === "softSkill")
         .slice(0, SOFT_SKILLS)

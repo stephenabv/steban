@@ -173,10 +173,7 @@ export function CoverLetterEditor({ initial, strategies, basePath }: CoverLetter
                   id={letter.id}
                   name={name}
                   variant="danger"
-                  onDeleted={() => {
-                    router.push(listHref);
-                    router.refresh();
-                  }}
+                  onDeleted={() => router.replace(listHref)}
                 />
               </div>
             </div>
@@ -220,7 +217,10 @@ function Messages({ editor }: { editor: CoverLetterEditorState }) {
         </Alert>
       ))}
       {editor.warnings.length > 0 && (
-        <Alert tone="warning" title="Saved, but check these claims">
+        <Alert
+          tone="warning"
+          title={"Saved. Your profile doesn't show these, so check the claims:"}
+        >
           <ul>
             {editor.warnings.map((warning) => (
               <li key={warning}>{warning}</li>

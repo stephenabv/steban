@@ -60,11 +60,18 @@ export class RequirementExtractor {
         continue;
       }
       const key = text.toLowerCase();
-      if (seen.has(key)) continue;
+      if (seen.has(key) || this.namesKnownTerm(text)) continue;
       seen.add(key);
       found.push({ kind: "responsibility", term: text, weight: 1 });
       if (found.length === MAX_RESPONSIBILITIES) break;
     }
     return found;
+  }
+
+  /** A line like "React and TS experience" is already counted as its technologies. */
+  private namesKnownTerm(text: string): boolean {
+    return (
+      this.lexicon.findMentions(text).length > 0 || this.softSkills.findMentions(text).length > 0
+    );
   }
 }

@@ -24,6 +24,11 @@ export interface HonestyResult {
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+/** Links are addresses, not claims: "steban.vercel.app" does not claim Vercel. */
+const URL_PATTERN = /\bhttps?:\/\/\S+/giu;
+
+const blank = (match: string): string => " ".repeat(match.length);
+
 /**
  * Ensures the letter never claims a technology the profile cannot back.
  * `enforce` repairs a draft by dropping offending sentences; `verify` is the
@@ -42,6 +47,11 @@ export class HonestyGuard {
         application.hiringManager,
         application.industryContext ?? "",
         application.workArrangement.schedule,
+        profile.contact.email,
+        profile.contact.portfolioUrl,
+        profile.contact.githubUrl ?? "",
+        profile.contact.linkedinUrl ?? "",
+        ...profile.projects.map((project) => project.liveUrl ?? ""),
       ],
     };
   }
@@ -52,11 +62,8 @@ export class HonestyGuard {
       .map((phrase) => phrase.trim())
       .filter(Boolean)
       .reduce(
-        (masked, phrase) =>
-          masked.replace(new RegExp(escapeRegExp(phrase), "giu"), (match) =>
-            " ".repeat(match.length)
-          ),
-        text
+        (masked, phrase) => masked.replace(new RegExp(escapeRegExp(phrase), "giu"), blank),
+        text.replace(URL_PATTERN, blank)
       );
     return this.lexicon
       .findMentions(scanned)

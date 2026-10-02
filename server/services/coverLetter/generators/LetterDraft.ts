@@ -45,6 +45,8 @@ export interface LetterOutline {
   /** The strongest matched technologies for the one-line fit. */
   fitTechnologies: string[];
   highlights: OutlineHighlight[];
+  /** Other matched technologies the fit line and highlights don't already name. */
+  additionalTechnologies: string[];
   /** Matched soft skills the profile shows evidence for. */
   softSkills: string[];
   band: WordBand;

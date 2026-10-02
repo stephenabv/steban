@@ -12,6 +12,9 @@ const BANDS: Record<LetterLength, WordBand> = {
   standard: { min: 250, max: 350 },
 };
 
+/** Targets are approximate ("about 250 words"), so a letter slightly short of the band still fits. */
+const UNDER_TOLERANCE = 0.9;
+
 /** Body word-count targets per letter length. */
 export class LetterLengthPolicy {
   static band(length: LetterLength): WordBand {
@@ -21,7 +24,7 @@ export class LetterLengthPolicy {
   /** Where a body word count falls relative to the target band. */
   static assess(length: LetterLength, words: number): LengthFit {
     const { min, max } = BANDS[length];
-    if (words < min) return "under";
+    if (words < Math.floor(min * UNDER_TOLERANCE)) return "under";
     return words > max ? "over" : "within";
   }
 }
