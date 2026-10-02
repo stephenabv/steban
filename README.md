@@ -98,7 +98,12 @@ npm run lint         # Run ESLint
 npm run lint:fix     # Auto-fix ESLint issues
 npm run format       # Format all files with Prettier
 npm run type-check   # TypeScript strict check (no emit)
+npm test             # Unit and integration tests (Vitest)
+npm run test:e2e     # Playwright E2E (builds and starts the app on port 3100)
 ```
+
+E2E tests run against `next build && next start` with the local JSON store and throwaway admin
+credentials. If Playwright can't find a browser, set `PLAYWRIGHT_CHROMIUM_PATH` to a Chromium binary.
 
 ---
 
@@ -132,6 +137,10 @@ Copy the printed output and set it as `ADMIN_PASSWORD_HASH`.
 | Variable | Description |
 |---|---|
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 Measurement ID (e.g. `G-XXXXXXXXXX`) |
+| `COVER_LETTER_AI_ENABLED` | `true` turns on the AI cover letter generator. Anything else (or unset) keeps the deterministic template generator only. |
+| `ANTHROPIC_API_KEY` | Server-only Anthropic API key, required when `COVER_LETTER_AI_ENABLED=true`. Never prefix with `NEXT_PUBLIC_`. |
+| `COVER_LETTER_AI_MODEL` | Model for the AI generator. Default `claude-opus-5-5`. |
+| `COVER_LETTER_AI_TIMEOUT_MS` | Per-attempt timeout for the AI call. Default `20000`; retried twice with backoff, then the template is used. |
 
 ### Vercel integrations (auto-set)
 
@@ -246,6 +255,7 @@ Navigate to `/admin` (redirects to `/admin/login` when not authenticated).
 | Social Links | `/admin/social` | GitHub, LinkedIn, Facebook URLs |
 | Footer | `/admin/footer` | Footer link URLs (privacy, terms) |
 | Messages | `/admin/messages` | Read and manage contact form submissions |
+| Cover Letters | `/admin/cover-letters` | Generate, edit, finalize and export cover letters from your portfolio data (private, never public) |
 
 > **Note:** All admin UI is complete. Data persistence requires connecting the service layer to a database — see [Database](#database).
 

@@ -1,0 +1,193 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+// ─── Workspace: letter on the left, evidence on the right ─────────────────────
+.workspace {
+  display: grid;
+  gap: @space-5;
+  align-items: start;
+
+  @media (min-width: @bp-xl) {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: @space-5;
+
+  @media (min-width: @bp-xl) {
+    position: sticky;
+    top: calc(@admin-topbar-height + @space-4);
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: @space-3;
+  margin-bottom: @space-5;
+}
+
+.toolbarGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: @space-2;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: @space-2;
+  font-size: @fs-sm;
+  color: @color-text-muted;
+}
+
+// ─── Letter preview (reads like the exported document) ────────────────────────
+.letter {
+  display: flex;
+  flex-direction: column;
+  gap: @space-4;
+  max-width: 68ch;
+  font-size: @fs-base;
+  line-height: @lh-relaxed;
+  color: @color-text-primary;
+  overflow-wrap: anywhere;
+
+  p {
+    margin: 0;
+  }
+
+  strong {
+    font-weight: @fw-semibold;
+  }
+}
+
+.letterHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.letterName {
+  font-weight: @fw-bold;
+}
+
+.letterLines {
+  font-size: @fs-sm;
+  color: @color-text-secondary;
+}
+
+.letterBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+// ─── Editor fields ────────────────────────────────────────────────────────────
+.fixed {
+  padding: @space-3 @space-4;
+  border: 1px dashed @color-border;
+  border-radius: @radius-sm;
+  font-size: @fs-sm;
+  line-height: @lh-normal;
+  color: @color-text-secondary;
+  white-space: pre-line;
+}
+
+.paragraph {
+  min-height: 9rem;
+  line-height: @lh-relaxed;
+}
+
+// ─── Requirement panels ───────────────────────────────────────────────────────
+.requirementList {
+  display: flex;
+  flex-direction: column;
+  gap: @space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.requirement {
+  display: flex;
+  flex-direction: column;
+  gap: @space-1;
+  padding-bottom: @space-3;
+  border-bottom: 1px solid @color-border;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+.requirementTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: @space-2;
+  font-size: @fs-sm;
+  font-weight: @fw-medium;
+}
+
+.evidence {
+  margin: 0;
+  padding-left: @space-4;
+  font-size: @fs-xs;
+  color: @color-text-muted;
+}
+
+.gapList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: @space-2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// ─── Profile summary ──────────────────────────────────────────────────────────
+.profile {
+  .surface();
+  border-radius: @radius-md;
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: @space-3;
+    padding: @space-4 @space-5;
+    font-weight: @fw-medium;
+    cursor: pointer;
+    border-radius: @radius-md;
+    .focus-ring();
+  }
+}
+
+.profileBody {
+  display: flex;
+  flex-direction: column;
+  gap: @space-4;
+  padding: 0 @space-5 @space-5;
+}
+
+.profileLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: @space-2;
+}
+
+.choiceGrid {
+  display: grid;
+  gap: @space-4;
+
+  @media (min-width: @bp-md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

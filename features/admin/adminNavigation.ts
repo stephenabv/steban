@@ -30,6 +30,7 @@ export const adminNavigation: AdminNavGroup[] = [
       { path: "/resume", label: "Resume", icon: "file-text", description: "Upload and replace your resume PDF" },
       { path: "/about", label: "About", icon: "briefcase", description: "Biography, skills, experience" },
       { path: "/contact-info", label: "Contact Info", icon: "mail", description: "Email and profile links" },
+      { path: "/cover-letters", label: "Cover Letters", icon: "pencil", description: "Letters for job applications" },
     ],
   },
   {

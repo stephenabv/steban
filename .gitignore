@@ -42,3 +42,8 @@ next-env.d.ts
 
 # local JSON data store (dev fallback when no POSTGRES_URL)
 /data
+
+# playwright
+/test-results
+/playwright-report
+/tests/e2e/.auth

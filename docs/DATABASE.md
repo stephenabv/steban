@@ -431,3 +431,45 @@ CREATE INDEX idx_projects_featured ON projects (featured, featured_order);
 CREATE INDEX idx_contact_messages_read ON contact_messages (read);
 CREATE INDEX idx_seo_metadata_route ON seo_metadata (page_route);
 ```
+
+### Cover letters
+
+Created automatically on first use by `PostgresCoverLetterRepository` (`CREATE TABLE IF NOT EXISTS`),
+so no manual migration is needed. Every query is parameterized and filtered by `owner_id`.
+Without `DATABASE_URL`/`POSTGRES_URL`, letters are stored in `data/cover-letters.json`.
+
+```sql
+CREATE TABLE IF NOT EXISTS job_applications (
+  id                TEXT PRIMARY KEY,
+  owner_id          TEXT NOT NULL,
+  company_name      TEXT NOT NULL,
+  company_location  TEXT,
+  hiring_manager    TEXT NOT NULL DEFAULT 'Hiring Manager',
+  position_title    TEXT NOT NULL,
+  work_arrangement  JSONB NOT NULL,          -- { mode: onsite|hybrid|remote, schedule }
+  job_description   TEXT NOT NULL,           -- private; never shown on public pages
+  industry_context  TEXT,
+  posting_url       TEXT,                    -- reference only; never fetched
+  letter_date       DATE NOT NULL,
+  tone              TEXT NOT NULL CHECK (tone IN ('professional', 'warm')),
+  length            TEXT NOT NULL CHECK (length IN ('concise', 'standard')),
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS cover_letters (
+  id              TEXT PRIMARY KEY,
+  owner_id        TEXT NOT NULL,
+  application_id  TEXT NOT NULL REFERENCES job_applications (id) ON DELETE CASCADE,
+  generator       TEXT NOT NULL CHECK (generator IN ('template', 'ai')),
+  status          TEXT NOT NULL CHECK (status IN ('draft', 'final')),
+  sections        JSONB NOT NULL,           -- header, date, recipient, salutation, body runs, closing, signature
+  plain_text      TEXT NOT NULL,
+  match_report    JSONB NOT NULL,           -- matched requirements with evidence, and gaps
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_cover_letters_owner ON cover_letters (owner_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_job_applications_owner ON job_applications (owner_id);
+```

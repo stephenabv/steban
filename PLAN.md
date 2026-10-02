@@ -186,6 +186,7 @@ Copyright · Privacy Policy · Terms & Conditions · social links · "All Rights
 
 ## 8.7 Admin dashboard (authentication required) ✅
 Every client-facing surface editable: Hero · About · Skills · Projects · Featured Projects · Contact Information · Social Links · SEO Metadata · Analytics · Footer · Messages inbox.
+Private tools: Cover Letters (generated from portfolio data; never public).
 
 ---
 
@@ -325,7 +326,10 @@ None. Next step requires Vercel environment setup (Postgres, Blob).
 
 ## Technical debt
 - AuditService logs to console only; needs Postgres table.
-- Rate limiter uses in-memory store; should use Vercel KV for multi-instance production.
+- Rate limiter uses in-memory store; should use Vercel KV for multi-instance production. This also
+  applies to the cover letter generation limit (20 per admin per hour).
+- Cover letter honesty check is lexicon based: it catches technologies it knows (~100 entries in
+  TechnologyLexicon) but not arbitrary claims typed into a manual edit.
 - Featured carousel order can't be edited from the admin: `featuredOrder` isn't part of the project
   Server Action schema. Needs a backward-compatible schema addition before drag-to-reorder UI.
 
@@ -392,6 +396,22 @@ Status:   Accepted.
 
 ## Changelog
 ```
+## 2026-10-02 — Cover letter generator
+### Added
+- Admin → Cover Letters: list, new and edit views. Applicant details come from Hero, About,
+  Projects and contact data; only company and position fields are typed in.
+- Layers: domain model (server/domain/coverLetter), services (requirement extraction, profile
+  matching, template-method generator pipeline with Template and optional AI strategies, exporters
+  for PDF/DOCX/TXT), Postgres and JSON repositories, server actions and an export route.
+- Honesty guard: letters never name a technology the profile lacks; gaps are listed as "Gaps not
+  mentioned". Manual edits that name one save with a warning.
+- Optional AI generator (Anthropic, `COVER_LETTER_AI_ENABLED`), structured output validated with
+  Zod, falling back to the template on error or timeout.
+- Vitest unit/integration suites and Playwright E2E (page objects).
+### Security
+- Every action and the export route re-check the admin session and scope by owner; Zod strict
+  schemas shared with the client; per-admin generation rate limit; job posting URLs never fetched.
+- Analytics page views now run on public pages only, so admin URLs never reach Firebase.
 ## 2026-09-25 — Admin content editors persisted
 ### Added
 - Hero, About (biography, skills, experience, education, certifications, awards), SEO (per page),

@@ -3,9 +3,7 @@ import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
 import { connection } from "next/server";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
-import { FirebaseAnalytics } from "@/components/layout/FirebaseAnalytics";
 import { MotionProvider } from "@/components/layout/MotionProvider";
-import { analyticsConfig } from "@/config/analytics";
 import { THEME_COLORS } from "@/lib/theme/theme";
 import { getServerTheme } from "@/lib/theme/getServerTheme";
 import "@/styles/globals.less";
@@ -87,7 +85,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to main content
         </a>
         <MotionProvider>{children}</MotionProvider>
-        {analyticsConfig.firebase.enabled && <FirebaseAnalytics />}
       </body>
     </html>
   );
