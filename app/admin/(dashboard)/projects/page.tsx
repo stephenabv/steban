@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getProjectService } from "@/server/services";
 import { getAdminBasePath } from "@/lib/adminRoute";
+import { firstSearchParam, type SearchParamValue } from "@/lib/searchParams";
 import { AdminPageHeader } from "@/features/admin/AdminPageHeader";
 import { ProjectsTable } from "@/features/admin/ProjectsTable";
 import { toAdminProjectRow } from "@/features/admin/projects/toAdminProjectRow";
@@ -13,7 +14,12 @@ export const metadata: Metadata = { title: "Projects" };
 /** Rows loaded into the client-side table (search/filter/sort run in the browser). */
 const PAGE_LIMIT = 100;
 
-export default async function AdminProjectsPage() {
+export default async function AdminProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, SearchParamValue>>;
+}) {
+  const initialSearch = firstSearchParam((await searchParams).q);
   const basePath = getAdminBasePath();
   const result = await getProjectService().getAll({ pageSize: PAGE_LIMIT });
   const projects = result.ok ? result.value.items.map(toAdminProjectRow) : [];
@@ -38,7 +44,13 @@ export default async function AdminProjectsPage() {
       )}
 
       {result.ok ? (
-        <ProjectsTable projects={projects} newHref={`${basePath}/projects/new`} />
+        <ProjectsTable
+          // Remount when the palette links here with a new filter.
+          key={initialSearch ?? ""}
+          projects={projects}
+          newHref={`${basePath}/projects/new`}
+          initialSearch={initialSearch}
+        />
       ) : (
         <Alert tone="danger" title="Failed to load projects">
           {result.error.message}

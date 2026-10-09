@@ -96,6 +96,11 @@
 
 .topbarSpacer {
   flex: 1;
+
+  // Phones: the search icon button takes the free space with margin-left: auto.
+  @media (max-width: (@bp-md - 1px)) {
+    display: none;
+  }
 }
 
 .topbarLink {

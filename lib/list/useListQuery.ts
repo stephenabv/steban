@@ -20,10 +20,10 @@ export interface UseListQuery<T> {
 export function useListQuery<T>(
   items: ReadonlyArray<T>,
   query: ListQuery<T>,
-  initial: { sort: SortState; pageSize?: number }
+  initial: { sort: SortState; pageSize?: number; search?: string }
 ): UseListQuery<T> {
   const initialState: ListQueryState = {
-    search: "",
+    search: initial.search ?? "",
     filterId: ALL_FILTER_ID,
     sort: initial.sort,
     page: 1,

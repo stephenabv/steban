@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { markMessageReadAction, deleteMessageAction } from "./messageActions";
 import { Modal, ModalFooterStart } from "@/components/ui/Modal";
@@ -54,19 +54,33 @@ const shortDate = new Intl.DateTimeFormat("en-US", {
 });
 const longDate = new Intl.DateTimeFormat("en-US", { dateStyle: "full", timeStyle: "short" });
 
-export function MessagesInbox({ messages }: { messages: InboxMessage[] }) {
+export function MessagesInbox({
+  messages,
+  initialOpenId,
+}: {
+  messages: InboxMessage[];
+  /** Message to open on arrival, e.g. from a command palette link. */
+  initialOpenId?: string;
+}) {
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [viewMessage, setViewMessage] = useState<InboxMessage | null>(null);
+  // Open the linked message whenever the link changes (adjusting state during
+  // render, so it shows on the first paint with no effect round-trip).
+  const [linkedId, setLinkedId] = useState<string | undefined>(undefined);
+  if (initialOpenId !== linkedId) {
+    setLinkedId(initialOpenId);
+    const linked = messages.find((m) => m.id === initialOpenId);
+    if (linked) setViewMessage(linked);
+  }
   const [deleteTarget, setDeleteTarget] = useState<InboxMessage | null>(null);
   const list = useListQuery(messages, inboxQuery, {
     sort: { id: "received", direction: "desc" },
     pageSize: 15,
   });
 
-  function onView(m: InboxMessage) {
-    setViewMessage(m);
+  function markRead(m: InboxMessage) {
     if (!m.read) {
       startTransition(async () => {
         const result = await markMessageReadAction(m.id);
@@ -78,6 +92,26 @@ export function MessagesInbox({ messages }: { messages: InboxMessage[] }) {
       });
     }
   }
+
+  function onView(m: InboxMessage) {
+    setViewMessage(m);
+    markRead(m);
+  }
+
+  // A message opened from a link counts as read, and the link is dropped from
+  // the address bar so a reload doesn't reopen it.
+  useEffect(() => {
+    if (!initialOpenId) return;
+    const linked = messages.find((m) => m.id === initialOpenId);
+    if (linked) markRead(linked);
+    // Through the router: a raw history.replaceState here would be overwritten
+    // when the navigation that brought us here commits.
+    const url = new URL(window.location.href);
+    url.searchParams.delete("open");
+    router.replace(`${url.pathname}${url.search}`, { scroll: false });
+    // Keyed on the link only: a refreshed message list must not mark it again.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialOpenId]);
 
   function onConfirmDelete() {
     if (!deleteTarget) return;

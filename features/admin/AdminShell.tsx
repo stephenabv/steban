@@ -11,6 +11,7 @@ import { Icon } from "@/components/icons/Icon";
 import { useLocalPreference } from "@/lib/hooks/useLocalPreference";
 import { acquireScrollLock } from "@/lib/dom/scrollLock";
 import { AdminSidebar } from "./AdminSidebar";
+import { AdminSearch } from "./search/AdminSearch";
 import styles from "./AdminShell.module.less";
 
 export function AdminShell({ basePath, children }: { basePath: string; children: React.ReactNode }) {
@@ -74,6 +75,8 @@ export function AdminShell({ basePath, children }: { basePath: string; children:
             <span className={styles.brandText}>Portfolio</span>
             <span className={styles.brandBadge}>Admin</span>
           </Link>
+
+          <AdminSearch basePath={basePath} />
 
           <div className={styles.topbarSpacer} />
 
