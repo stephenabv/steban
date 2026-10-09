@@ -12,6 +12,7 @@ import {
 } from "@/server/services";
 import { LEGAL_DEFAULTS } from "@/config/legalDefaults";
 import { siteConfig } from "@/config/site";
+import { PageMetadataBuilder } from "@/lib/seo/PageMetadataBuilder";
 import { socialLinks } from "@/config/social";
 import { legalNav } from "@/config/navigation";
 import type { NavLink } from "@/config/navigation";
@@ -109,20 +110,5 @@ export const getLegalDocument = cache(async (kind: LegalDocumentKind): Promise<P
  */
 export async function getPageMetadata(pageKey: SeoPageKey, defaults: Metadata): Promise<Metadata> {
   const seo = await orFallback("seo", () => getSeoService().getByPageKey(pageKey), null);
-  if (!seo) return defaults;
-
-  const metadata: Metadata = { ...defaults };
-  if (seo.title) metadata.title = pageKey === "home" ? { absolute: seo.title } : seo.title;
-  if (seo.description) metadata.description = seo.description;
-  if (seo.keywords.length > 0) metadata.keywords = seo.keywords;
-  if (seo.title || seo.description || seo.ogImageUrl) {
-    metadata.openGraph = {
-      ...(defaults.openGraph ?? {}),
-      ...(seo.title ? { title: seo.title } : {}),
-      ...(seo.description ? { description: seo.description } : {}),
-      ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl }] } : {}),
-    };
-  }
-  if (seo.noIndex) metadata.robots = { index: false, follow: true };
-  return metadata;
+  return PageMetadataBuilder.build(pageKey, defaults, seo);
 }

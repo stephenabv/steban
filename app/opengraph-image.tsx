@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
 import { siteConfig } from "@/config/site";
+import { defaultOgImage } from "@/config/seo";
 
-export const alt = `${siteConfig.name} — Computer Engineer`;
-export const size = { width: 1200, height: 630 };
+export const alt = defaultOgImage.alt;
+export const size = { width: defaultOgImage.width, height: defaultOgImage.height };
 export const contentType = "image/png";
 
 export default function OpengraphImage() {

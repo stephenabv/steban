@@ -35,6 +35,18 @@ export const defaultSeo = {
 export type SeoConfig = typeof defaultSeo;
 
 /**
+ * The generated site-wide share card (app/opengraph-image.tsx). Pages that set
+ * their own `openGraph` must list it explicitly: Next.js replaces nested
+ * metadata objects per segment, so the root file image is not inherited.
+ */
+export const defaultOgImage = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  alt: `${siteConfig.name} — Computer Engineer`,
+} as const;
+
+/**
  * Per-page defaults, used when no admin SEO override is saved (or a field is
  * left empty). The admin SEO editor shows these as placeholders.
  */
