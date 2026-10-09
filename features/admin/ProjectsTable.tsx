@@ -42,8 +42,21 @@ const projectQuery = new ListQuery<AdminProjectRow>({
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-export function ProjectsTable({ projects, newHref }: { projects: AdminProjectRow[]; newHref: string }) {
-  const list = useListQuery(projects, projectQuery, { sort: { id: "published", direction: "desc" }, pageSize: 10 });
+export function ProjectsTable({
+  projects,
+  newHref,
+  initialSearch,
+}: {
+  projects: AdminProjectRow[];
+  newHref: string;
+  /** Pre-filled search, e.g. from a command palette link. */
+  initialSearch?: string;
+}) {
+  const list = useListQuery(projects, projectQuery, {
+    sort: { id: "published", direction: "desc" },
+    pageSize: 10,
+    search: initialSearch,
+  });
 
   const columns = useMemo<DataColumn<AdminProjectRow>[]>(
     () => [

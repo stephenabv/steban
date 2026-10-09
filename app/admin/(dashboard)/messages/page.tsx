@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getContactService } from "@/server/services";
+import { firstSearchParam, type SearchParamValue } from "@/lib/searchParams";
 import { MessagesInbox } from "@/features/admin/MessagesInbox";
 import type { InboxMessage } from "@/features/admin/MessagesInbox";
 import { AdminPageHeader } from "@/features/admin/AdminPageHeader";
@@ -14,7 +15,12 @@ export const dynamic = "force-dynamic";
 /** Rows loaded into the client-side table (search/filter/sort run in the browser). */
 const PAGE_LIMIT = 100;
 
-export default async function AdminMessagesPage() {
+export default async function AdminMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, SearchParamValue>>;
+}) {
+  const openId = firstSearchParam((await searchParams).open);
   const [result, unreadResult] = await Promise.all([
     getContactService().getMessages({ page: 1, pageSize: PAGE_LIMIT }),
     getContactService().getUnreadCount(),
@@ -53,7 +59,7 @@ export default async function AdminMessagesPage() {
       )}
 
       {result.ok ? (
-        <MessagesInbox messages={messages} />
+        <MessagesInbox messages={messages} initialOpenId={openId} />
       ) : (
         <Alert tone="danger" title="Could not load messages">
           Please refresh the page. If this keeps happening, check the database connection.
