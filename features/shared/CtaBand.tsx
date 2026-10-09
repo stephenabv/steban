@@ -17,7 +17,6 @@ export async function CtaBand({
   return (
     <section className={styles.wrap} aria-labelledby="cta-heading">
       <Reveal className={styles.band}>
-        <div className={styles.glow} aria-hidden="true" />
         <div className={styles.text}>
           <h2 id="cta-heading" className={styles.title}>
             {title}

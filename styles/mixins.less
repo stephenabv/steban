@@ -71,18 +71,32 @@
 .icon-button() {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: @radius-md;
-  border: 1px solid @color-border;
-  background: @tint-4;
-  color: @color-text-primary;
+  width: 40px;
+  height: 40px;
+  border-radius: @radius-control;
+  border: 1px solid @color-border-hover;
+  background: transparent;
+  color: @color-text-secondary;
   cursor: pointer;
   transition: background @transition-fast;
   .focus-ring();
 
   &:hover {
-    background: @tint-8;
+    background: @tint-5;
+    color: @color-text-primary;
+  }
+}
+
+// Buttons sharing a row split it evenly; when the row is too narrow they stack,
+// each at full width, so stacked buttons never differ in length.
+.button-group(@min: 168px) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, @min), 1fr));
+  gap: @space-3;
+
+  > * {
+    width: 100%;
+    min-width: 0;
   }
 }
 
@@ -143,28 +157,23 @@
   letter-spacing: @tracking-wide;
 }
 
+// Graphite text is solid; these mixins keep their names for existing call sites.
 .gradient-text() {
-  background: linear-gradient(135deg, @color-text-primary 20%, @color-accent-light 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: @color-text-primary;
 }
 
 .accent-text() {
-  background: @gradient-accent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: @color-accent-light;
 }
 
 // ─── Form controls ────────────────────────────────────────────────────────────
 .control-base() {
   width: 100%;
-  min-height: 44px;
-  background: @color-bg-subtle;
+  min-height: 40px;
+  background: @color-bg;
   border: 1px solid @color-border-hover;
-  border-radius: @radius-md;
-  padding: @space-3 @space-4;
+  border-radius: @radius-control;
+  padding: @space-2 @space-3;
   color: @color-text-primary;
   font-size: @fs-sm;
   line-height: @lh-normal;
@@ -208,9 +217,9 @@
   align-items: center;
   justify-content: center;
   gap: @space-2;
-  min-height: 44px;
-  padding: @space-3 @space-6;
-  border-radius: @radius-full;
+  min-height: 40px;
+  padding: 0 @space-4;
+  border-radius: @radius-control;
   font-weight: @fw-semibold;
   font-size: @fs-sm;
   line-height: 1;
@@ -233,12 +242,10 @@
 
   &:hover {
     background: @color-accent-dark;
-    box-shadow: @shadow-glow;
-    transform: translateY(-1px);
   }
 
   &:active {
-    transform: translateY(0);
+    transform: translateY(1px);
   }
 }
 

@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
 import { siteConfig } from "@/config/site";
+import { defaultOgImage } from "@/config/seo";
 
-export const alt = `${siteConfig.name} — Computer Engineer`;
-export const size = { width: 1200, height: 630 };
+export const alt = defaultOgImage.alt;
+export const size = { width: defaultOgImage.width, height: defaultOgImage.height };
 export const contentType = "image/png";
 
 export default function OpengraphImage() {
@@ -16,9 +17,9 @@ export default function OpengraphImage() {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
-          background: "#0a0a0f",
+          background: "#0b0d10",
           padding: "80px 96px",
-          color: "#f0f0f5",
+          color: "#e6eaef",
           fontFamily: "sans-serif",
         }}
       >
@@ -31,19 +32,19 @@ export default function OpengraphImage() {
             justifyContent: "center",
             width: 120,
             height: 120,
-            background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+            background: "linear-gradient(135deg, #2f6feb, #2560d4)",
             borderRadius: 28,
             marginBottom: 48,
           }}
         >
           <div style={{ fontSize: 52, fontWeight: 700, color: "#fff" }}>SA</div>
           <div style={{ display: "flex", alignItems: "center", marginTop: 4 }}>
-            <div style={{ width: 34, height: 5, background: "#c7d2fe", borderRadius: 3 }} />
+            <div style={{ width: 34, height: 5, background: "#a9c7ff", borderRadius: 3 }} />
             <div
               style={{
                 width: 12,
                 height: 12,
-                background: "#c7d2fe",
+                background: "#a9c7ff",
                 borderRadius: 6,
                 marginLeft: 7,
               }}
@@ -53,12 +54,12 @@ export default function OpengraphImage() {
 
         <div style={{ display: "flex", fontSize: 78, fontWeight: 700, lineHeight: 1.1 }}>
           Stephen{" "}
-          <span style={{ color: "#6366f1", marginLeft: 20 }}>Abueva</span>
+          <span style={{ color: "#79a8ff", marginLeft: 20 }}>Abueva</span>
         </div>
-        <div style={{ display: "flex", fontSize: 36, color: "#9090a8", marginTop: 20 }}>
+        <div style={{ display: "flex", fontSize: 36, color: "#a7b0ba", marginTop: 20 }}>
           Computer Engineer
         </div>
-        <div style={{ display: "flex", fontSize: 26, color: "#606075", marginTop: 44 }}>
+        <div style={{ display: "flex", fontSize: 26, color: "#8b949e", marginTop: 44 }}>
           {siteConfig.url.replace(/^https?:\/\//, "")}
         </div>
       </div>

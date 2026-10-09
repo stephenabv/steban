@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { siteUrl } from "@/config/site";
+import { PageMetadataBuilder } from "@/lib/seo/PageMetadataBuilder";
 import type { Project } from "@/server/domain/entities";
 import { getProjectService } from "@/server/services";
 import { Badge } from "@/components/ui/Badge";
@@ -29,11 +30,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: project.title,
     description: project.summary,
     alternates: { canonical: siteUrl(`/projects/${slug}`) },
-    openGraph: {
-      title: project.title,
-      description: project.summary,
-      images: project.coverImage ? [{ url: project.coverImage }] : [],
-    },
+    openGraph: PageMetadataBuilder.openGraph(
+      { alternates: { canonical: siteUrl(`/projects/${slug}`) } },
+      { title: project.title, description: project.summary, ogImageUrl: project.coverImage || undefined }
+    ),
   };
 }
 
@@ -53,7 +53,6 @@ export default async function ProjectDetailPage({ params }: Props) {
     <>
       <article className={styles.page}>
         <header className={styles.header}>
-          <div className={styles.glow} aria-hidden="true" />
           <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
             <ol role="list">
               <li>

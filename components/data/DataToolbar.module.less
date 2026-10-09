@@ -27,16 +27,27 @@
   background: @color-bg-subtle;
   max-width: 100%;
   overflow-x: auto;
+
+  // On phones the filter spans the row and its segments split it evenly.
+  @media (max-width: (@bp-md - 1px)) {
+    display: flex;
+    width: 100%;
+
+    .segment {
+      flex: 1 0 auto;
+      justify-content: center;
+    }
+  }
 }
 
 .segment {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 36px;
+  min-height: 32px;
   padding: 0 @space-3;
   border: none;
-  border-radius: calc(@radius-md - 3px);
+  border-radius: @radius-xs;
   background: transparent;
   color: @color-text-secondary;
   font-size: @fs-sm;
@@ -67,7 +78,7 @@
 .count {
   min-width: 20px;
   padding: 0 6px;
-  border-radius: @radius-full;
+  border-radius: @radius-xs;
   background: @tint-6;
   font-size: 11px;
   font-variant-numeric: tabular-nums;

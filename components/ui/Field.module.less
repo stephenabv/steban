@@ -87,21 +87,27 @@
 }
 
 // ─── Input with leading icon (search) ─────────────────────────────────────────
+// Leading icon sits inside the field, vertically centred beside the text; the
+// field fills whatever width its container gives it.
 .inputWrap {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
   min-width: 0;
 
   > svg {
     position: absolute;
     left: @space-3;
+    top: 50%;
+    transform: translateY(-50%);
     color: @color-text-muted;
     pointer-events: none;
   }
 
   .control {
-    padding-left: @space-10;
+    padding-left: 36px;
+    padding-right: @space-10; // room for the clear button
   }
 }
 

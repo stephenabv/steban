@@ -25,7 +25,6 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 50% 35%, fade(@color-accent, 16%) 0%, transparent 45%),
     linear-gradient(@color-border 1px, transparent 1px) 0 0 / 48px 48px,
     linear-gradient(90deg, @color-border 1px, transparent 1px) 0 0 / 48px 48px;
   mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 65%);
@@ -50,9 +49,8 @@
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: @space-3;
+  .button-group(160px);
+  width: 100%;
+  max-width: 360px;
   margin-top: @space-4;
 }

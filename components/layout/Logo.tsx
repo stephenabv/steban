@@ -2,7 +2,7 @@ import { useId } from "react";
 
 /**
  * Minimalist brand mark for Stephen Abueva — Computer Engineer.
- * An indigo rounded square with an "SA" monogram and a circuit-node accent
+ * A blue rounded square with an "SA" monogram and a circuit-node accent
  * (the small dot terminating the trace under the letters).
  * Also reproduced in app/icon.tsx / app/apple-icon.tsx / app/opengraph-image.tsx —
  * keep the geometry and colors in sync when changing it.
@@ -20,8 +20,8 @@ export function Logo({ size = 32, decorative = false }: { size?: number; decorat
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="100%" stopColor="#4f46e5" />
+          <stop offset="0%" stopColor="#2f6feb" />
+          <stop offset="100%" stopColor="#2560d4" />
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="14" fill={`url(#${gradientId})`} />
@@ -41,11 +41,11 @@ export function Logo({ size = 32, decorative = false }: { size?: number; decorat
       {/* circuit trace + node — a nod to computer engineering */}
       <path
         d="M18 48h20"
-        stroke="#c7d2fe"
+        stroke="#a9c7ff"
         strokeWidth="3"
         strokeLinecap="round"
       />
-      <circle cx="44" cy="48" r="3.5" fill="#c7d2fe" />
+      <circle cx="44" cy="48" r="3.5" fill="#a9c7ff" />
     </svg>
   );
 }
