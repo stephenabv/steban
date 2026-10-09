@@ -66,9 +66,7 @@
   height: 100%;
   .flex-center();
   color: @color-border-strong;
-  background:
-    radial-gradient(circle at 30% 30%, fade(@color-accent, 14%), transparent 60%),
-    @color-bg-elevated;
+  background: @color-bg-elevated;
 }
 
 .body {
@@ -120,8 +118,9 @@
 }
 
 .tech {
-  padding: 4px 10px;
-  border-radius: @radius-full;
+  padding: 2px 8px;
+  border-radius: @radius-xs;
+  font-family: @font-mono;
   background: @tint-4;
   border: 1px solid @color-border;
   font-size: @fs-xs;
@@ -148,9 +147,9 @@
 .arrowBtn {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: @radius-full;
+  width: 40px;
+  height: 40px;
+  border-radius: @radius-control;
   background: @color-bg-card;
   border: 1px solid @color-border-hover;
   color: @color-text-secondary;

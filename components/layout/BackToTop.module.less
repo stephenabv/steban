@@ -11,9 +11,9 @@
   bottom: calc(@inset-mobile + env(safe-area-inset-bottom));
   z-index: @z-sticky;
   .flex-center();
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: @radius-control;
   .glass();
   color: @color-text-primary;
   cursor: pointer;
@@ -32,8 +32,8 @@
   @media (min-width: @bp-md) {
     right: calc(@inset-desktop + env(safe-area-inset-right));
     bottom: calc(@inset-desktop + env(safe-area-inset-bottom));
-    width: 52px;
-    height: 52px;
+    width: 44px;
+    height: 44px;
   }
 
   @media (hover: hover) {

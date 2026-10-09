@@ -5,18 +5,7 @@
   position: relative;
   margin-top: @space-16;
   border-top: 1px solid @color-border;
-  background: linear-gradient(180deg, transparent 0%, fade(@color-accent, 4%) 100%);
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: -1px;
-    left: 50%;
-    width: min(560px, 80%);
-    height: 1px;
-    transform: translateX(-50%);
-    background: linear-gradient(90deg, transparent, color-mix(in srgb, @color-accent-light 60%, transparent), transparent);
-  }
+  background: @color-bg-subtle;
 }
 
 .inner {
@@ -56,7 +45,8 @@
 }
 
 .accent {
-  color: @color-accent-light;
+  color: @color-text-secondary;
+  font-weight: @fw-medium;
 }
 
 .tagline {

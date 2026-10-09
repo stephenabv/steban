@@ -13,6 +13,9 @@
   --ease-out: @ease-out;
   --duration-page: @duration-page;
   --nav-height: @nav-height;
+
+  // Headings share the UI face; Graphite has no separate display font.
+  --font-display: var(--font-sans);
 }
 
 // ─── Reset ────────────────────────────────────────────────────────────────────
@@ -120,6 +123,7 @@ h2,
 h3,
 h4 {
   font-family: @font-display;
+  font-weight: @fw-semibold;
   letter-spacing: -0.02em;
 }
 
@@ -130,7 +134,7 @@ h4,
 h5,
 h6 {
   line-height: @lh-tight;
-  font-weight: @fw-bold;
+  font-weight: @fw-semibold;
   color: @color-text-primary;
   text-wrap: balance;
 }
@@ -170,7 +174,7 @@ code {
   padding: @space-3 @space-6;
   background: @color-accent;
   color: #fff;
-  border-radius: @radius-full;
+  border-radius: @radius-control;
   font-weight: @fw-semibold;
   font-size: @fs-sm;
   transform: translate(-50%, -200%);

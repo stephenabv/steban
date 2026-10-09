@@ -59,6 +59,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: @space-2;
+
+  // On phones header actions stack and share one width.
+  @media (max-width: (@bp-sm - 1px)) {
+    .button-group(140px);
+    width: 100%;
+    gap: @space-2;
+  }
 }
 
 .stack {
@@ -353,8 +360,9 @@
     display: flex;
     justify-content: stretch;
 
+    // Labelled actions share the row evenly so they line up card to card.
     > * {
-      flex: 1 1 auto;
+      flex: 1 1 0;
     }
 
     // Icon-only buttons keep their square size instead of stretching the row.

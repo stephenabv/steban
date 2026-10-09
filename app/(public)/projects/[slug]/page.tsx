@@ -53,7 +53,6 @@ export default async function ProjectDetailPage({ params }: Props) {
     <>
       <article className={styles.page}>
         <header className={styles.header}>
-          <div className={styles.glow} aria-hidden="true" />
           <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
             <ol role="list">
               <li>

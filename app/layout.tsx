@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { connection } from "next/server";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
@@ -8,22 +8,19 @@ import { THEME_COLORS } from "@/lib/theme/theme";
 import { getServerTheme } from "@/lib/theme/getServerTheme";
 import "@/styles/globals.less";
 
-const inter = Inter({
+// Graphite type: IBM Plex Sans for UI and headings, Plex Mono for metadata.
+// Self-hosted by next/font, so CSP font-src 'self' holds.
+const plexSans = IBM_Plex_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-// Display face for headings — self-hosted by next/font, so CSP font-src 'self' holds.
-const outfit = Outfit({
-  variable: "--font-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
+const plexMono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -77,7 +74,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}
+      className={`${plexSans.variable} ${plexMono.variable}`}
       data-theme={theme ?? undefined}
     >
       <body>

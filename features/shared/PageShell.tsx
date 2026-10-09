@@ -18,7 +18,6 @@ export function PageShell({ eyebrow, title, description, children, width = "defa
   return (
     <div className={cn(styles.page, width === "prose" && styles.prose, className)}>
       <header className={styles.header}>
-        <div className={styles.glow} aria-hidden="true" />
         <SectionHeading variant="page" eyebrow={eyebrow} title={title} description={description} />
       </header>
       <div className={styles.content}>{children}</div>
