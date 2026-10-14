@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/server/auth/session";
 import { getProjectService } from "@/server/services";
+import { notifySearchEngines } from "@/server/seo/searchEngineNotifier";
 
 const createProjectSchema = z.object({
   title: z.string().trim().min(1, "Title is required.").max(200),
@@ -37,6 +38,12 @@ async function requireAdmin(): Promise<boolean> {
   return session.isAdmin === true;
 }
 
+/** Current slug of a project, or null when it can't be read (notification is best effort). */
+async function getProjectSlug(id: string): Promise<string | null> {
+  const result = await getProjectService().getById(id);
+  return result.ok && result.value ? result.value.slug : null;
+}
+
 export async function createProjectAction(input: CreateProjectActionInput): Promise<ActionResult> {
   if (!(await requireAdmin())) {
     return { ok: false, error: "Unauthorized." };
@@ -62,6 +69,8 @@ export async function createProjectAction(input: CreateProjectActionInput): Prom
 
   revalidatePath("/projects");
   revalidatePath("/");
+  revalidatePath("/sitemap.xml");
+  notifySearchEngines([`/projects/${result.value.slug}`, "/projects", "/"]);
   return { ok: true };
 }
 
@@ -76,6 +85,8 @@ export async function updateProjectAction(id: string, input: UpdateProjectAction
   }
 
   const { liveUrl, githubUrl, ...rest } = parsed.data;
+  // Read before writing so a renamed slug can be announced as gone.
+  const previousSlug = await getProjectSlug(id);
   const result = await getProjectService().update(id, {
     ...rest,
     liveUrl: liveUrl || undefined,
@@ -92,6 +103,13 @@ export async function updateProjectAction(id: string, input: UpdateProjectAction
   revalidatePath("/projects");
   revalidatePath(`/projects/${parsed.data.slug}`);
   revalidatePath("/");
+  revalidatePath("/sitemap.xml");
+  const changed = [`/projects/${result.value.slug}`, "/projects", "/"];
+  if (previousSlug && previousSlug !== result.value.slug) {
+    revalidatePath(`/projects/${previousSlug}`);
+    changed.push(`/projects/${previousSlug}`);
+  }
+  notifySearchEngines(changed);
   return { ok: true };
 }
 
@@ -100,6 +118,7 @@ export async function deleteProjectAction(id: string): Promise<ActionResult> {
     return { ok: false, error: "Unauthorized." };
   }
 
+  const slug = await getProjectSlug(id);
   const result = await getProjectService().delete(id);
   if (!result.ok) {
     return { ok: false, error: result.error.message };
@@ -110,5 +129,8 @@ export async function deleteProjectAction(id: string): Promise<ActionResult> {
 
   revalidatePath("/projects");
   revalidatePath("/");
+  revalidatePath("/sitemap.xml");
+  if (slug) revalidatePath(`/projects/${slug}`);
+  notifySearchEngines([...(slug ? [`/projects/${slug}`] : []), "/projects", "/"]);
   return { ok: true };
 }

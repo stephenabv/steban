@@ -142,6 +142,8 @@ Copy the printed output and set it as `ADMIN_PASSWORD_HASH`.
 | `COVER_LETTER_AI_MODEL` | Model for the AI generator. Default `claude-opus-5-5`. |
 | `COVER_LETTER_AI_TIMEOUT_MS` | Per-attempt timeout for the AI call. Default `20000`; retried twice with backoff, then the template is used. |
 | `WEBAUTHN_RP_ID` | Domain passkeys are bound to (e.g. `example.com`). Default: the host serving the request. Set it only to share passkeys across subdomains; changing it later invalidates existing passkeys. |
+| `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION` / `YANDEX_VERIFICATION` | Search-console ownership tokens (only the token, not the `<meta>` tag). Optional if you verify by DNS. |
+| `INDEXNOW_KEY` | Enables IndexNow: serves `/indexnow-key.txt` and notifies Bing/Yandex when public content is saved in production. 8–128 letters, digits or hyphens. |
 | `WEBAUTHN_ORIGINS` | Comma-separated origins allowed to use passkeys when `WEBAUTHN_RP_ID` is set. Default `https://<WEBAUTHN_RP_ID>`. |
 
 ### Vercel integrations (auto-set)
@@ -289,9 +291,10 @@ See [docs/DATABASE.md](docs/DATABASE.md) for full schema reference.
 ## SEO
 
 - **Metadata API** — Every page uses Next.js `generateMetadata` for title, description, canonical URL, OG, and Twitter card.
-- **JSON-LD** — Home page outputs `Person` + `WebSite` structured data schemas.
-- **Sitemap** — Auto-generated at `/sitemap.xml`. Extend `app/sitemap.ts` with dynamic project slugs once the database is connected.
-- **Robots** — Auto-generated at `/robots.txt`. Blocks `/admin/` and `/api/`.
+- **JSON-LD** — `Person` + `WebSite` on home, `ProfilePage` + `BreadcrumbList` on About, `CreativeWork` + `BreadcrumbList` on each project (`lib/structuredData.ts`).
+- **Sitemap** — `/sitemap.xml` lists every indexable page and project (with image entries), skips pages marked noindex in the admin, and refreshes hourly (`server/seo/`).
+- **Robots** — `/robots.txt` allows crawling and links the sitemap. Admin, API and `*.vercel.app` responses carry `X-Robots-Tag: noindex` instead (`server/security/robotsTag.ts`).
+- **Indexing** — Optional search-console verification tags and IndexNow pings on publish. Setup steps: [docs/DEPLOYMENT.md → Search Engine Indexing](docs/DEPLOYMENT.md#search-engine-indexing).
 - **Semantic HTML** — Correct heading hierarchy, landmark elements, and `alt` text throughout.
 
 ---

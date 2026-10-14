@@ -33,7 +33,7 @@ export default defineConfig({
       dependencies: ["setup"],
       use: { storageState: STORAGE_STATE },
     },
-    { name: "anonymous", testMatch: /unauthenticated\.spec\.ts$/ },
+    { name: "anonymous", testMatch: /(unauthenticated|seo)\.spec\.ts$/ },
     // Signs in on its own: adding a passkey needs a fresh sign-in, not the shared session.
     { name: "passkeys", testMatch: /passkeys\.spec\.ts$/ },
   ],

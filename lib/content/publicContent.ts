@@ -17,6 +17,7 @@ import { socialLinks } from "@/config/social";
 import { legalNav } from "@/config/navigation";
 import type { NavLink } from "@/config/navigation";
 import type { SocialItem } from "@/components/layout/SocialLinks";
+import type { PersonProfile } from "@/lib/structuredData";
 
 /*
  * Read models for the public site. Admin-saved content wins; config values are
@@ -66,6 +67,16 @@ export async function getPublicContact(): Promise<PublicContact> {
       external: true,
     }));
   return { email, profiles };
+}
+
+/** The site owner as described in structured data (hero name/title, contact links). */
+export function toPersonProfile(hero: Hero | null, contact: PublicContact): PersonProfile {
+  return {
+    name: hero?.name,
+    jobTitle: hero?.title,
+    email: contact.email,
+    sameAs: contact.profiles.map((profile) => profile.url),
+  };
 }
 
 export async function getLegalLinks(): Promise<NavLink[]> {

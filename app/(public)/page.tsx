@@ -3,8 +3,9 @@ import { HeroSection } from "@/features/home/HeroSection";
 import { FeaturedCarousel } from "@/features/home/FeaturedCarousel";
 import { CtaBand } from "@/features/shared/CtaBand";
 import { siteConfig } from "@/config/site";
-import { jsonLd, personSchema, websiteSchema } from "@/lib/structuredData";
-import { getHeroContent, getPageMetadata, getPublicContact } from "@/lib/content/publicContent";
+import { personSchema, websiteSchema } from "@/lib/structuredData";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { getHeroContent, getPageMetadata, getPublicContact, toPersonProfile } from "@/lib/content/publicContent";
 import { getProfilePhotoService, getProjectService, getResumeService, ProfilePhotoService } from "@/server/services";
 
 export function generateMetadata(): Promise<Metadata> {
@@ -32,25 +33,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Plain <script> (not next/script) so JSON-LD is in the initial server HTML
-          where non-JS crawlers can read it. Data blocks are exempt from CSP script-src. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(
-            personSchema({
-              name: hero?.name,
-              jobTitle: hero?.title,
-              email: contact.email,
-              sameAs: contact.profiles.map((p) => p.url),
-            })
-          ),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(websiteSchema()) }}
-      />
+      <JsonLd data={personSchema(toPersonProfile(hero, contact))} />
+      <JsonLd data={websiteSchema()} />
       <HeroSection hero={hero} photoSrc={photoSrc} resumeAvailable={resumeAvailable} nextSectionId={featured.length > 0 ? FEATURED_SECTION_ID : undefined} />
       <FeaturedCarousel id={FEATURED_SECTION_ID} projects={featured} />
       <CtaBand />

@@ -7,6 +7,7 @@ import { getLegalDocumentService, LegalDocumentError } from "@/server/services";
 import type { Result } from "@/server/domain/types";
 import { legalDraftSchema, legalVersionIdSchema, type LegalDraftFormInput } from "@/server/security/contentSchemas";
 import { LEGAL_DOCUMENTS } from "@/config/legal";
+import { notifySearchEngines } from "@/server/seo/searchEngineNotifier";
 import type { ContentActionResult } from "./contentActions";
 
 export interface LegalActionResult {
@@ -72,13 +73,17 @@ export async function saveLegalDraftAction(id: string, input: LegalDraftFormInpu
 export async function publishLegalVersionAction(id: string): Promise<LegalActionResult> {
   if (!(await requireAdmin())) return UNAUTHORIZED;
   if (!legalVersionIdSchema.safeParse(id).success) return NOT_FOUND;
-  return settle(await getLegalDocumentService().publish(id), "publish");
+  const result = await getLegalDocumentService().publish(id);
+  if (result.ok) notifySearchEngines([LEGAL_DOCUMENTS[result.value.kind].path]);
+  return settle(result, "publish");
 }
 
 export async function unpublishLegalVersionAction(id: string): Promise<LegalActionResult> {
   if (!(await requireAdmin())) return UNAUTHORIZED;
   if (!legalVersionIdSchema.safeParse(id).success) return NOT_FOUND;
-  return settle(await getLegalDocumentService().unpublish(id), "unpublish");
+  const result = await getLegalDocumentService().unpublish(id);
+  if (result.ok) notifySearchEngines([LEGAL_DOCUMENTS[result.value.kind].path]);
+  return settle(result, "unpublish");
 }
 
 export async function deleteLegalVersionAction(id: string): Promise<LegalActionResult> {
