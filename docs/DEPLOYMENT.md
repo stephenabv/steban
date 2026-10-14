@@ -66,7 +66,7 @@ Apply each variable to **Production**, **Preview**, and **Development** environm
 | `SESSION_SECRET` | `a3f9...` (64 hex chars) | Must be at least 32 characters. Use a unique value per environment. |
 | `ADMIN_USERNAME` | `stephen` | The admin login username. |
 | `ADMIN_PASSWORD_HASH` | `a1b2c3...:d4e5f6...` | Output of the password hash script. |
-| `NEXT_PUBLIC_SITE_URL` | `https://stephenabueva.com` | No trailing slash. |
+| `NEXT_PUBLIC_SITE_URL` | `https://stephenabueva.dev` | No trailing slash. |
 
 ### Optional
 
@@ -115,11 +115,41 @@ Required for image uploads (project cover images, profile photo).
 
 ## Custom Domain
 
-1. In the Vercel dashboard → your project → **Settings** → **Domains**.
-2. Add your domain (e.g. `stephenabueva.com`).
-3. Vercel provides DNS records; add them in your domain registrar.
-4. Update `NEXT_PUBLIC_SITE_URL` to match your custom domain.
-5. Vercel issues a free TLS certificate automatically.
+Production is served at `https://stephenabueva.dev` (registered at Cloudflare, DNS managed by Cloudflare, hosted on Vercel). Every absolute URL the app emits (canonical links, Open Graph, JSON-LD, `sitemap.xml`, `robots.txt`, cover-letter portfolio link) is derived from `NEXT_PUBLIC_SITE_URL` via `config/site.ts`, so pointing a new domain at the site is configuration, not code.
+
+### 1. Vercel: add the domain
+
+1. Vercel dashboard → project → **Settings** → **Domains** → **Add** `stephenabueva.dev`, connected to the **Production** environment.
+2. Accept Vercel's suggestion to also add `www.stephenabueva.dev` as a **308 redirect** to `stephenabueva.dev`.
+3. Edit the old `steban.vercel.app` entry and set it to **Redirect to** `stephenabueva.dev` (308), so old links and search results land on the new domain.
+4. Note the DNS values Vercel shows for each domain; use those exact values in step 2 if they differ from the defaults below.
+
+### 2. Cloudflare: DNS records
+
+Cloudflare dashboard → `stephenabueva.dev` → **DNS** → **Records**. Delete any existing apex `A`/`AAAA` or `www` records (e.g. registrar parking), then add:
+
+| Type | Name | Content | Proxy status |
+|---|---|---|---|
+| `A` | `@` | `76.76.21.21` (or the IP Vercel shows) | **DNS only** (grey cloud) |
+| `CNAME` | `www` | `cname.vercel-dns.com` (or the value Vercel shows) | **DNS only** (grey cloud) |
+
+Keep both records **DNS only**. Vercel terminates TLS, issues the certificate and runs its own CDN and firewall; proxying through Cloudflare puts a second CDN in front, can break certificate issuance and renewal, and hides the visitor IP that the rate limiter and audit log read. If you have `CAA` records, add one allowing `letsencrypt.org`.
+
+`.dev` is on the browser HSTS preload list, so the site is only reachable over HTTPS. That's already the case on Vercel.
+
+### 3. Environment variable
+
+Set `NEXT_PUBLIC_SITE_URL=https://stephenabueva.dev` for the **Production** environment, then **redeploy**. `NEXT_PUBLIC_*` values are inlined at build time, so an existing deployment keeps the old value until it is rebuilt.
+
+### 4. Verify
+
+- Vercel → Domains shows **Valid Configuration** for both domains and a certificate is issued.
+- `https://stephenabueva.dev/sitemap.xml` and `/robots.txt` list `https://stephenabueva.dev` URLs.
+- `https://steban.vercel.app` and `https://www.stephenabueva.dev` 308-redirect to `https://stephenabueva.dev`.
+
+### Admin passkeys after a domain change
+
+Passkeys are bound to the domain they were registered on (by default the host serving the request, see `server/auth/passkeys/relyingParty.ts`). Passkeys created on `steban.vercel.app` cannot sign in on `stephenabueva.dev`. Sign in with the admin password on the new domain, register a new passkey under **Admin → Passkeys**, then remove the old ones. Leave `WEBAUTHN_RP_ID` unset unless passkeys must be shared across subdomains.
 
 ---
 
@@ -197,7 +227,7 @@ Example Nginx config:
 ```nginx
 server {
     listen 443 ssl;
-    server_name stephenabueva.com;
+    server_name stephenabueva.dev;
 
     ssl_certificate     /etc/ssl/certs/cert.pem;
     ssl_certificate_key /etc/ssl/private/key.pem;

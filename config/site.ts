@@ -1,6 +1,6 @@
 // Single source of truth for the site origin. Normalized to strip any trailing
 // slash so path concatenation (`${SITE_URL}${path}`) never produces "//".
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://steban.vercel.app").replace(
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://stephenabueva.dev").replace(
   /\/+$/,
   ""
 );
