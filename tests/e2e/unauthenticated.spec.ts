@@ -11,7 +11,7 @@ test.describe("without a session", () => {
     test(`redirects ${path} to the login page`, async ({ page }) => {
       await page.goto(path);
       await expect(page).toHaveURL(/\/admin\/login\?callbackUrl=/);
-      await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
     });
   }
 

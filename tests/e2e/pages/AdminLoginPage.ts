@@ -8,7 +8,7 @@ export class AdminLoginPage {
   constructor(private readonly page: Page) {
     this.username = page.getByLabel("Username");
     this.password = page.getByLabel("Password", { exact: true });
-    this.submit = page.getByRole("button", { name: "Sign in" });
+    this.submit = page.getByRole("button", { name: "Sign in", exact: true });
   }
 
   async goto(): Promise<void> {

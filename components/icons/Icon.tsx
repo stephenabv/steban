@@ -193,6 +193,15 @@ const ICONS = {
     variant: "stroke",
     body: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />,
   },
+  key: {
+    variant: "stroke",
+    body: (
+      <>
+        <path d="M2.6 17.4A2 2 0 0 0 2 18.8V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.2a2 2 0 0 0 1.4-.6l.8-.8a6.5 6.5 0 1 0-4-4Z" />
+        <circle cx="16.5" cy="7.5" r=".5" />
+      </>
+    ),
+  },
   "file-text": {
     variant: "stroke",
     body: (

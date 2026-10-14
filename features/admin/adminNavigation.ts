@@ -43,6 +43,12 @@ export const adminNavigation: AdminNavGroup[] = [
       { path: "/analytics", label: "Analytics", icon: "bar-chart", description: "Tracking status" },
     ],
   },
+  {
+    label: "Account",
+    items: [
+      { path: "/passkeys", label: "Passkeys", icon: "key", description: "Sign in with Face ID, Touch ID or a security key" },
+    ],
+  },
 ];
 
 export function isAdminPathActive(pathname: string, basePath: string, path: string): boolean {

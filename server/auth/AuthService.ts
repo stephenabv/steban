@@ -1,4 +1,5 @@
 import { getSession } from "./session";
+import { signInAdmin } from "./adminSession";
 import type { AuditService } from "@/server/services/AuditService";
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
@@ -30,8 +31,7 @@ export class AuthService {
     }
 
     const session = await getSession();
-    session.isAdmin = true;
-    session.adminId = "admin";
+    signInAdmin(session, "admin");
     await session.save();
 
     await this.auditService.log("login", "admin", { ip, metadata: { success: true } });

@@ -101,3 +101,26 @@
   margin: @space-6 auto 0;
   width: fit-content;
 }
+
+// Empty when the browser has no WebAuthn support, so the divider only shows with the button.
+.alternative:not(:empty) {
+  display: flex;
+  flex-direction: column;
+  gap: @space-5;
+  margin-top: @space-5;
+
+  &::before {
+    content: "or";
+    display: flex;
+    align-items: center;
+    gap: @space-3;
+    font-size: @fs-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: @color-text-muted;
+    background:
+      linear-gradient(@color-border, @color-border) left center / calc(50% - 1.5em) 1px no-repeat,
+      linear-gradient(@color-border, @color-border) right center / calc(50% - 1.5em) 1px no-repeat;
+    justify-content: center;
+  }
+}
