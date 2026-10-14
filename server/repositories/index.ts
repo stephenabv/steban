@@ -14,3 +14,4 @@ export { SeoRepository } from "./SeoRepository";
 export { ManagedFileRepository } from "./ManagedFileRepository";
 export { FooterRepository } from "./FooterRepository";
 export { LegalDocumentRepository } from "./LegalDocumentRepository";
+export { PasskeyRepository, PasskeyAlreadyExistsError } from "./PasskeyRepository";

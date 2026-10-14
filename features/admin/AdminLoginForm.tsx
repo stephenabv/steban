@@ -8,6 +8,7 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
 import { Icon } from "@/components/icons/Icon";
+import { PasskeySignInButton } from "./passkeys/PasskeySignInButton";
 import styles from "./AdminLoginForm.module.less";
 
 export function AdminLoginForm({ basePath }: { basePath: string }) {
@@ -18,6 +19,13 @@ export function AdminLoginForm({ basePath }: { basePath: string }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  function goToDashboard() {
+    const raw = searchParams.get("callbackUrl") ?? "";
+    const destination = raw.startsWith(basePath) ? raw : basePath;
+    router.push(destination);
+    router.refresh();
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,10 +50,7 @@ export function AdminLoginForm({ basePath }: { basePath: string }) {
         setError(data.error ?? "Invalid credentials.");
         return;
       }
-      const raw = searchParams.get("callbackUrl") ?? "";
-      const destination = raw.startsWith(basePath) ? raw : basePath;
-      router.push(destination);
-      router.refresh();
+      goToDashboard();
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -103,6 +108,10 @@ export function AdminLoginForm({ basePath }: { basePath: string }) {
             Sign in
           </Button>
         </form>
+
+        <div className={styles.alternative}>
+          <PasskeySignInButton onSignedIn={goToDashboard} onError={setError} disabled={loading} />
+        </div>
 
         <Button href="/" variant="ghost" size="sm" icon="arrow-left" className={styles.backLink}>
           Back to site

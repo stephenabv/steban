@@ -2,14 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { rateLimit, rateLimitPolicies } from "@/server/security/rateLimit";
 import { adminLoginSchema } from "@/server/security/validation";
-import { getSession } from "@/server/auth/session";
+import { getSession, isSessionSecretConfigured } from "@/server/auth/session";
+import { signInAdmin } from "@/server/auth/adminSession";
 import { comparePassword } from "@/server/security/crypto";
+import { getClientIp } from "@/server/http/requestGuards";
 
 export async function POST(request: NextRequest) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown";
+  const ip = getClientIp(request);
 
   const limit = rateLimit(`admin-login:${ip}`, rateLimitPolicies.adminLogin);
   if (!limit.allowed) {
@@ -46,7 +45,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
   }
 
-  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+  if (!isSessionSecretConfigured()) {
     return NextResponse.json(
       { error: "Server misconfigured: SESSION_SECRET must be at least 32 characters." },
       { status: 500 }
@@ -54,8 +53,7 @@ export async function POST(request: NextRequest) {
   }
 
   const session = await getSession();
-  session.isAdmin = true;
-  session.adminId = "admin";
+  signInAdmin(session, "admin");
   await session.save();
 
   return NextResponse.json({ ok: true });

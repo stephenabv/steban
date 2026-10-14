@@ -34,6 +34,8 @@ export default defineConfig({
       use: { storageState: STORAGE_STATE },
     },
     { name: "anonymous", testMatch: /unauthenticated\.spec\.ts$/ },
+    // Signs in on its own: adding a passkey needs a fresh sign-in, not the shared session.
+    { name: "passkeys", testMatch: /passkeys\.spec\.ts$/ },
   ],
   webServer: {
     command: `npx next build && npx next start --port ${E2E_PORT}`,

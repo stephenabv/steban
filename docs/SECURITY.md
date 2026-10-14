@@ -9,6 +9,7 @@ This document describes the security architecture and the measures in place to p
 ## Table of Contents
 
 - [Authentication](#authentication)
+- [Passkeys](#passkeys)
 - [Session Management](#session-management)
 - [Password Hashing](#password-hashing)
 - [Content Security Policy](#content-security-policy)
@@ -38,6 +39,34 @@ Admin authentication is handled by `server/auth/AuthService.ts`.
 
 ---
 
+## Passkeys
+
+The admin can also sign in with a passkey (WebAuthn). Password sign-in stays available as a fallback.
+
+**Library:** [SimpleWebAuthn](https://simplewebauthn.dev) (`@simplewebauthn/server` and `@simplewebauthn/browser`).
+
+**Code:** `server/auth/passkeys/` (ceremonies), `server/http/PasskeyEndpoints.ts` (HTTP), `server/repositories/*PasskeyRepository.ts` (storage, table `admin_passkeys`), admin page at `/admin/passkeys`.
+
+| Endpoint | Access | Purpose |
+|---|---|---|
+| `POST /api/auth/passkey/options` | Public, rate limited | Sign-in challenge |
+| `POST /api/auth/passkey/verify` | Public, rate limited | Verify the assertion and start the session |
+| `POST /api/admin/passkeys/options` | Admin, signed in within 10 min | Registration challenge |
+| `POST /api/admin/passkeys` | Admin, signed in within 10 min | Verify and store a new passkey |
+
+**Controls:**
+
+- **User verification required** on every ceremony (biometric or device PIN), so a passkey is a complete second factor on its own.
+- **Usernameless sign-in** with discoverable credentials; the browser offers the passkeys it has for this site. The returned user handle must match the stored passkey's owner.
+- **One-time challenges** are stored in the encrypted session cookie, tagged with their ceremony and a 5-minute expiry, and removed on first use whether or not verification succeeds.
+- **Origin and RP ID** are checked by the library against the request's origin, or against `WEBAUTHN_RP_ID` / `WEBAUTHN_ORIGINS` when set. A forged `Host` header can't make a foreign assertion verify: the browser writes the origin into the signed client data and authenticators bind credentials to the RP ID.
+- **Signature counters** only move forward. The check runs in the `UPDATE` itself, so it holds across serverless instances; a counter that doesn't advance rejects the sign-in (possible cloned authenticator). Synced passkeys report 0 and are exempt, as the spec intends.
+- **Recent sign-in for enrolment:** adding a passkey needs a sign-in from the last 10 minutes (`authenticatedAt` in the session), so a stolen session cookie can't enrol an attacker's passkey for lasting access. Sessions from before this change have no timestamp and must sign in again.
+- **Same-origin check** on all four endpoints (`Origin` must match `Host`), on top of `SameSite=Lax`.
+- **Only public keys are stored.** Sign-in failures return one generic message and are audit-logged with the reason.
+
+---
+
 ## Session Management
 
 **Library:** [iron-session](https://github.com/vvo/iron-session)
@@ -57,8 +86,10 @@ Admin authentication is handled by `server/auth/AuthService.ts`.
 
 ```ts
 interface SessionData {
-  isAdmin?: boolean;
+  isAdmin: boolean;
   adminId?: string;
+  authenticatedAt?: number; // epoch ms of the last sign-in
+  webauthnChallenge?: { value: string; purpose: "registration" | "authentication"; expiresAt: number };
 }
 ```
 
@@ -253,3 +284,4 @@ Placing the guard in middleware rather than individual page components means:
 | No CSRF token on API routes | `SameSite=Lax` on the session cookie provides CSRF protection for same-site form submissions; if cross-site form submissions are ever needed, add a CSRF token |
 | `style-src: 'unsafe-inline'` | Required by LESS CSS Modules; low risk for a portfolio site |
 | Audit logs go to console | Replace `AuditService` with a structured logging sink for production observability |
+| Passkey challenges live in the stateless session cookie | A challenge is cleared after use, but an attacker holding both an old copy of the cookie and a captured assertion could replay it within the 5-minute window. Synced passkeys (counter 0) don't catch this. Store challenges server-side (e.g. Redis) to close it fully |

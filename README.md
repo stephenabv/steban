@@ -141,6 +141,8 @@ Copy the printed output and set it as `ADMIN_PASSWORD_HASH`.
 | `ANTHROPIC_API_KEY` | Server-only Anthropic API key, required when `COVER_LETTER_AI_ENABLED=true`. Never prefix with `NEXT_PUBLIC_`. |
 | `COVER_LETTER_AI_MODEL` | Model for the AI generator. Default `claude-opus-5-5`. |
 | `COVER_LETTER_AI_TIMEOUT_MS` | Per-attempt timeout for the AI call. Default `20000`; retried twice with backoff, then the template is used. |
+| `WEBAUTHN_RP_ID` | Domain passkeys are bound to (e.g. `example.com`). Default: the host serving the request. Set it only to share passkeys across subdomains; changing it later invalidates existing passkeys. |
+| `WEBAUTHN_ORIGINS` | Comma-separated origins allowed to use passkeys when `WEBAUTHN_RP_ID` is set. Default `https://<WEBAUTHN_RP_ID>`. |
 
 ### Vercel integrations (auto-set)
 
@@ -256,6 +258,7 @@ Navigate to `/admin` (redirects to `/admin/login` when not authenticated).
 | Footer | `/admin/footer` | Footer link URLs (privacy, terms) |
 | Messages | `/admin/messages` | Read and manage contact form submissions |
 | Cover Letters | `/admin/cover-letters` | Generate, edit, finalize and export cover letters from your portfolio data (private, never public) |
+| Passkeys | `/admin/passkeys` | Add and remove passkeys (Face ID, Touch ID, Windows Hello, security keys) for signing in without the password |
 
 > **Note:** All admin UI is complete. Data persistence requires connecting the service layer to a database — see [Database](#database).
 
@@ -303,7 +306,8 @@ Target: OWASP ASVS Level 2.
 | Security headers | HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
 | Session management | iron-session — HttpOnly, Secure, SameSite=Lax cookie; 8-hour TTL |
 | Password hashing | `crypto.scryptSync` with random 16-byte salt; timing-safe compare |
-| Rate limiting | Per-IP limits: admin login (10 / 15 min), contact form (5 / hr), general API (60 / min) |
+| Passkeys | WebAuthn via SimpleWebAuthn; user verification required; one-time challenges in the encrypted session (5 min TTL); signature counters only move forward; adding a passkey needs a sign-in from the last 10 minutes. Password sign-in stays available. |
+| Rate limiting | Per-IP limits: admin login (10 / 15 min, password and passkey each), contact form (5 / hr), general API (60 / min) |
 | Input validation | Zod schemas at every API boundary |
 | Output encoding | HTML entity escaping before any persistence |
 | Admin route guard | Middleware-level redirect for unauthenticated `/admin/*` requests |

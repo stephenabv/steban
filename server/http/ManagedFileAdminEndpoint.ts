@@ -12,6 +12,7 @@ import {
 } from "@/server/services";
 import { formatBytes } from "@/lib/formatBytes";
 import { toManagedFileSummary } from "@/lib/files/ManagedFileSummary";
+import { isSameOrigin } from "./requestGuards";
 
 /** Multipart framing overhead allowed on top of the file itself. */
 const MULTIPART_OVERHEAD = 64 * 1024;
@@ -29,17 +30,6 @@ const publishBodySchema = z.object({ published: z.boolean() }).strict();
 
 function json(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
-}
-
-/** Same-origin check — defence in depth on top of the SameSite=Lax session cookie. */
-function isSameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return false;
-  try {
-    return new URL(origin).host === request.headers.get("host");
-  } catch {
-    return false;
-  }
 }
 
 /**

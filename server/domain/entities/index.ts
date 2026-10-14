@@ -29,3 +29,4 @@ export type {
   LegalVersionStatus,
 } from "./LegalDocument";
 export { LEGAL_DOCUMENT_KINDS, LEGAL_VERSION_STATUSES, isLegalDocumentKind } from "./LegalDocument";
+export type { Passkey, CreatePasskeyInput, PasskeyTransport, PasskeyDeviceType } from "./Passkey";

@@ -5,6 +5,8 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const CONTENT_DIR = path.join(DATA_DIR, "content");
 /** Letters the tests write go here; removed afterwards only if this run created the file. */
 const LETTER_STORE = path.join(DATA_DIR, "cover-letters.json");
+/** Passkeys the tests register; removed afterwards only if this run created the file. */
+const PASSKEY_STORE = path.join(DATA_DIR, "passkeys.json");
 /** Files this run created, so teardown removes only those. */
 export const SEEDED_MANIFEST = path.join(__dirname, "..", ".auth", "seeded.json");
 
@@ -51,7 +53,10 @@ async function exists(file: string): Promise<boolean> {
 export default async function globalSetup(): Promise<void> {
   await fs.mkdir(CONTENT_DIR, { recursive: true });
   await fs.mkdir(path.dirname(SEEDED_MANIFEST), { recursive: true });
-  const seeded: string[] = (await exists(LETTER_STORE)) ? [] : [LETTER_STORE];
+  const seeded: string[] = [];
+  for (const store of [LETTER_STORE, PASSKEY_STORE]) {
+    if (!(await exists(store))) seeded.push(store);
+  }
   for (const [key, data] of Object.entries(SEED)) {
     const file = path.join(CONTENT_DIR, `${key}.json`);
     try {
