@@ -2,10 +2,10 @@ import { siteConfig } from "@/config/site";
 
 /** The WebAuthn relying party (this site) that passkeys are scoped to. */
 export interface RelyingParty {
-  /** Registrable domain passkeys are bound to, e.g. "steban.vercel.app". */
+  /** Registrable domain passkeys are bound to, e.g. "stephenabueva.dev". */
   id: string;
   name: string;
-  /** Origins allowed to run ceremonies, e.g. "https://steban.vercel.app". */
+  /** Origins allowed to run ceremonies, e.g. "https://stephenabueva.dev". */
   origins: string[];
 }
 

@@ -103,7 +103,7 @@ export function sampleProfileData(): ProfileSourceData {
           "Built a portfolio site with a private admin dashboard for editing every page. " +
           "Wrote the content services against PostgreSQL with a JSON fallback for local development.",
         technologies: ["Next.js", "TypeScript", "PostgreSQL"],
-        liveUrl: "https://steban.vercel.app",
+        liveUrl: "https://stephenabueva.dev",
       }),
     ],
     contact: {
@@ -111,7 +111,7 @@ export function sampleProfileData(): ProfileSourceData {
       githubUrl: "https://github.com/stephenabv",
       linkedinUrl: "https://www.linkedin.com/in/stephenabv",
     },
-    portfolioUrl: "https://steban.vercel.app",
+    portfolioUrl: "https://stephenabueva.dev",
   };
 }
 

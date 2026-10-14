@@ -19,7 +19,7 @@ describe("TemplateCoverLetterGenerator", () => {
     expect(sections.header.fullName).toBe("Stephen Abueva");
     expect(sections.header.lines).toEqual([
       "stephen@example.com",
-      "steban.vercel.app",
+      "stephenabueva.dev",
       "github.com/stephenabv",
       "linkedin.com/in/stephenabv",
     ]);
@@ -39,7 +39,7 @@ describe("TemplateCoverLetterGenerator", () => {
 
     expect(opening).toContain("Frontend Engineer");
     expect(opening).toContain("Acme Corp");
-    expect(closing).toContain("steban.vercel.app");
+    expect(closing).toContain("stephenabueva.dev");
   });
 
   it("names the job's technologies in bold", async () => {

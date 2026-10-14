@@ -7,7 +7,7 @@ import { PlainTextExporter } from "@/server/services/coverLetter/exporters/Plain
 import { CoverLetterExporterRegistry } from "@/server/services/coverLetter/exporters/CoverLetterExporterRegistry";
 
 const sections: CoverLetterSections = {
-  header: { fullName: "Stephen Abueva", lines: ["stephen@example.com", "steban.vercel.app"] },
+  header: { fullName: "Stephen Abueva", lines: ["stephen@example.com", "stephenabueva.dev"] },
   date: "October 2, 2026",
   recipient: ["Hiring Manager", "Acme Corp"],
   salutation: "Dear Hiring Manager,",

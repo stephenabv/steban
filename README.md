@@ -116,7 +116,7 @@ credentials. If Playwright can't find a browser, set `PLAYWRIGHT_CHROMIUM_PATH` 
 | `SESSION_SECRET` | Min 32 random characters — used by iron-session to encrypt session cookies |
 | `ADMIN_USERNAME` | Username for the admin login |
 | `ADMIN_PASSWORD_HASH` | Hashed admin password in `salt:hash` format (see below) |
-| `NEXT_PUBLIC_SITE_URL` | Full public URL of the site, no trailing slash (e.g. `https://stephenabueva.com`) |
+| `NEXT_PUBLIC_SITE_URL` | Full public URL of the site, no trailing slash (e.g. `https://stephenabueva.dev`) |
 
 #### Generating a password hash
 
