@@ -11,6 +11,12 @@ const API_BASE = "/api";
 // `object-src 'none'` on it makes Chrome's built-in viewer render blank.
 const CSP_EXEMPT_PATHS = new Set(["/resume.pdf"]);
 
+/** Hostname the client asked for (Host header, without port); nextUrl may carry the server's own. */
+function requestHostname(request: NextRequest): string {
+  const host = request.headers.get("host");
+  return host ? host.replace(/:\d+$/, "") : request.nextUrl.hostname;
+}
+
 export async function proxy(request: NextRequest) {
   const nonce = randomBytes(16).toString("base64");
   const csp = buildCsp(nonce);
@@ -29,7 +35,11 @@ export async function proxy(request: NextRequest) {
     for (const { key, value } of securityHeaders) {
       res.headers.set(key, value);
     }
-    const robotsTag = getRobotsTagHeader(pathname, [adminBasePath, ADMIN_INTERNAL_BASE, API_BASE]);
+    const robotsTag = getRobotsTagHeader(
+      pathname,
+      [adminBasePath, ADMIN_INTERNAL_BASE, API_BASE],
+      requestHostname(request)
+    );
     if (robotsTag) {
       res.headers.set(robotsTag.key, robotsTag.value);
     }

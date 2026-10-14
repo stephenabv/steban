@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { siteUrl } from "@/config/site";
+import { siteConfig, siteUrl } from "@/config/site";
+import { pageSeoDefaults } from "@/config/seo";
+import { breadcrumbSchema, projectSchema } from "@/lib/structuredData";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { PageMetadataBuilder } from "@/lib/seo/PageMetadataBuilder";
 import type { Project } from "@/server/domain/entities";
 import { getProjectService } from "@/server/services";
@@ -17,21 +21,27 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-async function getProject(slug: string): Promise<Project | null> {
+function projectUrl(slug: string): string {
+  return siteUrl(`/projects/${encodeURIComponent(slug)}`);
+}
+
+// Cached per request so generateMetadata and the page share one read.
+const getProject = cache(async (slug: string): Promise<Project | null> => {
   const result = await getProjectService().getBySlug(slug);
   return result.ok ? result.value : null;
-}
+});
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProject(slug);
-  if (!project) return { title: "Project Not Found" };
+  if (!project) return { title: "Project Not Found", robots: { index: false, follow: true } };
+  const canonical = projectUrl(project.slug);
   return {
     title: project.title,
-    description: project.summary,
-    alternates: { canonical: siteUrl(`/projects/${slug}`) },
+    description: project.summary || undefined,
+    alternates: { canonical },
     openGraph: PageMetadataBuilder.openGraph(
-      { alternates: { canonical: siteUrl(`/projects/${slug}`) } },
+      { alternates: { canonical } },
       { title: project.title, description: project.summary, ogImageUrl: project.coverImage || undefined }
     ),
   };
@@ -48,9 +58,18 @@ export default async function ProjectDetailPage({ params }: Props) {
   const project = await getProject(slug);
 
   if (!project) notFound();
+  const url = projectUrl(project.slug);
 
   return (
     <>
+      <JsonLd data={projectSchema({ ...project, url })} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: siteConfig.name, url: siteUrl() },
+          { name: pageSeoDefaults.projects.title, url: siteUrl("/projects") },
+          { name: project.title, url },
+        ])}
+      />
       <article className={styles.page}>
         <header className={styles.header}>
           <nav aria-label="Breadcrumb" className={styles.breadcrumb}>

@@ -3,6 +3,7 @@ import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { connection } from "next/server";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
+import { searchVerification } from "@/lib/seo/searchVerification";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { THEME_COLORS } from "@/lib/theme/theme";
 import { getServerTheme } from "@/lib/theme/getServerTheme";
@@ -62,6 +63,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteConfig.url,
   },
+  verification: searchVerification(),
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

@@ -29,6 +29,7 @@ import type {
 import type { ContactInfoContent } from "@/server/domain/entities";
 import { siteConfig } from "@/config/site";
 import { socialLinks } from "@/config/social";
+import { notifySearchEngines } from "@/server/seo/searchEngineNotifier";
 
 export interface ContentActionResult {
   ok: boolean;
@@ -65,6 +66,7 @@ export async function saveHeroAction(input: HeroFormInput): Promise<ContentActio
   const result = await getHeroService().save(parsed.data);
   if (!result.ok) return SAVE_FAILED;
   revalidatePath("/");
+  notifySearchEngines(["/"]);
   return { ok: true, savedAt: result.value.updatedAt.toISOString() };
 }
 
@@ -76,6 +78,7 @@ export async function saveAboutAction(input: AboutFormInput): Promise<ContentAct
   const result = await getAboutService().save(parsed.data);
   if (!result.ok) return SAVE_FAILED;
   revalidatePath("/about");
+  notifySearchEngines(["/about"]);
   return { ok: true, savedAt: result.value.updatedAt.toISOString() };
 }
 
@@ -90,6 +93,7 @@ export async function saveSeoAction(input: SeoFormInput): Promise<ContentActionR
   const result = await getSeoService().upsert(pageKey, content);
   if (!result.ok) return SAVE_FAILED;
   revalidatePath(SEO_PATHS[pageKey]);
+  notifySearchEngines([SEO_PATHS[pageKey]]);
   return { ok: true, savedAt: result.value.updatedAt.toISOString() };
 }
 

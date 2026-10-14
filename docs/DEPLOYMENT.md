@@ -11,6 +11,7 @@ This document covers deploying the portfolio to Vercel (recommended) and general
 - [Environment Variables Checklist](#environment-variables-checklist)
 - [Vercel Integrations](#vercel-integrations)
 - [Custom Domain](#custom-domain)
+- [Search Engine Indexing](#search-engine-indexing)
 - [Preview Deployments](#preview-deployments)
 - [Production Checklist](#production-checklist)
 - [Self-Hosting](#self-hosting)
@@ -73,6 +74,10 @@ Apply each variable to **Production**, **Preview**, and **Development** environm
 | Variable | Example value | Notes |
 |---|---|---|
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | `G-XXXXXXXXXX` | GA4 only fires in production. Leave unset in preview/development. |
+| `GOOGLE_SITE_VERIFICATION` | `AbC123...` | Token from Search Console's **HTML tag** method (only the `content` value). Not needed if you verify by DNS. |
+| `BING_SITE_VERIFICATION` | `0123ABCD...` | Token from Bing Webmaster Tools' `msvalidate.01` meta tag. Not needed if you import from Search Console. |
+| `YANDEX_VERIFICATION` | `abc123...` | Token from Yandex Webmaster's meta tag. |
+| `INDEXNOW_KEY` | `3f9c...` (32 hex chars) | Turns on IndexNow: served at `/indexnow-key.txt`, and production saves of projects, hero, about, SEO and legal pages ping Bing/Yandex. 8–128 letters, digits or hyphens. Generate with `openssl rand -hex 16`. |
 
 ### Auto-set by Vercel integrations
 
@@ -153,6 +158,27 @@ Passkeys are bound to the domain they were registered on (by default the host se
 
 ---
 
+## Search Engine Indexing
+
+What the app already does, so you don't have to:
+
+- **`/sitemap.xml`** lists every indexable public page: home, about, contact, privacy, terms, the projects index and each project (with its cover and gallery as image entries). It is regenerated hourly and immediately after a project is saved. `<lastmod>` is only set where a real content date exists (projects, about, legal pages), because Google ignores `lastmod` that isn't "consistently and verifiably accurate" and ignores `changefreq`/`priority` entirely, so those are not emitted.
+- Pages marked **noindex** in Admin → SEO are left out of the sitemap, so Search Console never reports "Submitted URL marked noindex".
+- **`/robots.txt`** allows everything and points at the sitemap. Admin and API routes are kept out of the index with an `X-Robots-Tag: noindex` header instead of robots.txt, which would advertise them.
+- Requests to any `*.vercel.app` host get `X-Robots-Tag: noindex`, so the Vercel alias can't compete with `stephenabueva.dev` as duplicate content. Preview deployments are already noindexed by Vercel.
+- **Structured data** (JSON-LD): `Person` and `WebSite` on the home page, `ProfilePage` and `BreadcrumbList` on About, `CreativeWork` and `BreadcrumbList` on each project. Every page has a canonical URL built from `NEXT_PUBLIC_SITE_URL`.
+
+### One-time steps (outside the repo)
+
+1. **Google Search Console** — <https://search.google.com/search-console> → **Add property** → **Domain** → `stephenabueva.dev`. Copy the `google-site-verification=...` TXT record into Cloudflare DNS (`TXT`, name `@`), then click **Verify**. A Domain property covers `www` and every protocol. (Alternative: a **URL prefix** property with the **HTML tag** method; put only the token in `GOOGLE_SITE_VERIFICATION` and redeploy.)
+2. **Submit the sitemap to Google** — Search Console → **Sitemaps** → enter `sitemap.xml` → **Submit**. Then use **URL Inspection** on the home page and **Request indexing**.
+3. **Bing Webmaster Tools** — <https://www.bing.com/webmasters> → **Import from Google Search Console** (fastest; it verifies the site and imports the sitemap). Otherwise add the site, verify with the `msvalidate.01` token in `BING_SITE_VERIFICATION` or a DNS CNAME, and submit `https://stephenabueva.dev/sitemap.xml` under **Sitemaps**. Bing's index also feeds DuckDuckGo, Yahoo and ChatGPT search.
+4. **IndexNow (optional, recommended)** — set `INDEXNOW_KEY` for the **Production** environment and redeploy. Confirm `https://stephenabueva.dev/indexnow-key.txt` shows the key. From then on, each published change notifies Bing and other IndexNow engines within minutes. Google doesn't use IndexNow; it relies on the sitemap.
+5. **Redirect the Vercel alias** — keep `steban.vercel.app` set to **Redirect to** `stephenabueva.dev` (see [Custom Domain](#custom-domain)), so existing links pass their signals to the canonical domain.
+6. **Check** — run the home page, About page and a project through Google's [Rich Results Test](https://search.google.com/test/rich-results), and watch Search Console's **Pages** report over the following weeks.
+
+---
+
 ## Preview Deployments
 
 Every push to any branch (other than `main`) automatically creates a preview deployment at a unique URL. This is useful for reviewing changes before merging.
@@ -170,14 +196,15 @@ Before going live, verify each item:
 - [ ] `SESSION_SECRET` is at least 32 characters and unique (not the same as in development).
 - [ ] `ADMIN_PASSWORD_HASH` uses a strong password (12+ characters, mixed case, numbers, symbols).
 - [ ] `NEXT_PUBLIC_SITE_URL` is the exact production URL (used in OG tags, canonical URLs, sitemap).
-- [ ] `robots.txt` is accessible at `/robots.txt` and blocks `/admin/` and `/api/`.
+- [ ] `robots.txt` is accessible at `/robots.txt`, and `/admin/login` responds with `X-Robots-Tag: noindex, nofollow`.
 - [ ] `/admin/` redirects to `/admin/login` when not authenticated (verify in an incognito window).
 - [ ] Contact form rate limiting works (submit more than 5 times quickly; should receive a 429).
 
 ### SEO
 
-- [ ] `sitemap.xml` is accessible at `/sitemap.xml`.
-- [ ] Home page outputs JSON-LD structured data (check with Google's Rich Results Test).
+- [ ] `sitemap.xml` is accessible at `/sitemap.xml` and lists the production domain.
+- [ ] Home, About and a project page pass Google's Rich Results Test.
+- [ ] The domain is verified in Google Search Console and Bing Webmaster Tools, with the sitemap submitted (see [Search Engine Indexing](#search-engine-indexing)).
 - [ ] All pages have unique `<title>` and `<meta name="description">` tags.
 - [ ] OG images render correctly (check with a social media link preview tool).
 
