@@ -47,10 +47,33 @@ describe("PageMetadataBuilder.build", () => {
     expect(metadata.openGraph?.description).toBe("Bio");
   });
 
+  it("mirrors overrides onto the X card so the site-wide card is not inherited", () => {
+    const metadata = PageMetadataBuilder.build(
+      "about",
+      aboutDefaults,
+      seo({ title: "About Stephen", description: "Bio", ogImageUrl: "https://cdn.example.com/about.png" })
+    );
+
+    expect(metadata.twitter).toEqual({
+      card: defaultSeo.twitter.card,
+      title: "About Stephen",
+      description: "Bio",
+      images: [{ url: "https://cdn.example.com/about.png" }],
+    });
+  });
+
+  it("keeps the generated image on the X card when only text is overridden", () => {
+    const metadata = PageMetadataBuilder.build("about", aboutDefaults, seo({ description: "Bio" }));
+
+    expect(metadata.twitter).toMatchObject({ description: "Bio", images: [defaultOgImage] });
+    expect(metadata.twitter).not.toHaveProperty("title");
+  });
+
   it("leaves openGraph to the root layout when no share field is overridden", () => {
     const metadata = PageMetadataBuilder.build("about", aboutDefaults, seo({ keywords: ["engineer"] }));
 
     expect(metadata.openGraph).toBeUndefined();
+    expect(metadata.twitter).toBeUndefined();
     expect(metadata.keywords).toEqual(["engineer"]);
   });
 
@@ -71,5 +94,21 @@ describe("PageMetadataBuilder.openGraph", () => {
 
     expect(og.images).toEqual([defaultOgImage]);
     expect(og).toMatchObject({ url: "https://example.com/projects/demo", title: "Demo" });
+  });
+});
+
+describe("PageMetadataBuilder.twitter", () => {
+  it("builds a project's X card from its Open Graph fields", () => {
+    const og = PageMetadataBuilder.openGraph(
+      { alternates: { canonical: "https://example.com/projects/demo" } },
+      { title: "Demo", description: "Summary", ogImageUrl: "https://cdn.example.com/demo.png" }
+    );
+
+    expect(PageMetadataBuilder.twitter(og)).toEqual({
+      card: "summary_large_image",
+      title: "Demo",
+      description: "Summary",
+      images: [{ url: "https://cdn.example.com/demo.png" }],
+    });
   });
 });

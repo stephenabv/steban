@@ -93,6 +93,8 @@ export async function saveSeoAction(input: SeoFormInput): Promise<ContentActionR
   const result = await getSeoService().upsert(pageKey, content);
   if (!result.ok) return SAVE_FAILED;
   revalidatePath(SEO_PATHS[pageKey]);
+  // The sitemap leaves out pages marked noindex.
+  revalidatePath("/sitemap.xml");
   notifySearchEngines([SEO_PATHS[pageKey]]);
   return { ok: true, savedAt: result.value.updatedAt.toISOString() };
 }

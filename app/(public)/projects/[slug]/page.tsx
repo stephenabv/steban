@@ -36,14 +36,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await getProject(slug);
   if (!project) return { title: "Project Not Found", robots: { index: false, follow: true } };
   const canonical = projectUrl(project.slug);
+  const openGraph = PageMetadataBuilder.openGraph(
+    { alternates: { canonical } },
+    { title: project.title, description: project.summary, ogImageUrl: project.coverImage || undefined }
+  );
   return {
     title: project.title,
     description: project.summary || undefined,
     alternates: { canonical },
-    openGraph: PageMetadataBuilder.openGraph(
-      { alternates: { canonical } },
-      { title: project.title, description: project.summary, ogImageUrl: project.coverImage || undefined }
-    ),
+    openGraph,
+    twitter: PageMetadataBuilder.twitter(openGraph),
   };
 }
 
