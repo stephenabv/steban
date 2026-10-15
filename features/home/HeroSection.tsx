@@ -1,13 +1,9 @@
-"use client";
-
 import Image from "next/image";
-import { motion } from "framer-motion";
 import type { Hero } from "@/server/domain/entities";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/icons/Icon";
-import { EASE_OUT, fadeUp } from "@/lib/motion";
 import { initials } from "@/lib/initials";
 import styles from "./HeroSection.module.less";
 
@@ -21,15 +17,22 @@ interface Props {
   nextSectionId?: string;
 }
 
+/**
+ * The photo frame is 240px wide (60vw on narrow phones) below the `lg`
+ * breakpoint and 400px from it — keep in sync with `.photoFrame`. An accurate
+ * hint stops phones from downloading a desktop-sized rendition.
+ */
+const PHOTO_SIZES = "(max-width: 1023px) min(240px, 60vw), 400px";
+
 const DEFAULT_INTRO =
   "Building scalable, high-performance web applications with a focus on clean architecture, security, and exceptional developer experience.";
 
 export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: Props) {
   const name = hero?.name || siteConfig.name;
 
-  // Stagger children in sequence (reduced motion is handled by MotionConfig).
-  const item = (i: number) => fadeUp(i * 0.1);
-
+  // Rendered on the server with CSS-only entrance animations: the copy and the
+  // photo paint with the first HTML instead of waiting for hydration, which
+  // is what kept Largest Contentful Paint late on mobile.
   return (
     <section className={styles.hero} aria-labelledby="hero-heading">
       <div className={styles.backdrop} aria-hidden="true">
@@ -37,26 +40,26 @@ export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: 
       </div>
 
       <div className={styles.inner}>
-        <motion.div className={styles.content} initial="hidden" animate="visible">
-          <motion.div variants={item(0)}>
+        <div className={styles.content}>
+          <div>
             <Badge tone="success" pulse>
               Available for opportunities
             </Badge>
-          </motion.div>
+          </div>
 
-          <motion.h1 id="hero-heading" variants={item(1)} className={styles.name}>
+          <h1 id="hero-heading" className={styles.name}>
             {name}
-          </motion.h1>
+          </h1>
 
-          <motion.p variants={item(2)} className={styles.title}>
+          <p className={styles.title}>
             {hero?.title || "Computer Engineer"}
-          </motion.p>
+          </p>
 
-          <motion.p variants={item(3)} className={styles.intro}>
+          <p className={styles.intro}>
             {hero?.introduction || DEFAULT_INTRO}
-          </motion.p>
+          </p>
 
-          <motion.div variants={item(4)} className={styles.actions}>
+          <div className={styles.actions}>
             <Button href="/projects" size="lg" iconRight="arrow-right">
               View Projects
             </Button>
@@ -75,14 +78,10 @@ export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: 
                 Resume
               </Button>
             )}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        <motion.div
-          className={styles.photoWrapper}
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1, transition: { duration: 0.8, delay: 0.2, ease: EASE_OUT } }}
-        >
+        <div className={styles.photoWrapper}>
           <div className={styles.photoFrame}>
             {photoSrc ? (
               <Image
@@ -90,8 +89,10 @@ export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: 
                 alt={hero?.photoAlt || `${name} — profile photo`}
                 fill
                 className={styles.photo}
-                priority
-                sizes="(max-width: 1024px) 70vw, 420px"
+                // The LCP element on phones: fetch it first, never lazily.
+                loading="eager"
+                fetchPriority="high"
+                sizes={PHOTO_SIZES}
               />
             ) : (
               <div className={styles.photoPlaceholder} role="img" aria-label={`${name} initials`}>
@@ -99,7 +100,7 @@ export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: 
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {nextSectionId && (

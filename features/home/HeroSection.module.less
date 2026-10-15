@@ -56,6 +56,27 @@
   @media (min-width: @bp-lg) {
     order: 1;
   }
+
+  // Staggered entrance, CSS-only so it starts with the first paint rather
+  // than after hydration. `backwards` holds the first keyframe during each
+  // delay; children are, in order: badge, name, title, intro, actions.
+  > * {
+    animation: hero-rise 0.6s @ease-out backwards;
+    .reduced-motion();
+  }
+
+  > :nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  > :nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  > :nth-child(4) {
+    animation-delay: 0.3s;
+  }
+  > :nth-child(5) {
+    animation-delay: 0.4s;
+  }
 }
 
 .name {
@@ -92,6 +113,10 @@
   display: flex;
   justify-content: center;
   order: 1;
+  // Transform-only entrance: the photo is the LCP element on phones, and
+  // starting it at opacity 0 would hold LCP back until the fade ends.
+  animation: hero-settle 0.8s @ease-out 0.2s backwards;
+  .reduced-motion();
 
   @media (min-width: @bp-lg) {
     order: 2;
@@ -127,6 +152,19 @@
   font-weight: @fw-semibold;
   letter-spacing: -0.04em;
   color: @color-text-muted;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes hero-settle {
+  from {
+    transform: scale(0.94);
+  }
 }
 
 // ─── Scroll cue ───────────────────────────────────────────────────────────────

@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
 import { searchVerification } from "@/lib/seo/searchVerification";
 import { MotionProvider } from "@/components/layout/MotionProvider";
+import { RouteTransitions } from "@/components/layout/RouteTransitions";
 import { THEME_COLORS } from "@/lib/theme/theme";
 import { getServerTheme } from "@/lib/theme/getServerTheme";
 import "@/styles/globals.less";
@@ -83,6 +84,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main-content" id="skip-nav">
           Skip to main content
         </a>
+        <RouteTransitions />
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
