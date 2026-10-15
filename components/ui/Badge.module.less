@@ -21,24 +21,36 @@
   flex-shrink: 0;
 }
 
+// The ring is a scaled pseudo-element, so the pulse animates only transform
+// and opacity and stays on the compositor (a box-shadow animation repaints
+// every frame).
 .pulse .dot {
-  box-shadow: 0 0 0 0 currentColor;
-  animation: pulse 2s ease-out infinite;
+  position: relative;
 
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: @color-success;
+    opacity: 0;
+    animation: pulse 2s ease-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 fade(@color-success, 55%);
+    transform: scale(1);
+    opacity: 0.55;
   }
-  70% {
-    box-shadow: 0 0 0 7px fade(@color-success, 0%);
-  }
+  70%,
   100% {
-    box-shadow: 0 0 0 0 fade(@color-success, 0%);
+    transform: scale(3.3);
+    opacity: 0;
   }
 }
 

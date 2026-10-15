@@ -190,7 +190,10 @@ code {
 }
 
 // ─── Route transitions (see app/**/template.tsx) ─────────────────────────────
-.route-page {
+// Armed by RouteTransitions after the first client-side navigation, so the
+// initial document load paints at full opacity (an opacity animation delays
+// Largest Contentful Paint until it ends).
+[data-route-transitions] .route-page {
   animation: route-page-enter @duration-page @ease-out both;
 
   @media (prefers-reduced-motion: reduce) {
@@ -204,6 +207,14 @@ code {
 // animation then starts the moment real content replaces the fallback.
 .route-page:has(> [data-route-loader]) {
   animation: none;
+}
+
+// Nothing sits in <main> while the fallback (a fixed overlay) is up, so the
+// footer would render just under the navbar and then jump below the page once
+// it streams in: a full-viewport layout shift (CLS ≈ 0.9 on mobile). Taking
+// the footer out of flow until then turns that jump into a plain insertion.
+body:has([data-route-loader]) > footer {
+  display: none;
 }
 
 @keyframes route-page-enter {

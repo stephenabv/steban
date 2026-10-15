@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
 
   images: {
     formats: ["image/avif", "image/webp"],
+    // Defaults plus 480: the hero photo renders ~240 CSS px wide on phones, and
+    // without a step between 384 and 640 a 2x screen downloads 640 px.
+    imageSizes: [32, 48, 64, 96, 128, 256, 384, 480],
     minimumCacheTTL: 86400,
     // Project cover/gallery images are pasted as external URLs in the admin (e.g. Vercel Blob).
     remotePatterns: [{ protocol: "https", hostname: "**" }],
