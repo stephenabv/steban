@@ -3,16 +3,17 @@ import { siteConfig, siteUrl } from "@/config/site";
 import { LEGAL_DOCUMENTS } from "@/config/legal";
 import { getLegalDocument } from "@/lib/content/publicContent";
 import { LegalPage } from "@/features/legal/LegalPage";
+import { PageMetadataBuilder } from "@/lib/seo/PageMetadataBuilder";
 
 const DEFINITION = LEGAL_DOCUMENTS.terms;
 
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getLegalDocument(DEFINITION.kind);
-  return {
+  return PageMetadataBuilder.withSocial({
     title: document.title,
     description: `${document.title} for ${siteConfig.name}'s portfolio website.`,
     alternates: { canonical: siteUrl(DEFINITION.path) },
-  };
+  });
 }
 
 export default async function TermsPage() {

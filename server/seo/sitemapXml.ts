@@ -16,11 +16,19 @@ export function xmlEscape(value: string): string {
 }
 
 /**
+ * Braces are not valid in a URL (RFC 3986). When they appear, the value is
+ * almost always an unrendered CDN template copied from a page's source, such
+ * as `poi={$this.metadata.x}`, so the image cannot be fetched.
+ */
+const UNRESOLVED_TEMPLATE = /[{}]/;
+
+/**
  * Normalizes an absolute http(s) URL for a sitemap <loc>/<image:loc>, or
- * returns null for anything else (relative paths, data: URIs, typos), which
- * search engines would reject.
+ * returns null for anything else (relative paths, data: URIs, typos,
+ * unrendered templates), which search engines would reject.
  */
 export function sitemapUrl(value: string): string | null {
+  if (UNRESOLVED_TEMPLATE.test(value)) return null;
   let url: URL;
   try {
     url = new URL(value.trim());

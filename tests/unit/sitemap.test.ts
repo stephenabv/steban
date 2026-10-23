@@ -128,6 +128,7 @@ describe("sitemap XML helpers", () => {
     expect(sitemapUrl(" https://example.com/a b ")).toBe("https://example.com/a%20b");
     expect(sitemapUrl("data:image/png;base64,AAAA")).toBeNull();
     expect(sitemapUrl("not a url")).toBeNull();
+    expect(sitemapUrl("https://cdn.example.com/logo?poi={$this.metadata.x}")).toBeNull();
   });
 });
 
