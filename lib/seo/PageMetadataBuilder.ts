@@ -21,18 +21,36 @@ type Twitter = NonNullable<Metadata["twitter"]>;
  */
 export class PageMetadataBuilder {
   static build(pageKey: SeoPageKey, defaults: Metadata, seo: SeoContent | null): Metadata {
-    if (!seo) return defaults;
-
     const metadata: Metadata = { ...defaults };
-    if (seo.title) metadata.title = pageKey === "home" ? { absolute: seo.title } : seo.title;
-    if (seo.description) metadata.description = seo.description;
-    if (seo.keywords.length > 0) metadata.keywords = seo.keywords;
-    if (seo.title || seo.description || seo.ogImageUrl) {
-      metadata.openGraph = PageMetadataBuilder.openGraph(defaults, seo);
-      metadata.twitter = PageMetadataBuilder.twitter(metadata.openGraph);
-    }
-    if (seo.noIndex) metadata.robots = { index: false, follow: true };
-    return metadata;
+    if (seo?.title) metadata.title = pageKey === "home" ? { absolute: seo.title } : seo.title;
+    if (seo?.description) metadata.description = seo.description;
+    if (seo?.keywords.length) metadata.keywords = seo.keywords;
+    if (seo?.noIndex) metadata.robots = { index: false, follow: true };
+    return PageMetadataBuilder.withSocial(metadata, seo?.ogImageUrl);
+  }
+
+  /**
+   * Gives a page its own Open Graph and X card built from its title,
+   * description and canonical URL. Without this, a page inherits the root
+   * layout's card, so its og:url, og:title and X card describe the home page
+   * instead of itself.
+   */
+  static withSocial(metadata: Metadata, ogImageUrl?: string): Metadata {
+    const title = PageMetadataBuilder.titleText(metadata.title);
+    const description = typeof metadata.description === "string" ? metadata.description : undefined;
+    const openGraph = PageMetadataBuilder.openGraph(metadata, {
+      ...(title ? { title } : {}),
+      ...(description ? { description } : {}),
+      ...(ogImageUrl ? { ogImageUrl } : {}),
+    });
+    return { ...metadata, openGraph, twitter: PageMetadataBuilder.twitter(openGraph) };
+  }
+
+  private static titleText(title: Metadata["title"]): string | undefined {
+    if (typeof title === "string") return title || undefined;
+    if (title && "absolute" in title) return title.absolute || undefined;
+    if (title && "default" in title) return title.default || undefined;
+    return undefined;
   }
 
   /** Site-wide Open Graph fields with the page's canonical URL, defaults and overrides layered on. */

@@ -19,8 +19,17 @@ const seo = (overrides: Partial<SeoContent> = {}): SeoContent => ({
 });
 
 describe("PageMetadataBuilder.build", () => {
-  it("returns the page defaults untouched when nothing is saved", () => {
-    expect(PageMetadataBuilder.build("about", aboutDefaults, null)).toBe(aboutDefaults);
+  it("gives the page its own social card when nothing is saved", () => {
+    const metadata = PageMetadataBuilder.build("about", aboutDefaults, null);
+
+    expect(metadata).toMatchObject(aboutDefaults);
+    expect(metadata.openGraph).toMatchObject({
+      title: "About",
+      description: "Default about description",
+      url: "https://example.com/about",
+      images: [defaultOgImage],
+    });
+    expect(metadata.twitter).toMatchObject({ title: "About", description: "Default about description" });
   });
 
   it("keeps the generated share image when only the title is overridden", () => {
@@ -65,15 +74,13 @@ describe("PageMetadataBuilder.build", () => {
   it("keeps the generated image on the X card when only text is overridden", () => {
     const metadata = PageMetadataBuilder.build("about", aboutDefaults, seo({ description: "Bio" }));
 
-    expect(metadata.twitter).toMatchObject({ description: "Bio", images: [defaultOgImage] });
-    expect(metadata.twitter).not.toHaveProperty("title");
+    expect(metadata.twitter).toMatchObject({ title: "About", description: "Bio", images: [defaultOgImage] });
   });
 
-  it("leaves openGraph to the root layout when no share field is overridden", () => {
+  it("keeps the page's own card when only keywords are overridden", () => {
     const metadata = PageMetadataBuilder.build("about", aboutDefaults, seo({ keywords: ["engineer"] }));
 
-    expect(metadata.openGraph).toBeUndefined();
-    expect(metadata.twitter).toBeUndefined();
+    expect(metadata.openGraph).toMatchObject({ title: "About", url: "https://example.com/about" });
     expect(metadata.keywords).toEqual(["engineer"]);
   });
 
@@ -82,6 +89,17 @@ describe("PageMetadataBuilder.build", () => {
 
     expect(metadata.title).toEqual({ absolute: "Home" });
     expect(metadata.robots).toEqual({ index: false, follow: true });
+  });
+});
+
+describe("PageMetadataBuilder.withSocial", () => {
+  it("uses the absolute home title and the page's canonical URL", () => {
+    const metadata = PageMetadataBuilder.withSocial({
+      title: { absolute: "Stephen Abueva" },
+      alternates: { canonical: "https://example.com" },
+    });
+
+    expect(metadata.openGraph).toMatchObject({ title: "Stephen Abueva", url: "https://example.com" });
   });
 });
 
