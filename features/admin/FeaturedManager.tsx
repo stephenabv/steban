@@ -17,7 +17,7 @@ import styles from "./AdminPage.module.less";
 
 
 interface Props {
-  /** Featured projects in carousel order (as returned by the service). */
+  /** Featured projects in home page order (as returned by the service). */
   featured: AdminProjectRow[];
   others: AdminProjectRow[];
   newHref: string;
@@ -58,7 +58,7 @@ export function FeaturedManager({ featured, others, newHref }: Props) {
           toast.error(result.error ?? "Couldn't update the project.");
           return;
         }
-        toast.success(on ? `"${project.title}" added to the carousel.` : `"${project.title}" removed from the carousel.`);
+        toast.success(on ? `"${project.title}" added to the home page.` : `"${project.title}" removed from the home page.`);
         router.refresh();
       } catch {
         toast.error("Something went wrong. Please try again.");
@@ -87,7 +87,7 @@ export function FeaturedManager({ featured, others, newHref }: Props) {
     <div className={styles.stack}>
       <Card>
         <CardHeader
-          title="In the carousel"
+          title="On the home page"
           description="Shown on the home page, in this order."
           actions={
             <Badge tone={atCapacity ? "warning" : "accent"}>
@@ -96,7 +96,7 @@ export function FeaturedManager({ featured, others, newHref }: Props) {
           }
         />
         {inCarousel.length === 0 ? (
-          <EmptyState compact icon="star" title="Nothing featured" description="The carousel is hidden until at least one project is featured." />
+          <EmptyState compact icon="star" title="Nothing featured" description="The home page shows a placeholder until at least one project is featured." />
         ) : (
           <ol className={styles.list} role="list">
             {inCarousel.map((p, i) => (
@@ -119,10 +119,10 @@ export function FeaturedManager({ featured, others, newHref }: Props) {
       </Card>
 
       <Card>
-        <CardHeader title="Available projects" description="Switch a project on to add it to the carousel." />
+        <CardHeader title="Available projects" description="Switch a project on to add it to the home page." />
         {atCapacity && (
           <Alert tone="info" className={styles.formError}>
-            The carousel is full. Remove a project above to feature another one.
+            The home page is full. Remove a project above to feature another one.
           </Alert>
         )}
         <SearchInput label="Search available projects" placeholder="Search projects…" value={query} onValueChange={setQuery} />

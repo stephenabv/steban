@@ -125,7 +125,7 @@ export function ProjectFormFields({ form, idPrefix }: Props) {
               checked={values.featured}
               onCheckedChange={(checked) => setField("featured", checked)}
               label="Feature on the home page"
-              description="Featured projects appear in the home page carousel."
+              description="Featured projects appear in the home page feed."
             />
           </div>
         </div>

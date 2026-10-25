@@ -25,7 +25,7 @@ export const adminNavigation: AdminNavGroup[] = [
     label: "Content",
     items: [
       { path: "/projects", label: "Projects", icon: "layers", description: "Add and manage projects" },
-      { path: "/featured", label: "Featured", icon: "star", description: "Home page carousel" },
+      { path: "/featured", label: "Featured", icon: "star", description: "Home page feed" },
       { path: "/hero", label: "Hero", icon: "user", description: "Name, title, photo and intro" },
       { path: "/resume", label: "Resume", icon: "file-text", description: "Upload and replace your resume PDF" },
       { path: "/about", label: "About", icon: "briefcase", description: "Biography, skills, experience" },

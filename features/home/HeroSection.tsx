@@ -1,9 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Hero } from "@/server/domain/entities";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Icon } from "@/components/icons/Icon";
+import { Icon, type IconName } from "@/components/icons/Icon";
 import { initials } from "@/lib/initials";
 import styles from "./HeroSection.module.less";
 
@@ -13,64 +14,96 @@ interface Props {
   photoSrc: string | null;
   /** Whether an uploaded resume is published; the button is hidden otherwise. */
   resumeAvailable: boolean;
-  /** Anchor id of the section the scroll cue should jump to. */
-  nextSectionId?: string;
 }
 
 /**
- * The photo frame is 240px wide (60vw on narrow phones) below the `lg`
- * breakpoint and 400px from it — keep in sync with `.photoFrame`. An accurate
- * hint stops phones from downloading a desktop-sized rendition.
+ * The avatar is 112px across below the `lg` breakpoint and 152px from it
+ * (the story ring and its gap sit outside) — keep in sync with `.avatar`.
+ * An accurate hint stops phones from downloading a desktop-sized rendition.
  */
-const PHOTO_SIZES = "(max-width: 1023px) min(240px, 60vw), 400px";
+const PHOTO_SIZES = "(max-width: 1023px) 112px, 152px";
 
 const DEFAULT_INTRO =
   "Building scalable, high-performance web applications with a focus on clean architecture, security, and exceptional developer experience.";
 
-export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: Props) {
+interface Highlight {
+  href: string;
+  label: string;
+  icon: IconName;
+  /** Plain <a> in a new tab (the resume PDF); a Next <Link> would prefetch it. */
+  external?: boolean;
+}
+
+function highlightsFor(resumeAvailable: boolean): Highlight[] {
+  return [
+    { href: "/projects", label: "Projects", icon: "grid" },
+    { href: "/about", label: "About", icon: "user" },
+    { href: "/contact", label: "Contact", icon: "mail" },
+    ...(resumeAvailable ? [{ href: siteConfig.resumePath, label: "Resume", icon: "file-text" as const, external: true }] : []),
+  ];
+}
+
+/**
+ * Profile header in the Facebook/Instagram idiom: a cover, a round photo in a
+ * story ring, the name and actions, then story-style highlight links.
+ *
+ * Rendered on the server with CSS-only, transform-only entrance animations: the
+ * copy and the photo paint at full opacity with the first HTML, so Largest
+ * Contentful Paint never waits for hydration or a fade.
+ */
+export function HeroSection({ hero, photoSrc, resumeAvailable }: Props) {
   const name = hero?.name || siteConfig.name;
 
-  // Rendered on the server with CSS-only entrance animations: the copy and the
-  // photo paint with the first HTML instead of waiting for hydration, which
-  // is what kept Largest Contentful Paint late on mobile.
   return (
     <section className={styles.hero} aria-labelledby="hero-heading">
-      <div className={styles.backdrop} aria-hidden="true">
-        <div className={styles.grid} />
-      </div>
+      <div className={styles.profile}>
+        <div className={styles.cover} aria-hidden="true" />
 
-      <div className={styles.inner}>
-        <div className={styles.content}>
-          <div>
-            <Badge tone="success" pulse>
-              Available for opportunities
-            </Badge>
+        <div className={styles.header}>
+          <div className={styles.ring}>
+            <div className={styles.avatar}>
+              {photoSrc ? (
+                <Image
+                  src={photoSrc}
+                  alt={hero?.photoAlt || `${name} — profile photo`}
+                  fill
+                  className={styles.photo}
+                  // Above the fold on every screen: fetch it first, never lazily.
+                  loading="eager"
+                  fetchPriority="high"
+                  sizes={PHOTO_SIZES}
+                />
+              ) : (
+                <div className={styles.photoPlaceholder} role="img" aria-label={`${name} initials`}>
+                  {initials(name)}
+                </div>
+              )}
+            </div>
           </div>
 
-          <h1 id="hero-heading" className={styles.name}>
-            {name}
-          </h1>
-
-          <p className={styles.title}>
-            {hero?.title || "Computer Engineer"}
-          </p>
-
-          <p className={styles.intro}>
-            {hero?.introduction || DEFAULT_INTRO}
-          </p>
+          <div className={styles.identity}>
+            <div>
+              <Badge tone="success" pulse>
+                Available for opportunities
+              </Badge>
+            </div>
+            <h1 id="hero-heading" className={styles.name}>
+              {name}
+            </h1>
+            <p className={styles.title}>{hero?.title || "Computer Engineer"}</p>
+          </div>
 
           <div className={styles.actions}>
-            <Button href="/projects" size="lg" iconRight="arrow-right">
+            <Button href="/projects" iconRight="arrow-right">
               View Projects
             </Button>
-            <Button href="/contact" size="lg" variant="secondary">
+            <Button href="/contact" variant="secondary">
               Contact Me
             </Button>
             {resumeAvailable && (
               <Button
                 href={siteConfig.resumePath}
-                size="lg"
-                variant="ghost"
+                variant="secondary"
                 icon="download"
                 external // plain <a>: a Next <Link> would prefetch the PDF route
                 aria-label="View resume (PDF, opens in new tab)"
@@ -81,34 +114,39 @@ export function HeroSection({ hero, photoSrc, resumeAvailable, nextSectionId }: 
           </div>
         </div>
 
-        <div className={styles.photoWrapper}>
-          <div className={styles.photoFrame}>
-            {photoSrc ? (
-              <Image
-                src={photoSrc}
-                alt={hero?.photoAlt || `${name} — profile photo`}
-                fill
-                className={styles.photo}
-                // The LCP element on phones: fetch it first, never lazily.
-                loading="eager"
-                fetchPriority="high"
-                sizes={PHOTO_SIZES}
-              />
-            ) : (
-              <div className={styles.photoPlaceholder} role="img" aria-label={`${name} initials`}>
-                {initials(name)}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+        <p className={styles.intro}>{hero?.introduction || DEFAULT_INTRO}</p>
 
-      {nextSectionId && (
-        <a href={`#${nextSectionId}`} className={styles.scrollCue}>
-          <span>Selected work</span>
-          <Icon name="arrow-down" size={16} />
-        </a>
-      )}
+        <nav className={styles.highlights} aria-label="Highlights">
+          <ul role="list">
+            {highlightsFor(resumeAvailable).map(({ href, label, icon, external }) => {
+              const content = (
+                <>
+                  <span className={styles.highlightRing} aria-hidden="true">
+                    <span>
+                      <Icon name={icon} size={24} />
+                    </span>
+                  </span>
+                  {label}
+                </>
+              );
+              return (
+                <li key={href}>
+                  {external ? (
+                    <a href={href} className={styles.highlight} target="_blank" rel="noopener noreferrer">
+                      {content}
+                      <span className="sr-only">(PDF, opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    <Link href={href} className={styles.highlight}>
+                      {content}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </div>
     </section>
   );
 }

@@ -47,20 +47,28 @@
 @color-scrim: var(--color-scrim);
 
 // ─── Color Palette: theme-invariant (compile-time) ────────────────────────────
-// Graphite: one working blue, no secondary hue. White text on it passes 4.5:1.
-@color-accent:      #2f6feb;
-@color-accent-dark: #2560d4;
-@color-accent-glow: rgba(47, 111, 235, 0.28);   // selection and focus halos only
-@color-accent-soft: rgba(47, 111, 235, 0.12);
-@color-accent-2:    @color-accent;               // kept for older call sites; no second hue
+// Facebook blue drives every action; white text on it passes 4.8:1 (AA).
+@color-accent:      #0866ff;
+@color-accent-dark: #0861d9;
+@color-accent-glow: rgba(8, 102, 255, 0.3);    // selection and focus halos only
+@color-accent-soft: rgba(8, 102, 255, 0.12);
+@color-accent-2:    #d62976;                   // Instagram magenta, decorative only
 
-@color-success: #3fb950;
+@color-success: #31a24c;
 @color-warning: #d29922;
-@color-error:   #f0605a;
-@color-info:    #58a6ff;
+@color-error:   #f02849;
+@color-info:    #4ba3ff;
 
-// Solid accent rule; gradients are not part of the Graphite language.
-@gradient-accent: linear-gradient(90deg, @color-accent 0%, @color-accent 100%);
+// Instagram gradient. Decorative only (rings, cover, rules): never put text on it.
+@ig-yellow: #feda75;
+@ig-orange: #fa7e1e;
+@ig-pink:   #d62976;
+@ig-purple: #962fbf;
+@ig-blue:   #4f5bd5;
+@gradient-ig: linear-gradient(45deg, @ig-yellow 0%, @ig-orange 25%, @ig-pink 50%, @ig-purple 75%, @ig-blue 100%);
+// Profile cover: Facebook blue sweeping into the Instagram hues.
+@gradient-cover: linear-gradient(120deg, @color-accent 0%, @ig-blue 30%, @ig-purple 55%, @ig-pink 78%, @ig-orange 100%);
+@gradient-accent: @gradient-ig;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
 @font-sans:    var(--font-sans);
@@ -112,8 +120,10 @@
 // ─── Layout ───────────────────────────────────────────────────────────────────
 @container-max:  1280px;
 @container-prose: 760px;
+@container-social: 1100px; // profile header + feed width (home), as on Facebook
 @nav-offset:     0px;    // the bar sits flush with the viewport top
-@nav-pill-height: 64px;
+@nav-pill-height: 56px;
+@tabbar-height:  60px;   // phone bottom tab bar (Navbar), below @bp-md
 @nav-height:     (@nav-offset + @nav-pill-height); // total space reserved above content
 
 @admin-topbar-height:     60px;
@@ -128,7 +138,7 @@
 @bp-2xl: 1536px;
 
 // ─── Borders & Radii ──────────────────────────────────────────────────────────
-// Graphite radii: 4 tags, 6 controls, 8 cards, 12 overlays. Pills are only for
+// Radii: 4 tags, 6 controls, 8 cards, 12 overlays. Pills are only for
 // avatars and status dots (@radius-full).
 @radius-xs:      4px;
 @radius-sm:      6px;
