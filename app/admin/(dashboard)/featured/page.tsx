@@ -24,7 +24,7 @@ export default async function AdminFeaturedPage() {
     <div className={`${styles.page} ${styles.narrow}`}>
       <AdminPageHeader
         title="Featured projects"
-        description={`Choose up to ${MAX_FEATURED} projects for the home page carousel.`}
+        description={`Choose up to ${MAX_FEATURED} projects for the home page feed.`}
       />
       {allResult.ok && featuredResult.ok ? (
         <FeaturedManager featured={featured} others={others} newHref={`${getAdminBasePath()}/projects/new`} />

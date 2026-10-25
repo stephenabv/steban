@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
           icon="star"
           tone="accent"
           href={`${basePath}/featured`}
-          hint="Shown in the home carousel"
+          hint="Shown on the home page"
         />
         <StatCard label="Messages" value={display(messageTotal)} icon="message" href={`${basePath}/messages`} />
         <StatCard

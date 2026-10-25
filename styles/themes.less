@@ -11,81 +11,83 @@
 .theme-dark() {
   color-scheme: dark;
 
-  --color-bg: #0b0d10;
-  --color-bg-subtle: #0e1115;
-  --color-bg-card: #12161b;
-  --color-bg-elevated: #181d24;
-  --color-bg-hover: #1b2028;
-  --color-border: #222832;
-  --color-border-hover: #2c3440;
-  --color-border-strong: #3a4350;
+  // Facebook dark: charcoal canvas, raised grey cards.
+  --color-bg: #18191a;
+  --color-bg-subtle: #1c1d1f;
+  --color-bg-card: #242526;
+  --color-bg-elevated: #3a3b3c;
+  --color-bg-hover: #303132;
+  --color-border: #3e4042;
+  --color-border-hover: #4b4d50;
+  --color-border-strong: #5c5e62;
 
-  --color-text-primary: #e6eaef;
-  --color-text-secondary: #a7b0ba;
-  --color-text-muted: #8b949e;
+  --color-text-primary: #e4e6eb;
+  --color-text-secondary: #b0b3b8;
+  --color-text-muted: #b0b3b8; // 7.3:1 on cards; FB uses one secondary grey
 
-  --color-accent-light: #79a8ff;
-  --color-accent-lighter: #a9c7ff;
+  --color-accent-light: #4ba3ff; // link/active blue, 5.8:1 on cards
+  --color-accent-lighter: #8cc2ff;
 
-  --color-success-fg: #5bd27a;
-  --color-warning-fg: #e3b341;
+  --color-success-fg: #6bd685;
+  --color-warning-fg: #f0c060;
   --color-error-fg: #ff8a84;
   --color-info-fg: #79c0ff;
 
   --color-tint: #ffffff;
-  --color-scrim: rgba(5, 7, 9, 0.72);
+  --color-scrim: rgba(0, 0, 0, 0.7);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
-  --shadow-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.5);
+  --shadow-inset-highlight: none;
 
-  // Bars and floating controls: near-opaque surface, hairline border, no gloss.
-  --glass-from: rgba(14, 17, 21, 0.92);
-  --glass-mid: rgba(14, 17, 21, 0.92);
-  --glass-to: rgba(14, 17, 21, 0.92);
-  --glass-border: #222832;
-  --glass-shadow: none;
+  // Bars and floating controls: opaque card surface, hairline border.
+  --glass-from: #242526;
+  --glass-mid: #242526;
+  --glass-to: #242526;
+  --glass-border: #3e4042;
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   --glass-highlight: transparent;
 }
 
 .theme-light() {
   color-scheme: light;
 
-  --color-bg: #f6f7f9;
-  --color-bg-subtle: #eef0f3;
+  // Facebook light: grey canvas, white cards with a soft drop shadow.
+  --color-bg: #f0f2f5;
+  --color-bg-subtle: #e9ebee;
   --color-bg-card: #ffffff;
-  --color-bg-elevated: #ffffff;
-  --color-bg-hover: #eef0f3;
-  --color-border: #dde1e6;
-  --color-border-hover: #c9cfd6;
-  --color-border-strong: #aeb6bf;
+  --color-bg-elevated: #e4e6eb; // FB secondary-button grey
+  --color-bg-hover: #f2f2f2;
+  --color-border: #dadde1;
+  --color-border-hover: #ced0d4;
+  --color-border-strong: #a8abaf;
 
-  --color-text-primary: #11151a;
-  --color-text-secondary: #4a5360;
-  --color-text-muted: #5f6875;
+  --color-text-primary: #050505;
+  --color-text-secondary: #4b4f56;
+  --color-text-muted: #65676b; // 5.0:1 on the canvas, 5.7:1 on cards
 
-  --color-accent-light: #1f5bd6;
-  --color-accent-lighter: #1a4fb8;
+  --color-accent-light: #0861d9; // link/active blue, 5.6:1 on white
+  --color-accent-lighter: #0650b5;
 
   --color-success-fg: #176f30; // ≥ 4.5:1 on the success badge tint (WCAG AA)
-  --color-warning-fg: #9a6700;
-  --color-error-fg: #c93c37;
+  --color-warning-fg: #8a5a00;
+  --color-error-fg: #c0282d;
   --color-info-fg: #0b5cad;
 
-  --color-tint: #11151a;
-  --color-scrim: rgba(17, 21, 26, 0.45);
+  --color-tint: #050505;
+  --color-scrim: rgba(5, 5, 5, 0.45);
 
-  --shadow-sm: 0 1px 2px rgba(17, 21, 26, 0.06);
-  --shadow-md: 0 8px 24px rgba(17, 21, 26, 0.08);
-  --shadow-lg: 0 16px 40px rgba(17, 21, 26, 0.12);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.16);
   --shadow-inset-highlight: none;
 
-  --glass-from: rgba(255, 255, 255, 0.94);
-  --glass-mid: rgba(255, 255, 255, 0.94);
-  --glass-to: rgba(255, 255, 255, 0.94);
-  --glass-border: #dde1e6;
-  --glass-shadow: none;
+  --glass-from: #ffffff;
+  --glass-mid: #ffffff;
+  --glass-to: #ffffff;
+  --glass-border: #dadde1;
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   --glass-highlight: transparent;
 }
 

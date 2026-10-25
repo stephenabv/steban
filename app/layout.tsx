@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { connection } from "next/server";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
@@ -9,22 +8,6 @@ import { RouteTransitions } from "@/components/layout/RouteTransitions";
 import { THEME_COLORS } from "@/lib/theme/theme";
 import { getServerTheme } from "@/lib/theme/getServerTheme";
 import "@/styles/globals.less";
-
-// Graphite type: IBM Plex Sans for UI and headings, Plex Mono for metadata.
-// Self-hosted by next/font, so CSP font-src 'self' holds.
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-});
 
 export async function generateViewport(): Promise<Viewport> {
   const theme = await getServerTheme();
@@ -75,11 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const theme = await getServerTheme();
 
   return (
-    <html
-      lang="en"
-      className={`${plexSans.variable} ${plexMono.variable}`}
-      data-theme={theme ?? undefined}
-    >
+    <html lang="en" data-theme={theme ?? undefined}>
       <body>
         <a href="#main-content" id="skip-nav">
           Skip to main content

@@ -1,9 +1,17 @@
 @import "styles/variables.less";
 @import "styles/mixins.less";
 
+// Facebook's filled grey icon button.
 .toggle {
   .icon-button();
   flex-shrink: 0;
+  border-color: transparent;
+  background: @color-bg-elevated;
+  color: @color-text-primary;
+
+  &:hover {
+    background: color-mix(in srgb, @color-bg-elevated 88%, @color-tint);
+  }
   overflow: hidden;
 
   // Match the compact CTA beside it once the desktop nav is showing.

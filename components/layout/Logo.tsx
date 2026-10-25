@@ -20,8 +20,8 @@ export function Logo({ size = 32, decorative = false }: { size?: number; decorat
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#2f6feb" />
-          <stop offset="100%" stopColor="#2560d4" />
+          <stop offset="0%" stopColor="#0866ff" />
+          <stop offset="100%" stopColor="#0861d9" />
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="14" fill={`url(#${gradientId})`} />
@@ -31,7 +31,7 @@ export function Logo({ size = 32, decorative = false }: { size?: number; decorat
         textAnchor="middle"
         dominantBaseline="central"
         fill="#ffffff"
-        fontFamily="var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif"
+        fontFamily="var(--font-sans), system-ui, sans-serif"
         fontSize="26"
         fontWeight="700"
         letterSpacing="0.5"

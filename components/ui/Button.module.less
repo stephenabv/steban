@@ -10,7 +10,7 @@
   border: 1px solid transparent;
   border-radius: @radius-control;
   font-family: @font-sans;
-  font-weight: @fw-medium;
+  font-weight: @fw-semibold;
   line-height: 1;
   white-space: nowrap;
   text-decoration: none;
@@ -24,8 +24,9 @@
     transform @transition-fast;
   .focus-ring();
 
+  // Facebook-style press: a quick, compositor-only shrink.
   &:active:not(:disabled):not([aria-disabled="true"]) {
-    transform: translateY(1px);
+    transform: scale(0.96);
   }
 
   &:disabled,
@@ -95,14 +96,13 @@
   }
 }
 
+// Facebook's grey secondary button: filled, borderless.
 .secondary {
   background: @color-bg-elevated;
   color: @color-text-primary;
-  border-color: @color-border-hover;
 
   &:hover {
-    border-color: @color-border-strong;
-    background: @color-bg-hover;
+    background: color-mix(in srgb, @color-bg-elevated 88%, @color-tint);
   }
 }
 

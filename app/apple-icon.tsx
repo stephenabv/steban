@@ -14,7 +14,7 @@ export default function AppleIcon() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #2f6feb, #2560d4)",
+          background: "linear-gradient(135deg, #0866ff, #0861d9)",
           borderRadius: 40,
           color: "#fff",
         }}

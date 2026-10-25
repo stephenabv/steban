@@ -1,31 +1,20 @@
 @import "styles/variables.less";
 @import "styles/mixins.less";
 
-// Full-width bar with a hairline bottom border; the inner row aligns to the
-// page container so the logo and content share one left edge.
+// Solid card-coloured bar with Facebook's hairline shadow. No backdrop-filter:
+// it would also make the bar the containing block of the fixed tab bar below.
 .header {
   position: fixed;
   top: @nav-offset;
   left: 0;
   right: 0;
   z-index: @z-nav;
-  border-bottom: 1px solid transparent;
-  background: color-mix(in srgb, @color-bg 72%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition:
-    background-color @transition-normal,
-    border-color @transition-normal;
-
-  &:has(.scrolled) {
-    border-bottom-color: @color-border;
-    background: color-mix(in srgb, @color-bg 92%, transparent);
-  }
+  background: @color-bg-card;
+  box-shadow: @shadow-sm;
 }
 
-.pill {
+.bar {
   .container();
-  position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
@@ -40,7 +29,7 @@
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: @space-3;
+  gap: @space-2;
   justify-self: start;
   min-width: 0;
   border-radius: @radius-sm;
@@ -48,63 +37,97 @@
 
   svg {
     flex-shrink: 0;
+    transition: transform @transition-normal;
+  }
+
+  @media (hover: hover) {
+    &:hover svg {
+      transform: rotate(-6deg) scale(1.05);
+    }
+  }
+
+  svg {
+    .reduced-motion();
   }
 }
 
 .wordmark {
-  font-family: @font-display;
-  font-size: @fs-base;
-  font-weight: @fw-semibold;
+  font-size: @fs-lg;
+  font-weight: @fw-bold;
   letter-spacing: -0.01em;
   color: @color-text-primary;
   white-space: nowrap;
 
   span {
-    color: @color-text-secondary;
-    font-weight: @fw-medium;
+    color: inherit;
   }
 }
 
-.links {
+// ─── Desktop: icon tabs with a sliding underline ─────────────────────────────
+.tabs {
   display: none;
-  align-items: center;
-  gap: @space-1;
+  height: 100%;
 
   @media (min-width: @bp-md) {
+    display: block;
+  }
+
+  ul {
+    display: flex;
+    height: 100%;
+    gap: @space-2;
+  }
+
+  li {
     display: flex;
   }
 }
 
-.link {
+.tab {
   position: relative;
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  height: 36px;
-  padding: 0 @space-3;
-  border-radius: @radius-control;
-  font-size: @fs-sm;
-  font-weight: @fw-medium;
-  color: @color-text-secondary;
-  transition: color @transition-fast;
-  .focus-ring();
+  justify-content: center;
+  gap: 2px;
+  width: 112px;
+  margin-block: 4px;
+  border-radius: @radius-lg;
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  color: @color-text-muted;
+  transition:
+    background @transition-fast,
+    color @transition-fast;
+  .focus-ring-inset();
 
-  &:hover,
+  @media (hover: hover) {
+    &:hover {
+      background: @color-bg-hover;
+    }
+  }
+
   &.active {
-    color: @color-text-primary;
+    color: @color-accent-light;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  @media (min-width: @bp-lg) {
+    width: 128px;
   }
 }
 
-.linkText {
-  position: relative;
-  z-index: 1;
-}
-
-.activePill {
+.underline {
   position: absolute;
-  inset: 0;
-  border-radius: @radius-control;
-  background: @color-bg-elevated;
-  border: 1px solid @color-border;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: @color-accent-light;
 }
 
 .actions {
@@ -117,33 +140,34 @@
 // Doubled class beats Button's own `display` regardless of stylesheet order.
 .cta.cta {
   display: none;
+  min-height: 36px;
 
   @media (min-width: @bp-md) {
     display: inline-flex;
   }
 }
 
-.menuBtn {
-  .icon-button();
-
-  @media (min-width: @bp-md) {
-    display: none;
-  }
-}
-
-.mobilePanel {
-  pointer-events: auto;
-  max-width: @container-max;
-  margin: 0 auto;
-  padding: @space-2 @space-4 @space-4;
-  border-top: 1px solid @color-border;
-  background: @color-bg-subtle;
-  transform-origin: top center;
+// ─── Phones: Instagram-style bottom tab bar ──────────────────────────────────
+.tabBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: @z-nav;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: @color-bg-card;
+  // A shadow, not a border: the bar stays exactly @tabbar-height tall, which
+  // is what the body reserves for it (globals.less).
+  box-shadow: 0 -1px 0 @color-border;
 
   ul {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    height: @tabbar-height;
+  }
+
+  li {
     display: flex;
-    flex-direction: column;
-    gap: @space-1;
   }
 
   @media (min-width: @bp-md) {
@@ -151,42 +175,41 @@
   }
 }
 
-.mobileLink {
+.tabBarLink {
+  position: relative;
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  min-height: 48px;
-  padding: 0 @space-3;
-  border-radius: @radius-control;
-  font-size: @fs-base;
-  font-weight: @fw-medium;
-  color: @color-text-secondary;
-  transition:
-    background @transition-fast,
-    color @transition-fast;
+  justify-content: center;
+  gap: 2px;
+  font-size: 0.6875rem;
+  font-weight: @fw-semibold;
+  color: @color-text-muted;
+  -webkit-tap-highlight-color: transparent;
+  transition: color @transition-fast;
   .focus-ring-inset();
 
   svg {
-    opacity: 0.4;
-    transition:
-      opacity @transition-fast,
-      transform @transition-fast;
+    transition: transform @duration-fast @ease-out;
+    .reduced-motion();
   }
 
-  &:hover,
-  &.active {
-    color: @color-text-primary;
-    background: @tint-5;
-
-    svg {
-      opacity: 1;
-      transform: translateX(2px);
-    }
+  &:active svg {
+    transform: scale(0.88);
   }
 
   &.active {
-    background: @color-bg-elevated;
-    color: @color-text-primary;
-    box-shadow: inset 2px 0 0 @color-accent;
+    color: @color-accent-light;
   }
+}
+
+.tabBarIndicator {
+  position: absolute;
+  top: 0;
+  left: 22%;
+  right: 22%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: @color-accent-light;
 }

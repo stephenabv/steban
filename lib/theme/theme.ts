@@ -13,8 +13,8 @@ export const THEME_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 /** Browser chrome colour per theme — mirrors --color-bg in styles/themes.less. */
 export const THEME_COLORS: Readonly<Record<Theme, string>> = {
-  dark: "#0b0d10",
-  light: "#f6f7f9",
+  dark: "#18191a",
+  light: "#f0f2f5",
 };
 
 /** Allow-list guard: cookie values are user-controlled input. */

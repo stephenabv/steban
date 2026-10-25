@@ -45,3 +45,27 @@ test.describe("home page performance guards", () => {
     await expect(footer).toBeVisible();
   });
 });
+
+test.describe("social layout", () => {
+  test("phones get the bottom tab bar and it never covers the page end", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const tabBar = page.locator("nav[data-tabbar]");
+    await expect(tabBar).toBeVisible();
+    await expect(tabBar.locator('a[aria-current="page"]')).toHaveAttribute("href", "/");
+    await expect(tabBar.locator('a[href="/contact"]')).toBeVisible();
+
+    // The body reserves the bar's height, so the footer's last line stays reachable.
+    const padding = await page.evaluate(() => parseFloat(getComputedStyle(document.body).paddingBottom));
+    const barHeight = await tabBar.evaluate((el) => el.getBoundingClientRect().height);
+    expect(padding).toBeGreaterThanOrEqual(barHeight);
+  });
+
+  test("desktop uses the top tabs instead", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("nav[data-tabbar]")).toBeHidden();
+    await expect(page.getByRole("navigation", { name: "Main navigation" }).locator('a[href="/projects"]')).toBeVisible();
+  });
+});
