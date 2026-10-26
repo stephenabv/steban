@@ -10,8 +10,8 @@ import styles from "./FeaturedFeed.module.less";
 
 const MAX_TECH = 6;
 
-/** The feed column is 680px wide (HomePage.module.less); phones get a full-width rendition. */
-const COVER_SIZES = "(max-width: 767px) 100vw, 680px";
+/** The feed column is at most ~700px wide; phones get a full-width rendition. */
+const COVER_SIZES = "(max-width: 767px) 100vw, (max-width: 1099px) 60vw, 700px";
 
 const postDate = new Intl.DateTimeFormat("en-US", {
   month: "long",
@@ -76,12 +76,9 @@ export function FeaturedFeed({ projects, id }: Props) {
     <section id={id} className={styles.feed} aria-labelledby="featured-heading">
       <div className={styles.heading}>
         <h2 id="featured-heading">Featured work</h2>
-        {/* The empty state carries its own link; one projects link per view. */}
-        {projects.length > 0 && (
-          <Button href="/projects" variant="link">
-            See all projects
-          </Button>
-        )}
+        <Button href="/projects" variant="link">
+          See all projects
+        </Button>
       </div>
 
       {projects.length === 0 ? (

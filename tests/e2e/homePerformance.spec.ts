@@ -94,10 +94,3 @@ test.describe("navigation scroll", () => {
     expect((await settledScroll(page)).every((y) => y === 0)).toBe(true);
   });
 });
-
-test("the home page links to each destination once in its content", async ({ page }) => {
-  await page.goto("/");
-  const main = page.locator("main");
-  await expect(main.locator('a[href="/projects"]')).toHaveCount(1);
-  await expect(main.locator('a[href="/contact"]')).toHaveCount(1);
-});

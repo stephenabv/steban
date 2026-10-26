@@ -1,8 +1,9 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Hero } from "@/server/domain/entities";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Icon, type IconName } from "@/components/icons/Icon";
 import { initials } from "@/lib/initials";
 import styles from "./HeroSection.module.less";
 
@@ -24,11 +25,27 @@ const PHOTO_SIZES = "(max-width: 1023px) 112px, 152px";
 const DEFAULT_INTRO =
   "Building scalable, high-performance web applications with a focus on clean architecture, security, and exceptional developer experience.";
 
+interface Highlight {
+  href: string;
+  label: string;
+  icon: IconName;
+  /** Plain <a> in a new tab (the resume PDF); a Next <Link> would prefetch it. */
+  external?: boolean;
+}
+
+function highlightsFor(resumeAvailable: boolean): Highlight[] {
+  return [
+    { href: "/projects", label: "Projects", icon: "grid" },
+    { href: "/about", label: "About", icon: "user" },
+    { href: "/contact", label: "Contact", icon: "mail" },
+    ...(resumeAvailable ? [{ href: siteConfig.resumePath, label: "Resume", icon: "file-text" as const, external: true }] : []),
+  ];
+}
+
 /**
  * Profile header in the Facebook/Instagram idiom: a cover, a round photo in a
- * story ring, the name, the introduction and the two actions only the hero
- * offers (contact, resume). Projects are reached from the feed right below it
- * and from the navbar, so the hero does not link to them again.
+ * story ring, the name with the introduction beside it, then story-style
+ * highlight links (projects, about, contact, resume) as the hero's actions.
  *
  * Rendered on the server with CSS-only, transform-only entrance animations: the
  * copy and the photo paint at full opacity with the first HTML, so Largest
@@ -76,26 +93,39 @@ export function HeroSection({ hero, photoSrc, resumeAvailable }: Props) {
             <p className={styles.title}>{hero?.title || "Computer Engineer"}</p>
           </div>
 
-          <div className={styles.actions}>
-            <Button href="/contact" iconRight="arrow-right">
-              Contact Me
-            </Button>
-            {resumeAvailable && (
-              <Button
-                href={siteConfig.resumePath}
-                variant="secondary"
-                icon="download"
-                external // plain <a>: a Next <Link> would prefetch the PDF route
-                aria-label="View resume (PDF, opens in new tab)"
-              >
-                Resume
-              </Button>
-            )}
-          </div>
+          <p className={styles.intro}>{hero?.introduction || DEFAULT_INTRO}</p>
         </div>
 
-        <p className={styles.intro}>{hero?.introduction || DEFAULT_INTRO}</p>
-
+        <nav className={styles.highlights} aria-label="Highlights">
+          <ul role="list">
+            {highlightsFor(resumeAvailable).map(({ href, label, icon, external }) => {
+              const content = (
+                <>
+                  <span className={styles.highlightRing} aria-hidden="true">
+                    <span>
+                      <Icon name={icon} size={24} />
+                    </span>
+                  </span>
+                  {label}
+                </>
+              );
+              return (
+                <li key={href}>
+                  {external ? (
+                    <a href={href} className={styles.highlight} target="_blank" rel="noopener noreferrer">
+                      {content}
+                      <span className="sr-only">(PDF, opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    <Link href={href} className={styles.highlight}>
+                      {content}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
     </section>
   );

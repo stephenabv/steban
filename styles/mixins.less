@@ -12,6 +12,12 @@
   }
 }
 
+// Narrower column for the profile header and feed (home).
+.social-container() {
+  .container();
+  max-width: @container-social;
+}
+
 .section-spacing() {
   padding-block: @space-16;
 
@@ -118,6 +124,19 @@
 
   &:hover {
     box-shadow: @shadow-md;
+  }
+}
+
+// Instagram story ring: a gradient ring around a round child. @gap is the
+// card-coloured gap between ring and content.
+.story-ring(@width: 3px, @gap: 3px) {
+  padding: @width;
+  border-radius: @radius-full;
+  background: @gradient-ig;
+
+  > * {
+    border-radius: @radius-full;
+    border: @gap solid @color-bg-card;
   }
 }
 

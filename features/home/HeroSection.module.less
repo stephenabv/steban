@@ -11,7 +11,7 @@
 .profile {
   max-width: @container-social;
   margin-inline: auto;
-  padding-bottom: @space-6;
+  padding-bottom: @space-2;
 }
 
 // Decorative cover: Facebook blue into the Instagram hues. A static gradient
@@ -39,7 +39,8 @@
   }
 
   @media (min-width: @bp-lg) {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    // photo | name | introduction
+    grid-template-columns: auto auto minmax(0, 1fr);
     align-items: end;
     gap: @space-6;
     margin-top: -84px;
@@ -101,7 +102,7 @@
   color: @color-text-muted;
 }
 
-// ─── Name, title and actions ─────────────────────────────────────────────────
+// ─── Name, title and introduction ─────────────────────────────────────────────
 .identity {
   display: flex;
   flex-direction: column;
@@ -132,53 +133,136 @@
   color: @color-text-muted;
 }
 
-.actions {
-  .button-group(200px);
-  gap: @space-2;
-  margin-top: @space-1;
-
-  @media (min-width: @bp-lg) {
-    .button-group(136px);
-    gap: @space-2;
-    width: 360px;
-    margin: 0 0 @space-3;
-  }
-}
-
+// Below the name on phones; beside it, after a divider, from `lg`.
 .intro {
   max-width: 680px;
-  margin-top: @space-3;
-  padding-inline: @space-4;
   font-size: @fs-base;
   line-height: @lh-normal;
   color: @color-text-primary;
 
-  @media (min-width: @bp-md) {
-    padding-inline: @space-8;
+  @media (min-width: @bp-lg) {
+    // Same offset as .identity, so both blocks start just below the cover.
+    margin-top: calc(84px + @space-3);
+    padding: @space-1 0 @space-2 @space-6;
+    border-left: 1px solid @color-border;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
   }
+}
+
+// ─── Story-style highlight links ──────────────────────────────────────────────
+.highlights {
+  margin: @space-4 @space-4 0;
+  border-top: 1px solid @color-border;
+
+  @media (min-width: @bp-md) {
+    margin-inline: @space-8;
+  }
+
+  // Wide, even spacing between the circles: 4 × 64px + 3 × 32px still fits
+  // a 390px phone without scrolling.
+  ul {
+    display: flex;
+    gap: @space-8;
+    padding-block: @space-4 @space-2;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    @media (min-width: @bp-md) {
+      gap: @space-12;
+    }
+  }
+}
+
+.highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 64px;
+  border-radius: @radius-sm;
+  font-size: @fs-xs;
+  font-weight: @fw-semibold;
+  color: @color-text-primary;
+  .focus-ring();
+
+  @media (min-width: @bp-md) {
+    font-size: 0.8125rem;
+  }
+}
+
+.highlightRing {
+  display: block;
+  width: 64px;
+  aspect-ratio: 1;
+  .story-ring(3px, 3px);
+  transition: transform @duration-normal @ease-out;
+
+  > span {
+    width: 100%;
+    height: 100%;
+    .flex-center();
+    background: @color-bg;
+    color: @color-accent-light;
+  }
+
+  @media (min-width: @bp-md) {
+    width: 72px;
+  }
+
+  .highlight:hover & {
+    transform: scale(1.06);
+  }
+
+  .highlight:active & {
+    transform: scale(0.95);
+  }
+
+  .reduced-motion();
 }
 
 // ─── Entrance ─────────────────────────────────────────────────────────────────
 // Transform-only and CSS-only: everything is fully opaque from the first
 // paint, so the motion never holds back Largest Contentful Paint.
 .identity,
-.actions,
-.intro {
+.intro,
+.highlights li {
   animation: hero-rise 0.6s @ease-out backwards;
   .reduced-motion();
 }
 
-.actions {
-  animation-delay: 0.08s;
+.intro {
+  animation-delay: 0.1s;
 }
 
-.intro {
-  animation-delay: 0.14s;
+.highlights li {
+  animation-name: highlight-pop;
+  animation-duration: 0.5s;
+
+  &:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.26s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.32s;
+  }
+  &:nth-child(4) {
+    animation-delay: 0.38s;
+  }
 }
 
 @keyframes hero-rise {
   from {
     transform: translateY(14px);
+  }
+}
+
+@keyframes highlight-pop {
+  from {
+    transform: scale(0.85);
   }
 }
 

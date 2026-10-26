@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/features/home/HeroSection";
 import { FeaturedFeed } from "@/features/home/FeaturedFeed";
+import { IntroCard } from "@/features/home/IntroCard";
+import { CtaBand } from "@/features/shared/CtaBand";
 import { siteConfig } from "@/config/site";
 import { personSchema, websiteSchema } from "@/lib/structuredData";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -36,12 +38,13 @@ export default async function HomePage() {
       <JsonLd data={personSchema(toPersonProfile(hero, contact))} />
       <JsonLd data={websiteSchema()} />
       <HeroSection hero={hero} photoSrc={photoSrc} resumeAvailable={resumeAvailable} />
-      {/* One entry point per destination: the hero carries the contact and
-          resume actions, the feed links to all projects, and the navbar and
-          footer cover the rest, so nothing here repeats them. */}
       <div className={styles.layout}>
+        <div className={styles.sidebar}>
+          <IntroCard title={hero?.title || "Computer Engineer"} contact={contact} />
+        </div>
         <FeaturedFeed id={FEATURED_SECTION_ID} projects={featured} />
       </div>
+      <CtaBand width="social" />
     </>
   );
 }

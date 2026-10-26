@@ -1,16 +1,29 @@
 @import "styles/variables.less";
 @import "styles/mixins.less";
 
-// A single centred feed column, as on Facebook; cards run edge to edge on phones.
-@feed-width: 680px;
-
+// Facebook profile layout: the Intro card beside the feed from `lg`, above
+// it (full width) on smaller screens. Phones run cards edge to edge.
 .layout {
-  max-width: @feed-width;
+  display: grid;
+  gap: @space-3;
+  max-width: @container-social;
   margin: @space-3 auto 0;
 
   @media (min-width: @bp-md) {
-    margin-top: @space-6;
-    box-sizing: content-box;
+    gap: @space-4;
+    margin-top: @space-4;
     padding-inline: @space-8;
+  }
+
+  @media (min-width: @bp-lg) {
+    grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.sidebar {
+  @media (min-width: @bp-lg) {
+    position: sticky;
+    top: calc(@nav-height + @space-4);
   }
 }

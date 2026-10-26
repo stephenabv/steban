@@ -4,6 +4,20 @@
 .wrap {
   .container();
   padding-block: @space-12 0;
+
+  // Home: the feed's column, edge to edge on phones like the posts above it.
+  &.social {
+    max-width: @container-social;
+
+    @media (max-width: (@bp-md - 1px)) {
+      padding-inline: 0;
+      padding-top: @space-3;
+    }
+  }
+
+  &:not(.social) .band {
+    border-radius: @radius-lg;
+  }
 }
 
 .band {
@@ -26,10 +40,9 @@
     background: linear-gradient(90deg, @ig-yellow, @ig-orange, @ig-pink, @ig-purple, @ig-blue);
   }
 
-  border-radius: @radius-lg;
-
   @media (min-width: @bp-md) {
     padding: @space-10;
+    border-radius: @radius-lg;
   }
 
   @media (min-width: @bp-lg) {
