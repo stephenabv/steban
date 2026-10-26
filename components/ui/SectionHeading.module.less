@@ -24,11 +24,14 @@
 
 .eyebrow {
   .eyebrow();
+  // Readable at a glance, yet well under half the title's size (≥ 30px).
+  font-size: clamp(@fs-sm, 1.3vw, @fs-base);
+  gap: @space-3;
 
   &::before {
     content: "";
-    width: 18px;
-    height: 2px;
+    width: 24px;
+    height: 3px;
     border-radius: 2px;
     background: @gradient-accent;
   }

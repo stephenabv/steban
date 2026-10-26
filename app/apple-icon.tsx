@@ -1,45 +1,10 @@
 import { ImageResponse } from "next/og";
+import { LogoMark } from "@/components/layout/LogoMark";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
+// iOS rounds the corners itself, so the tile is drawn square to avoid a halo.
 export default function AppleIcon() {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(135deg, #0866ff, #0861d9)",
-          borderRadius: 40,
-          color: "#fff",
-        }}
-      >
-        <div style={{ fontSize: 76, fontWeight: 700, letterSpacing: 2 }}>SA</div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginTop: 8,
-          }}
-        >
-          <div style={{ width: 52, height: 8, background: "#a9c7ff", borderRadius: 4 }} />
-          <div
-            style={{
-              width: 18,
-              height: 18,
-              background: "#a9c7ff",
-              borderRadius: 9,
-              marginLeft: 10,
-            }}
-          />
-        </div>
-      </div>
-    ),
-    { ...size }
-  );
+  return new ImageResponse(<LogoMark size={size.width} square />, { ...size });
 }

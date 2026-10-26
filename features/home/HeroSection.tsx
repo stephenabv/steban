@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Hero } from "@/server/domain/entities";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/icons/Icon";
 import { initials } from "@/lib/initials";
 import styles from "./HeroSection.module.less";
@@ -45,7 +44,8 @@ function highlightsFor(resumeAvailable: boolean): Highlight[] {
 
 /**
  * Profile header in the Facebook/Instagram idiom: a cover, a round photo in a
- * story ring, the name and actions, then story-style highlight links.
+ * story ring, the name with the introduction beside it, then story-style
+ * highlight links (projects, about, contact, resume) as the hero's actions.
  *
  * Rendered on the server with CSS-only, transform-only entrance animations: the
  * copy and the photo paint at full opacity with the first HTML, so Largest
@@ -93,28 +93,8 @@ export function HeroSection({ hero, photoSrc, resumeAvailable }: Props) {
             <p className={styles.title}>{hero?.title || "Computer Engineer"}</p>
           </div>
 
-          <div className={styles.actions}>
-            <Button href="/projects" iconRight="arrow-right">
-              View Projects
-            </Button>
-            <Button href="/contact" variant="secondary">
-              Contact Me
-            </Button>
-            {resumeAvailable && (
-              <Button
-                href={siteConfig.resumePath}
-                variant="secondary"
-                icon="download"
-                external // plain <a>: a Next <Link> would prefetch the PDF route
-                aria-label="View resume (PDF, opens in new tab)"
-              >
-                Resume
-              </Button>
-            )}
-          </div>
+          <p className={styles.intro}>{hero?.introduction || DEFAULT_INTRO}</p>
         </div>
-
-        <p className={styles.intro}>{hero?.introduction || DEFAULT_INTRO}</p>
 
         <nav className={styles.highlights} aria-label="Highlights">
           <ul role="list">

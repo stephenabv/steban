@@ -43,6 +43,24 @@ test.describe("crawlability", () => {
     expect(xml).not.toContain("<changefreq>");
   });
 
+  // Google only honours rel="canonical" in the <head> of the served HTML, and
+  // Googlebot's user agent is not one Next.js sends blocking metadata to by default.
+  for (const path of ["/", "/about", "/contact", "/projects", "/privacy", "/terms"]) {
+    test(`${path} declares its canonical URL in the served <head>`, async ({ request }) => {
+      const response = await request.get(path, {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      });
+      expect(response.ok()).toBe(true);
+      const head = (await response.text()).split("</head>")[0];
+      const canonical = head.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+      expect(canonical, "canonical link inside <head>").toBeDefined();
+      expect(new URL(canonical!).pathname.replace(/\/$/, "")).toBe(path.replace(/\/$/, ""));
+    });
+  }
+
   test("the IndexNow key file is absent when no key is configured", async ({ request }) => {
     const response = await request.get("/indexnow-key.txt");
     expect(response.status()).toBe(404);

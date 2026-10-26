@@ -3,9 +3,9 @@
 
 // ─── Profile card ─────────────────────────────────────────────────────────────
 .hero {
+  // Flat band, no card shadow: the page canvas in dark mode, white in light.
   padding-top: @nav-height;
-  background: @color-bg-card;
-  box-shadow: @shadow-sm;
+  background: @color-bg-band;
 }
 
 .profile {
@@ -39,7 +39,8 @@
   }
 
   @media (min-width: @bp-lg) {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    // photo | name | introduction
+    grid-template-columns: auto auto minmax(0, 1fr);
     align-items: end;
     gap: @space-6;
     margin-top: -84px;
@@ -77,7 +78,7 @@
   width: 112px;
   aspect-ratio: 1;
   border-radius: @radius-full;
-  border: 4px solid @color-bg-card;
+  border: 4px solid @color-bg-band;
   background: @color-bg-elevated;
   overflow: hidden;
   box-sizing: content-box;
@@ -101,7 +102,7 @@
   color: @color-text-muted;
 }
 
-// ─── Name, title and actions ─────────────────────────────────────────────────
+// ─── Name, title and introduction ─────────────────────────────────────────────
 .identity {
   display: flex;
   flex-direction: column;
@@ -132,29 +133,21 @@
   color: @color-text-muted;
 }
 
-.actions {
-  .button-group(200px);
-  gap: @space-2;
-  margin-top: @space-1;
-
-  @media (min-width: @bp-lg) {
-    .button-group(136px);
-    gap: @space-2;
-    width: 456px;
-    margin: 0 0 @space-3;
-  }
-}
-
+// Below the name on phones; beside it, after a divider, from `lg`.
 .intro {
   max-width: 680px;
-  margin-top: @space-3;
-  padding-inline: @space-4;
   font-size: @fs-base;
   line-height: @lh-normal;
   color: @color-text-primary;
 
-  @media (min-width: @bp-md) {
-    padding-inline: @space-8;
+  @media (min-width: @bp-lg) {
+    // Same offset as .identity, so both blocks start just below the cover.
+    margin-top: calc(84px + @space-3);
+    padding: @space-1 0 @space-2 @space-6;
+    border-left: 1px solid @color-border;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -167,12 +160,18 @@
     margin-inline: @space-8;
   }
 
+  // Wide, even spacing between the circles: 4 × 64px + 3 × 32px still fits
+  // a 390px phone without scrolling.
   ul {
     display: flex;
-    gap: @space-5;
+    gap: @space-8;
     padding-block: @space-4 @space-2;
     overflow-x: auto;
     scrollbar-width: none;
+
+    @media (min-width: @bp-md) {
+      gap: @space-12;
+    }
   }
 }
 
@@ -204,7 +203,7 @@
     width: 100%;
     height: 100%;
     .flex-center();
-    background: @color-bg;
+    background: @color-bg-band;
     color: @color-accent-light;
   }
 
@@ -227,19 +226,14 @@
 // Transform-only and CSS-only: everything is fully opaque from the first
 // paint, so the motion never holds back Largest Contentful Paint.
 .identity,
-.actions,
 .intro,
 .highlights li {
   animation: hero-rise 0.6s @ease-out backwards;
   .reduced-motion();
 }
 
-.actions {
-  animation-delay: 0.08s;
-}
-
 .intro {
-  animation-delay: 0.14s;
+  animation-delay: 0.1s;
 }
 
 .highlights li {
