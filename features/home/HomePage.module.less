@@ -2,12 +2,14 @@
 @import "styles/mixins.less";
 
 // Facebook profile layout: the Intro card beside the feed from `lg`, above
-// it (full width) on smaller screens. Phones run cards edge to edge.
+// it (full width) on smaller screens. Phones keep the hero's 16px side gutter
+// so cards never touch the screen edges.
 .layout {
   display: grid;
   gap: @space-3;
   max-width: @container-social;
   margin: @space-3 auto 0;
+  padding-inline: @space-4;
 
   @media (min-width: @bp-md) {
     gap: @space-4;

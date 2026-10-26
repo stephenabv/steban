@@ -5,18 +5,14 @@
   .container();
   padding-block: @space-12 0;
 
-  // Home: the feed's column, edge to edge on phones like the posts above it.
+  // Home: the feed's column, with the same 16px phone gutter as the posts above it.
   &.social {
     max-width: @container-social;
 
     @media (max-width: (@bp-md - 1px)) {
-      padding-inline: 0;
+      padding-inline: @space-4;
       padding-top: @space-3;
     }
-  }
-
-  &:not(.social) .band {
-    border-radius: @radius-lg;
   }
 }
 
@@ -29,6 +25,7 @@
   gap: @space-6;
   padding: @space-8 @space-4;
   background: @color-bg-card;
+  border-radius: @radius-lg;
   box-shadow: @shadow-sm;
 
   // Instagram gradient rule along the top edge (decorative).
@@ -36,7 +33,6 @@
 
   @media (min-width: @bp-md) {
     padding: @space-10;
-    border-radius: @radius-lg;
   }
 
   @media (min-width: @bp-lg) {

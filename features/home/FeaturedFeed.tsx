@@ -10,8 +10,8 @@ import styles from "./FeaturedFeed.module.less";
 
 const MAX_TECH = 6;
 
-/** The feed column is at most ~700px wide; phones get a full-width rendition. */
-const COVER_SIZES = "(max-width: 767px) 100vw, (max-width: 1099px) 60vw, 700px";
+/** The feed column is at most ~700px wide; on phones it is the viewport minus the 16px gutters. */
+const COVER_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1099px) 60vw, 700px";
 
 const postDate = new Intl.DateTimeFormat("en-US", {
   month: "long",
