@@ -11,7 +11,7 @@
 .profile {
   max-width: @container-social;
   margin-inline: auto;
-  padding-bottom: @space-2;
+  padding-bottom: @space-6;
 }
 
 // Decorative cover: Facebook blue into the Instagram hues. A static gradient
@@ -140,7 +140,7 @@
   @media (min-width: @bp-lg) {
     .button-group(136px);
     gap: @space-2;
-    width: 456px;
+    width: 360px;
     margin: 0 0 @space-3;
   }
 }
@@ -158,78 +158,12 @@
   }
 }
 
-// ─── Story-style highlight links ──────────────────────────────────────────────
-.highlights {
-  margin: @space-4 @space-4 0;
-  border-top: 1px solid @color-border;
-
-  @media (min-width: @bp-md) {
-    margin-inline: @space-8;
-  }
-
-  ul {
-    display: flex;
-    gap: @space-5;
-    padding-block: @space-4 @space-2;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-}
-
-.highlight {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  min-width: 64px;
-  border-radius: @radius-sm;
-  font-size: @fs-xs;
-  font-weight: @fw-semibold;
-  color: @color-text-primary;
-  .focus-ring();
-
-  @media (min-width: @bp-md) {
-    font-size: 0.8125rem;
-  }
-}
-
-.highlightRing {
-  display: block;
-  width: 64px;
-  aspect-ratio: 1;
-  .story-ring(3px, 3px);
-  transition: transform @duration-normal @ease-out;
-
-  > span {
-    width: 100%;
-    height: 100%;
-    .flex-center();
-    background: @color-bg;
-    color: @color-accent-light;
-  }
-
-  @media (min-width: @bp-md) {
-    width: 72px;
-  }
-
-  .highlight:hover & {
-    transform: scale(1.06);
-  }
-
-  .highlight:active & {
-    transform: scale(0.95);
-  }
-
-  .reduced-motion();
-}
-
 // ─── Entrance ─────────────────────────────────────────────────────────────────
 // Transform-only and CSS-only: everything is fully opaque from the first
 // paint, so the motion never holds back Largest Contentful Paint.
 .identity,
 .actions,
-.intro,
-.highlights li {
+.intro {
   animation: hero-rise 0.6s @ease-out backwards;
   .reduced-motion();
 }
@@ -242,33 +176,9 @@
   animation-delay: 0.14s;
 }
 
-.highlights li {
-  animation-name: highlight-pop;
-  animation-duration: 0.5s;
-
-  &:nth-child(1) {
-    animation-delay: 0.2s;
-  }
-  &:nth-child(2) {
-    animation-delay: 0.26s;
-  }
-  &:nth-child(3) {
-    animation-delay: 0.32s;
-  }
-  &:nth-child(4) {
-    animation-delay: 0.38s;
-  }
-}
-
 @keyframes hero-rise {
   from {
     transform: translateY(14px);
-  }
-}
-
-@keyframes highlight-pop {
-  from {
-    transform: scale(0.85);
   }
 }
 

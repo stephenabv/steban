@@ -69,3 +69,35 @@ test.describe("social layout", () => {
     await expect(page.getByRole("navigation", { name: "Main navigation" }).locator('a[href="/projects"]')).toBeVisible();
   });
 });
+
+test.describe("navigation scroll", () => {
+  /** Samples scrollY for a while after a navigation, to catch a late smooth scroll. */
+  async function settledScroll(page: Page): Promise<number[]> {
+    const samples: number[] = [];
+    for (let i = 0; i < 8; i++) {
+      samples.push(await page.evaluate(() => Math.round(window.scrollY)));
+      await page.waitForTimeout(125);
+    }
+    return samples;
+  }
+
+  test("a page change lands on the top of the new page, not its closing call to action", async ({ page }) => {
+    await page.goto("/");
+    await page.locator('header nav[aria-label="Main navigation"] a[href="/projects"]').first().click();
+    await page.waitForURL("**/projects");
+    expect(await settledScroll(page)).toEqual(Array(8).fill(0));
+
+    // From the bottom of a page too: the footer link must not leave us near the end.
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+    await page.locator('footer a[href="/about"]').click();
+    await page.waitForURL("**/about");
+    expect((await settledScroll(page)).every((y) => y === 0)).toBe(true);
+  });
+});
+
+test("the home page links to each destination once in its content", async ({ page }) => {
+  await page.goto("/");
+  const main = page.locator("main");
+  await expect(main.locator('a[href="/projects"]')).toHaveCount(1);
+  await expect(main.locator('a[href="/contact"]')).toHaveCount(1);
+});

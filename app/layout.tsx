@@ -58,7 +58,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const theme = await getServerTheme();
 
   return (
-    <html lang="en" data-theme={theme ?? undefined}>
+    // data-scroll-behavior: Next.js 16 no longer turns off the smooth
+    // `scroll-behavior` (globals.less) while it positions a new route. Without
+    // it, its scroll-into-view calls animate and stack, and a navigation could
+    // glide down to the "Have a project in mind?" band instead of the top.
+    <html lang="en" data-theme={theme ?? undefined} data-scroll-behavior="smooth">
       <body>
         <a href="#main-content" id="skip-nav">
           Skip to main content
