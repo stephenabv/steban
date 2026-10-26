@@ -1,10 +1,12 @@
 import "server-only";
 import { AboutService } from "./AboutService";
+import { AppearanceService } from "./AppearanceService";
 import { FooterService } from "./FooterService";
 import { HeroService } from "./HeroService";
 import { SeoService } from "./SeoService";
 import { getDocumentStore } from "@/server/repositories/document/documentStore.instance";
 import { DocumentAboutRepository } from "@/server/repositories/DocumentAboutRepository";
+import { DocumentAppearanceRepository } from "@/server/repositories/DocumentAppearanceRepository";
 import { DocumentFooterRepository } from "@/server/repositories/DocumentFooterRepository";
 import { DocumentHeroRepository } from "@/server/repositories/DocumentHeroRepository";
 import { DocumentSeoRepository } from "@/server/repositories/DocumentSeoRepository";
@@ -17,6 +19,7 @@ let hero: HeroService | null = null;
 let about: AboutService | null = null;
 let seo: SeoService | null = null;
 let footer: FooterService | null = null;
+let appearance: AppearanceService | null = null;
 
 export function getHeroService(): HeroService {
   hero ??= new HeroService(new DocumentHeroRepository(getDocumentStore()));
@@ -36,4 +39,9 @@ export function getSeoService(): SeoService {
 export function getFooterService(): FooterService {
   footer ??= new FooterService(new DocumentFooterRepository(getDocumentStore()));
   return footer;
+}
+
+export function getAppearanceService(): AppearanceService {
+  appearance ??= new AppearanceService(new DocumentAppearanceRepository(getDocumentStore()));
+  return appearance;
 }

@@ -5,6 +5,7 @@ import type { z } from "zod";
 import { getSession } from "@/server/auth/session";
 import {
   getAboutService,
+  getAppearanceService,
   getContactService,
   getFooterService,
   getHeroService,
@@ -12,6 +13,7 @@ import {
 } from "@/server/services";
 import {
   aboutSchema,
+  appearanceSchema,
   contactEmailSchema,
   footerSchema,
   heroSchema,
@@ -20,6 +22,7 @@ import {
 } from "@/server/security/contentSchemas";
 import type {
   AboutFormInput,
+  AppearanceFormInput,
   ContactEmailFormInput,
   FooterFormInput,
   HeroFormInput,
@@ -147,6 +150,18 @@ export async function saveFooterAction(input: FooterFormInput): Promise<ContentA
 
   const result = await getFooterService().save(parsed.data);
   if (!result.ok) return SAVE_FAILED;
+  revalidatePath("/", "layout");
+  return { ok: true, savedAt: result.value.updatedAt.toISOString() };
+}
+
+export async function saveAppearanceAction(input: AppearanceFormInput): Promise<ContentActionResult> {
+  if (!(await requireAdmin())) return UNAUTHORIZED;
+  const parsed = appearanceSchema.safeParse(input);
+  if (!parsed.success) return validationFailure(parsed.error);
+
+  const result = await getAppearanceService().save(parsed.data);
+  if (!result.ok) return SAVE_FAILED;
+  // The gradient is painted on <html> by the root layout: every page changes.
   revalidatePath("/", "layout");
   return { ok: true, savedAt: result.value.updatedAt.toISOString() };
 }

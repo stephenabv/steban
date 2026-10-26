@@ -32,13 +32,7 @@
   box-shadow: @shadow-sm;
 
   // Instagram gradient rule along the top edge (decorative).
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 4px;
-    background: linear-gradient(90deg, @ig-yellow, @ig-orange, @ig-pink, @ig-purple, @ig-blue);
-  }
+  .gradient-rule-top(4px);
 
   @media (min-width: @bp-md) {
     padding: @space-10;
