@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { connection } from "next/server";
+import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/config/site";
 import { defaultSeo } from "@/config/seo";
 import { searchVerification } from "@/lib/seo/searchVerification";
@@ -69,6 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <RouteTransitions />
         <MotionProvider>{children}</MotionProvider>
+        <Analytics />
       </body>
     </html>
   );
