@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
 
+  // Render metadata (title, description, canonical, robots) in the initial
+  // <head> for every visitor instead of streaming it into <body> for all but a
+  // short list of bots. Googlebot is not on that list, and Google ignores a
+  // rel="canonical" outside <head>, so the apex and www hosts were reported as
+  // "Duplicate without user-selected canonical". Metadata here reads the same
+  // cached content the page renders, so blocking on it costs no extra fetch.
+  htmlLimitedBots: /.*/,
+
   images: {
     formats: ["image/avif", "image/webp"],
     // Defaults plus 480: the hero photo renders ~240 CSS px wide on phones, and
