@@ -3,9 +3,9 @@
 
 // ─── Profile card ─────────────────────────────────────────────────────────────
 .hero {
+  // Flat band, no card shadow: the page canvas in dark mode, white in light.
   padding-top: @nav-height;
-  background: @color-bg-card;
-  box-shadow: @shadow-sm;
+  background: @color-bg-band;
 }
 
 .profile {
@@ -78,7 +78,7 @@
   width: 112px;
   aspect-ratio: 1;
   border-radius: @radius-full;
-  border: 4px solid @color-bg-card;
+  border: 4px solid @color-bg-band;
   background: @color-bg-elevated;
   overflow: hidden;
   box-sizing: content-box;
@@ -203,7 +203,7 @@
     width: 100%;
     height: 100%;
     .flex-center();
-    background: @color-bg;
+    background: @color-bg-band;
     color: @color-accent-light;
   }
 
