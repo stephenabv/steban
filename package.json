@@ -19,6 +19,7 @@
     "@anthropic-ai/sdk": "^0.131.0",
     "@simplewebauthn/browser": "^13.3.0",
     "@simplewebauthn/server": "^13.3.3",
+    "@vercel/analytics": "^2.0.1",
     "docx": "^9.8.1",
     "firebase": "^12.15.0",
     "framer-motion": "^12.42.0",
