@@ -13,5 +13,6 @@ export { JsonContactInfoRepository, JsonContactMessageRepository } from "./JsonC
 export { SeoRepository } from "./SeoRepository";
 export { ManagedFileRepository } from "./ManagedFileRepository";
 export { FooterRepository } from "./FooterRepository";
+export { AppearanceRepository } from "./AppearanceRepository";
 export { LegalDocumentRepository } from "./LegalDocumentRepository";
 export { PasskeyRepository, PasskeyAlreadyExistsError } from "./PasskeyRepository";

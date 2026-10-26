@@ -40,10 +40,12 @@
 // ─── Post card ────────────────────────────────────────────────────────────────
 // Edge-to-edge on phones (as in the Facebook app), a rounded card from `md`.
 .post {
+  position: relative;
   background: @color-bg-card;
   box-shadow: @shadow-sm;
   overflow: hidden;
   transition: box-shadow @transition-normal;
+  .gradient-rule-top();
 
   @media (min-width: @bp-md) {
     border-radius: @radius-lg;

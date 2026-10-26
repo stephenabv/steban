@@ -262,6 +262,17 @@ const ICONS = {
     ),
   },
   code: { variant: "stroke", body: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" /> },
+  palette: {
+    variant: "stroke",
+    body: (
+      <>
+        <path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2.2a1.8 1.8 0 0 0-1.3 3.1 1.8 1.8 0 0 1-1.3 2.9Z" />
+        <circle cx="7.5" cy="10.5" r="1" />
+        <circle cx="10.5" cy="6.5" r="1" />
+        <circle cx="15.5" cy="7.5" r="1" />
+      </>
+    ),
+  },
   sun: {
     variant: "stroke",
     body: (

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Metadata, Viewport } from "next";
 import { connection } from "next/server";
 import { Analytics } from "@vercel/analytics/next";
@@ -8,6 +9,8 @@ import { MotionProvider } from "@/components/layout/MotionProvider";
 import { RouteTransitions } from "@/components/layout/RouteTransitions";
 import { THEME_COLORS } from "@/lib/theme/theme";
 import { getServerTheme } from "@/lib/theme/getServerTheme";
+import { gradientStyle } from "@/lib/theme/gradient";
+import { getGradientStops } from "@/lib/content/publicContent";
 import "@/styles/globals.less";
 
 export async function generateViewport(): Promise<Viewport> {
@@ -56,14 +59,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // (set by proxy.ts) to all inline scripts it generates — required for nonce-based CSP.
   await connection();
   // Rendered server-side so the stored theme is painted on the first frame.
-  const theme = await getServerTheme();
+  const [theme, gradientStops] = await Promise.all([getServerTheme(), getGradientStops()]);
+  // The admin-chosen gradient, as custom properties on <html>: in the first
+  // paint with the HTML itself, so no restyle, flash or layout shift.
+  const style = gradientStyle(gradientStops) as CSSProperties;
 
   return (
     // data-scroll-behavior: Next.js 16 no longer turns off the smooth
     // `scroll-behavior` (globals.less) while it positions a new route. Without
     // it, its scroll-into-view calls animate and stack, and a navigation could
     // glide down to the "Have a project in mind?" band instead of the top.
-    <html lang="en" data-theme={theme ?? undefined} data-scroll-behavior="smooth">
+    <html lang="en" data-theme={theme ?? undefined} data-scroll-behavior="smooth" style={style}>
       <body>
         <a href="#main-content" id="skip-nav">
           Skip to main content

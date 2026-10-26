@@ -20,6 +20,7 @@ export type {
 export type { SeoMetadata, SeoContent, SeoPageKey, UpdateSeoMetadataInput } from "./SeoMetadata";
 export { SEO_PAGE_KEYS } from "./SeoMetadata";
 export type { FooterSettings, FooterContent } from "./Footer";
+export type { AppearanceSettings, AppearanceContent } from "./Appearance";
 export type { ManagedFile, ManagedFileContent, CreateManagedFileInput } from "./ManagedFile";
 export type { ResumeFile, ResumeFileContent, CreateResumeFileInput } from "./Resume";
 export type {

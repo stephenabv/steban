@@ -7,6 +7,8 @@ const CONTENT_DIR = path.join(DATA_DIR, "content");
 const LETTER_STORE = path.join(DATA_DIR, "cover-letters.json");
 /** Passkeys the tests register; removed afterwards only if this run created the file. */
 const PASSKEY_STORE = path.join(DATA_DIR, "passkeys.json");
+/** The gradient palette the appearance spec saves; removed afterwards only if this run created it. */
+const APPEARANCE_STORE = path.join(CONTENT_DIR, "appearance.json");
 /** Files this run created, so teardown removes only those. */
 export const SEEDED_MANIFEST = path.join(__dirname, "..", ".auth", "seeded.json");
 
@@ -54,7 +56,7 @@ export default async function globalSetup(): Promise<void> {
   await fs.mkdir(CONTENT_DIR, { recursive: true });
   await fs.mkdir(path.dirname(SEEDED_MANIFEST), { recursive: true });
   const seeded: string[] = [];
-  for (const store of [LETTER_STORE, PASSKEY_STORE]) {
+  for (const store of [LETTER_STORE, PASSKEY_STORE, APPEARANCE_STORE]) {
     if (!(await exists(store))) seeded.push(store);
   }
   for (const [key, data] of Object.entries(SEED)) {

@@ -36,6 +36,7 @@ export const adminNavigation: AdminNavGroup[] = [
   {
     label: "Site",
     items: [
+      { path: "/appearance", label: "Appearance", icon: "palette", description: "Gradient colours across the site" },
       { path: "/seo", label: "SEO Metadata", icon: "search", description: "Titles, descriptions, OG images" },
       { path: "/social", label: "Social Links", icon: "share", description: "Footer and contact profiles" },
       { path: "/footer", label: "Footer", icon: "layout", description: "Legal links" },

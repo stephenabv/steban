@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { z } from "zod";
 import { SEO_PAGE_KEYS } from "@/server/domain/entities";
 import { LEGAL_LIMITS } from "@/config/legal";
+import { GRADIENT_STOP_LIMITS, normalizeHexColor } from "@/lib/theme/gradient";
 
 /*
  * Validation for admin-editable site content. Every URL that can end up in an
@@ -171,12 +172,34 @@ export const footerSchema = z.object({
   termsUrl: linkTarget("Terms & conditions link"),
 });
 
+// ─── Appearance ───────────────────────────────────────────────────────────────
+/** Hex colours only (normalised to `#rrggbb`): the values are written into CSS. */
+const hexColor = z
+  .string()
+  .max(16)
+  .transform((v, ctx) => {
+    const color = normalizeHexColor(v);
+    if (!color) {
+      ctx.addIssue({ code: "custom", message: "Use a hex colour such as #d62976." });
+      return z.NEVER;
+    }
+    return color;
+  });
+
+export const appearanceSchema = z.object({
+  gradientStops: z
+    .array(hexColor)
+    .min(GRADIENT_STOP_LIMITS.min, `Pick at least ${GRADIENT_STOP_LIMITS.min} colours.`)
+    .max(GRADIENT_STOP_LIMITS.max, `Use at most ${GRADIENT_STOP_LIMITS.max} colours.`),
+});
+
 export type HeroFormInput = z.input<typeof heroSchema>;
 export type AboutFormInput = z.input<typeof aboutSchema>;
 export type SeoFormInput = z.input<typeof seoSchema>;
 export type ContactEmailFormInput = z.input<typeof contactEmailSchema>;
 export type SocialLinksFormInput = z.input<typeof socialLinksSchema>;
 export type FooterFormInput = z.input<typeof footerSchema>;
+export type AppearanceFormInput = z.input<typeof appearanceSchema>;
 
 // ─── Legal documents ──────────────────────────────────────────────────────────
 export const legalDraftSchema = z.object({

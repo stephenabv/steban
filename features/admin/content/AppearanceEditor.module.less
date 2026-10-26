@@ -1,0 +1,142 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: @space-5;
+}
+
+// ─── Preview ──────────────────────────────────────────────────────────────────
+// A miniature of the profile header and a project card. The editor's palette is
+// set as the same custom properties the site reads, scoped to this box.
+.preview {
+  overflow: hidden;
+  border: 1px solid @color-border;
+  border-radius: @radius-md;
+  background: @color-bg;
+}
+
+.cover {
+  height: 96px;
+  background: @gradient-cover;
+}
+
+.previewBody {
+  display: flex;
+  align-items: flex-end;
+  gap: @space-4;
+  padding: 0 @space-4 @space-4;
+  margin-top: -32px;
+}
+
+.ring {
+  flex-shrink: 0;
+  display: block;
+  width: 72px;
+  height: 72px;
+  .story-ring(3px, 3px);
+}
+
+.ringInner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: @color-bg-elevated;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: @space-2;
+  padding: @space-4 @space-3 @space-3;
+  border-radius: @radius-md;
+  background: @color-bg-card;
+  box-shadow: @shadow-sm;
+  .gradient-rule-top();
+}
+
+.line {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: @tint-9;
+}
+
+.lineShort {
+  width: 60%;
+}
+
+.previewCaption {
+  margin-top: -@space-3;
+  font-size: @fs-xs;
+  color: @color-text-muted;
+}
+
+// ─── Stops ────────────────────────────────────────────────────────────────────
+.listError {
+  font-size: @fs-sm;
+  color: @color-error-fg;
+}
+
+.stops {
+  display: flex;
+  flex-direction: column;
+  gap: @space-3;
+  list-style: none;
+}
+
+.stopControls {
+  display: flex;
+  align-items: center;
+  gap: @space-2;
+}
+
+.swatch {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 2px;
+  border: 1px solid @color-border-hover;
+  border-radius: @radius-control;
+  background: @color-bg;
+  cursor: pointer;
+  .focus-ring();
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  // Kept apart: one unknown vendor pseudo-element would void a shared rule.
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: calc(@radius-control - 2px);
+  }
+
+  &::-moz-color-swatch {
+    border: none;
+    border-radius: calc(@radius-control - 2px);
+  }
+}
+
+.hex {
+  flex: 1;
+  min-width: 0;
+  font-family: @font-mono;
+  text-transform: lowercase;
+}
+
+.stopActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+// Equal-width buttons that stack at full width on narrow screens.
+.actions {
+  .button-group(180px);
+}

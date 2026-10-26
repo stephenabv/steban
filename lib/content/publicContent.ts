@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import type { About, Hero, LegalDocumentKind, SeoPageKey } from "@/server/domain/entities";
 import {
   getAboutService,
+  getAppearanceService,
   getContactService,
   getFooterService,
   getHeroService,
@@ -18,6 +19,7 @@ import { legalNav } from "@/config/navigation";
 import type { NavLink } from "@/config/navigation";
 import type { SocialItem } from "@/components/layout/SocialLinks";
 import type { PersonProfile } from "@/lib/structuredData";
+import { DEFAULT_GRADIENT_STOPS } from "@/lib/theme/gradient";
 
 /*
  * Read models for the public site. Admin-saved content wins; config values are
@@ -43,6 +45,15 @@ export function getHeroContent(): Promise<Hero | null> {
 export function getAboutContent(): Promise<About | null> {
   return orFallback("about", () => getAboutService().getAbout(), null);
 }
+
+/**
+ * The decorative gradient's colours: the saved palette, or the default when
+ * nothing is saved or storage is unavailable. Cached per request.
+ */
+export const getGradientStops = cache(async (): Promise<readonly string[]> => {
+  const saved = await orFallback("appearance", () => getAppearanceService().get(), null);
+  return saved?.gradientStops ?? DEFAULT_GRADIENT_STOPS;
+});
 
 export interface PublicContact {
   email: string;
