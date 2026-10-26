@@ -14,11 +14,6 @@
   align-items: baseline;
   justify-content: space-between;
   gap: @space-4;
-  padding-inline: @space-4;
-
-  @media (min-width: @bp-md) {
-    padding-inline: 0;
-  }
 
   h2 {
     font-size: @fs-xl;
@@ -38,18 +33,16 @@
 }
 
 // ─── Post card ────────────────────────────────────────────────────────────────
-// Edge-to-edge on phones (as in the Facebook app), a rounded card from `md`.
+// A rounded card at every width; `overflow: hidden` clips the gradient rule
+// and the cover image to its corners.
 .post {
   position: relative;
   background: @color-bg-card;
+  border-radius: @radius-lg;
   box-shadow: @shadow-sm;
   overflow: hidden;
   transition: box-shadow @transition-normal;
   .gradient-rule-top();
-
-  @media (min-width: @bp-md) {
-    border-radius: @radius-lg;
-  }
 
   @media (hover: hover) {
     &:hover {
@@ -211,11 +204,8 @@
   gap: @space-3;
   padding: @space-10 @space-6;
   background: @color-bg-card;
+  border-radius: @radius-lg;
   box-shadow: @shadow-sm;
   color: @color-text-muted;
   text-align: center;
-
-  @media (min-width: @bp-md) {
-    border-radius: @radius-lg;
-  }
 }

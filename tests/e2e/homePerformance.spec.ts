@@ -62,6 +62,27 @@ test.describe("social layout", () => {
     expect(padding).toBeGreaterThanOrEqual(barHeight);
   });
 
+  test("phone cards keep a side gutter and nothing scrolls sideways", async ({ page }) => {
+    const width = 390;
+    const gutter = 16;
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(scrollWidth).toBeLessThanOrEqual(width);
+
+    // The Intro card, every feed post and the closing call to action.
+    const cards = page.locator('aside[aria-labelledby="intro-heading"], #featured article, section:has(#cta-heading) > *');
+    const count = await cards.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+    for (let i = 0; i < count; i++) {
+      const box = await cards.nth(i).boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(gutter);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width - gutter);
+    }
+  });
+
   test("desktop uses the top tabs instead", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
