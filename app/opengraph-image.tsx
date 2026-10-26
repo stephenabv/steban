@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { siteConfig } from "@/config/site";
 import { defaultOgImage } from "@/config/seo";
+import { LogoMark } from "@/components/layout/LogoMark";
 
 export const alt = defaultOgImage.alt;
 export const size = { width: defaultOgImage.width, height: defaultOgImage.height };
@@ -23,33 +24,8 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        {/* SA badge */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 120,
-            height: 120,
-            background: "linear-gradient(135deg, #0866ff, #0861d9)",
-            borderRadius: 28,
-            marginBottom: 48,
-          }}
-        >
-          <div style={{ fontSize: 52, fontWeight: 700, color: "#fff" }}>SA</div>
-          <div style={{ display: "flex", alignItems: "center", marginTop: 4 }}>
-            <div style={{ width: 34, height: 5, background: "#a9c7ff", borderRadius: 3 }} />
-            <div
-              style={{
-                width: 12,
-                height: 12,
-                background: "#a9c7ff",
-                borderRadius: 6,
-                marginLeft: 7,
-              }}
-            />
-          </div>
+        <div style={{ display: "flex", marginBottom: 48 }}>
+          <LogoMark size={120} />
         </div>
 
         <div style={{ display: "flex", fontSize: 78, fontWeight: 700, lineHeight: 1.1 }}>

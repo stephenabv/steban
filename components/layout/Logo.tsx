@@ -1,51 +1,18 @@
-import { useId } from "react";
+import { LogoMark } from "./LogoMark";
 
 /**
- * Minimalist brand mark for Stephen Abueva — Computer Engineer.
- * A blue rounded square with an "SA" monogram and a circuit-node accent
- * (the small dot terminating the trace under the letters).
- * Also reproduced in app/icon.tsx / app/apple-icon.tsx / app/opengraph-image.tsx —
- * keep the geometry and colors in sync when changing it.
+ * Brand mark for Stephen Abueva — Computer Engineer: a circuit-trace "S" with
+ * a node on each end, between code brackets. The favicon, Apple touch icon and
+ * share images draw the same `LogoMark`.
  */
 export function Logo({ size = 32, decorative = false }: { size?: number; decorative?: boolean }) {
-  const gradientId = useId();
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
+    <LogoMark
+      size={size}
       role={decorative ? undefined : "img"}
       aria-label={decorative ? undefined : "Stephen Abueva logo"}
       aria-hidden={decorative || undefined}
-    >
-      <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0866ff" />
-          <stop offset="100%" stopColor="#0861d9" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="14" fill={`url(#${gradientId})`} />
-      <text
-        x="32"
-        y="30"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="#ffffff"
-        fontFamily="var(--font-sans), system-ui, sans-serif"
-        fontSize="26"
-        fontWeight="700"
-        letterSpacing="0.5"
-      >
-        SA
-      </text>
-      {/* circuit trace + node — a nod to computer engineering */}
-      <path
-        d="M18 48h20"
-        stroke="#a9c7ff"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <circle cx="44" cy="48" r="3.5" fill="#a9c7ff" />
-    </svg>
+      focusable="false"
+    />
   );
 }
