@@ -1,16 +1,18 @@
 import type { CSSProperties, ReactNode } from "react";
 import styles from "./TechBackdrop.module.less";
+import { TechBackdropSensor } from "./TechBackdropSensor";
 
 /**
- * Decorative layer of faint tech glyphs (circuit traces, code fragments and
- * generic tech icons) that drifts behind the public pages.
+ * Decorative layer of tech glyphs (circuit traces, code fragments and generic
+ * tech icons) that roams across the public pages, over the content.
  *
- * It is pure server-rendered SVG and text: no client JS, no images to fetch,
- * nothing in the accessibility tree and nothing that can take pointer events.
- * The layer is fixed to the viewport, so it never adds to page height (no
- * layout shift), and glyphs hug the side gutters so they stay out of the way
- * of the content column. Motion is transform-only and is skipped entirely
- * under prefers-reduced-motion.
+ * The glyphs are server-rendered SVG and text: no images to fetch, nothing in
+ * the accessibility tree, and the layer takes no pointer events, so every
+ * link, button and text selection underneath keeps working. It is fixed to
+ * the viewport, so it never adds to page height (no layout shift). Motion is
+ * transform-only and is skipped under prefers-reduced-motion. A small client
+ * sensor marks each glyph that is over content so it can fade there and
+ * keep that content readable.
  */
 
 type GlyphKind =
@@ -25,48 +27,41 @@ type GlyphKind =
   | "cloud"
   | "code";
 
+/** A route waypoint, as an offset from the start in viewport units (vw, vh). */
+type Waypoint = readonly [x: number, y: number];
+
 interface Glyph {
   readonly kind: GlyphKind;
-  /** Vertical position in the viewport (a percentage keeps it fluid). */
-  readonly top: string;
-  /** Which side gutter the glyph lives in. */
-  readonly side: "left" | "right";
-  /**
-   * Distance from the viewport edge as a fraction of the side gutter (the
-   * space outside the content column). Negative values tuck the glyph past
-   * the edge. Icons are also capped at 55% of the gutter, so with an inset
-   * of at most 0.3 a glyph always ends before the content starts.
-   */
-  readonly inset: number;
+  /** Start position in the viewport, in vw and vh. */
+  readonly x: number;
+  readonly y: number;
   /** Size in px: width for icons, font size for code. */
   readonly size: number;
-  /** Drift cycle in seconds; staggered so glyphs never move in unison. */
+  /** Two waypoints the glyph passes through before looping back to its start. */
+  readonly route: readonly [Waypoint, Waypoint];
+  /** Degrees turned per loop: 360 spins it, 0 only rocks it gently. */
+  readonly spin: number;
+  /** Loop length in seconds; delays are negative so glyphs start mid-route. */
   readonly duration: number;
   readonly delay: number;
-  /** Slight rotation at the top of the drift, in degrees. */
-  readonly tilt: number;
-  /**
-   * Size in px when the gutter is too narrow for the full set (phones,
-   * tablets, small laptops). Only glyphs that set it show there: they shrink
-   * and tuck mostly past the edge so they never sit under text.
-   */
-  readonly phoneSize?: number;
+  /** Shown on phones too. Kept to a handful so small screens stay calm. */
+  readonly phone?: boolean;
   /** Text for `code` glyphs. */
   readonly text?: string;
 }
 
 const GLYPHS: readonly Glyph[] = [
-  { kind: "circuit", top: "14%", side: "left", inset: -0.15, size: 170, duration: 22, delay: 0, tilt: 0, phoneSize: 64 },
-  { kind: "brackets", top: "34%", side: "left", inset: 0.3, size: 46, duration: 16, delay: -4, tilt: -6 },
-  { kind: "code", top: "54%", side: "left", inset: 0.2, size: 13, duration: 20, delay: -9, tilt: 0, text: "200 OK" },
-  { kind: "chip", top: "72%", side: "left", inset: 0.25, size: 56, duration: 18, delay: -2, tilt: 8, phoneSize: 40 },
-  { kind: "branch", top: "90%", side: "left", inset: 0.15, size: 40, duration: 17, delay: -11, tilt: -4 },
-  { kind: "terminal", top: "10%", side: "right", inset: 0.25, size: 50, duration: 19, delay: -6, tilt: 5 },
-  { kind: "circuitAlt", top: "28%", side: "right", inset: -0.15, size: 160, duration: 24, delay: -13, tilt: 0 },
-  { kind: "braces", top: "50%", side: "right", inset: 0.25, size: 44, duration: 15, delay: -3, tilt: 6, phoneSize: 36 },
-  { kind: "database", top: "66%", side: "right", inset: 0.3, size: 42, duration: 21, delay: -8, tilt: -5 },
-  { kind: "code", top: "82%", side: "right", inset: 0.1, size: 13, duration: 23, delay: -15, tilt: 0, text: "0x3BEA62" },
-  { kind: "cloud", top: "94%", side: "right", inset: 0.3, size: 54, duration: 18, delay: -5, tilt: 4 },
+  { kind: "circuit", x: 4, y: 12, size: 130, route: [[30, 18], [12, 50]], spin: 0, duration: 70, delay: 0, phone: true },
+  { kind: "brackets", x: 22, y: 64, size: 46, route: [[28, -30], [50, 10]], spin: 360, duration: 48, delay: -12, phone: true },
+  { kind: "code", x: 58, y: 8, size: 13, route: [[-30, 40], [-10, 70]], spin: 0, duration: 62, delay: -20, text: "200 OK" },
+  { kind: "chip", x: 80, y: 70, size: 54, route: [[-40, -20], [-20, -55]], spin: -360, duration: 56, delay: -8, phone: true },
+  { kind: "branch", x: 40, y: 86, size: 40, route: [[25, -45], [-25, -60]], spin: 0, duration: 66, delay: -30 },
+  { kind: "terminal", x: 86, y: 14, size: 50, route: [[-45, 30], [-70, 5]], spin: 0, duration: 58, delay: -4, phone: true },
+  { kind: "circuitAlt", x: 66, y: 44, size: 120, route: [[-50, 25], [-30, -30]], spin: 0, duration: 76, delay: -40 },
+  { kind: "braces", x: 10, y: 40, size: 44, route: [[55, 30], [70, -25]], spin: 360, duration: 44, delay: -16, phone: true },
+  { kind: "database", x: 50, y: 30, size: 42, route: [[30, 40], [-35, 45]], spin: 0, duration: 60, delay: -26 },
+  { kind: "code", x: 30, y: 26, size: 13, route: [[40, 50], [-20, 60]], spin: 0, duration: 68, delay: -34, text: "0x3BEA62" },
+  { kind: "cloud", x: 70, y: 88, size: 54, route: [[-55, -40], [10, -70]], spin: 0, duration: 64, delay: -10, phone: true },
 ];
 
 /** Shared SVG attributes: line art in currentColor, no fill. */
@@ -155,17 +150,21 @@ function renderIcon(kind: Exclude<GlyphKind, "code">): ReactNode {
   }
 }
 
-/** Geometry goes in as custom properties so the stylesheet owns the responsive rules. */
+/** Geometry and route go in as custom properties; the stylesheet owns motion. */
 function glyphStyle(glyph: Glyph): CSSProperties {
+  const [[x1, y1], [x2, y2]] = glyph.route;
   const vars: Record<string, string> = {
-    "--glyph-top": glyph.top,
-    "--glyph-inset": String(glyph.inset),
+    "--glyph-x": `${glyph.x}vw`,
+    "--glyph-y": `${glyph.y}vh`,
     "--glyph-size": `${glyph.size}px`,
-    "--drift-duration": `${glyph.duration}s`,
-    "--drift-delay": `${glyph.delay}s`,
-    "--drift-tilt": `${glyph.tilt}deg`,
+    "--route-x1": `${x1}vw`,
+    "--route-y1": `${y1}vh`,
+    "--route-x2": `${x2}vw`,
+    "--route-y2": `${y2}vh`,
+    "--route-spin": `${glyph.spin}deg`,
+    "--route-duration": `${glyph.duration}s`,
+    "--route-delay": `${glyph.delay}s`,
   };
-  if (glyph.phoneSize !== undefined) vars["--glyph-phone-size"] = `${glyph.phoneSize}px`;
   return vars as CSSProperties;
 }
 
@@ -176,13 +175,14 @@ export function TechBackdrop() {
         <span
           key={i}
           className={glyph.kind === "code" ? `${styles.glyph} ${styles.code}` : styles.glyph}
-          data-phone={glyph.phoneSize !== undefined ? "" : undefined}
-          data-side={glyph.side}
+          data-phone={glyph.phone ? "" : undefined}
+          data-glyph=""
           style={glyphStyle(glyph)}
         >
           {glyph.kind === "code" ? glyph.text : renderIcon(glyph.kind)}
         </span>
       ))}
+      <TechBackdropSensor />
     </div>
   );
 }
