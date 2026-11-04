@@ -113,36 +113,88 @@ test.describe("HUD layout", () => {
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#050706");
   });
 
-  for (const width of [390, 1024, 1440, 1920]) {
-    test(`background tech glyphs stay decorative and out of the content column at ${width}px`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto("/about");
-      await expect(page.locator("#main-content h1")).toBeVisible();
+  test("floating tech glyphs sit over the content without blocking it", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/about");
+    await expect(page.locator("#main-content h1")).toBeVisible();
 
-      const backdrop = page.locator("[data-tech-backdrop]");
-      await expect(backdrop).toHaveAttribute("aria-hidden", "true");
-      const layer = await backdrop.evaluate((el) => {
-        const style = getComputedStyle(el);
-        return { position: style.position, zIndex: style.zIndex, pointerEvents: style.pointerEvents };
-      });
-      expect(layer).toEqual({ position: "fixed", zIndex: "-1", pointerEvents: "none" });
-
-      // Every visible glyph must end before the page heading's column starts
-      // (left side) or begin after the content column ends (right side).
-      const overlaps = await page.evaluate(() => {
-        const heading = document.querySelector("#main-content h1");
-        if (!heading) return ["no page heading"];
-        const contentLeft = heading.getBoundingClientRect().left;
-        const contentRight = document.documentElement.clientWidth - contentLeft;
-        return [...document.querySelectorAll<HTMLElement>("[data-tech-backdrop] > *")]
-          .filter((el) => getComputedStyle(el).display !== "none")
-          .map((el) => ({ side: el.dataset.side, box: el.getBoundingClientRect() }))
-          .filter(({ side, box }) => (side === "left" ? box.right > contentLeft : box.left < contentRight))
-          .map(({ side, box }) => `${side} glyph at ${Math.round(box.left)}-${Math.round(box.right)}`);
-      });
-      expect(overlaps).toEqual([]);
+    const backdrop = page.locator("[data-tech-backdrop]");
+    await expect(backdrop).toHaveAttribute("aria-hidden", "true");
+    const layer = await backdrop.evaluate((el) => {
+      const style = getComputedStyle(el);
+      const nav = document.querySelector("header");
+      return {
+        position: style.position,
+        pointerEvents: style.pointerEvents,
+        zIndex: Number(style.zIndex),
+        navZIndex: nav ? Number(getComputedStyle(nav).zIndex) : Number.NaN,
+      };
     });
-  }
+    expect(layer.position).toBe("fixed");
+    expect(layer.pointerEvents).toBe("none");
+    expect(layer.zIndex).toBeGreaterThan(0);
+    expect(layer.zIndex).toBeLessThan(layer.navZIndex);
+
+    // Hit testing passes straight through every glyph to the page underneath.
+    const blocked = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>("[data-glyph]")]
+        .filter((g) => g.offsetParent !== null)
+        .filter((g) => {
+          const box = g.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return hit !== null && g.closest("[data-tech-backdrop]")!.contains(hit);
+        }).length,
+    );
+    expect(blocked).toBe(0);
+  });
+
+  test("a floating glyph fades while it is over content and shows over empty space", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/about");
+    const heading = page.locator("#main-content h1");
+    await expect(heading).toBeVisible();
+
+    // A small icon glyph, so a patch of empty canvas big enough for it is easy to find.
+    const glyph = page.locator("[data-glyph]").nth(1);
+    const park = (x: number, y: number) =>
+      glyph.evaluate(
+        (el, [px, py]) => {
+          el.style.animation = "none";
+          el.style.setProperty("--glyph-x", `${px}px`);
+          el.style.setProperty("--glyph-y", `${py}px`);
+        },
+        [x, y] as const,
+      );
+
+    const box = (await heading.boundingBox())!;
+    await park(box.x + 20, box.y + 10);
+    await expect(glyph).toHaveAttribute("data-over", "");
+    await expect(glyph).toHaveCSS("opacity", "0.1");
+
+    // Find a patch of bare canvas: only layout wrappers with no text, no
+    // background and nothing interactive under it.
+    const empty = await page.evaluate(() => {
+      const bare = (x: number, y: number) => {
+        const el = document.elementFromPoint(x, y);
+        if (!el) return false;
+        if (el.matches("a, button, input, textarea, select, label, img, svg, video, canvas, [role='button']")) return false;
+        if ([...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim() !== "")) return false;
+        const style = getComputedStyle(el);
+        return style.backgroundImage === "none" && /rgba\(0, 0, 0, 0\)|transparent/.test(style.backgroundColor);
+      };
+      for (let y = 120; y < innerHeight - 80; y += 20) {
+        for (let x = 20; x < innerWidth - 80; x += 20) {
+          const patch = [0, 30, 60].flatMap((dx) => [0, 30, 60].map((dy) => [x + dx, y + dy] as const));
+          if (patch.every(([px, py]) => bare(px, py))) return { x, y };
+        }
+      }
+      return null;
+    });
+    expect(empty).not.toBeNull();
+    await park(empty!.x, empty!.y);
+    await expect(glyph).not.toHaveAttribute("data-over", "");
+    await expect(glyph).toHaveCSS("opacity", "0.4");
+  });
 });
 
 test.describe("navigation scroll", () => {

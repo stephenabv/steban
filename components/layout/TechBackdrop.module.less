@@ -1,46 +1,32 @@
 @import "styles/variables.less";
 
-// The full set needs a real side gutter. The content column is
-// @container-max wide plus its padding, so at this width the gutter is ~92px.
-@backdrop-full-from: 1400px;
-@content-pad: @space-8;
-
-// Fixed, behind everything in the root stacking context. <html> has no
-// background, so body's colour paints on the canvas underneath this layer and
-// non-positioned page content paints on top of it.
+// Fixed over the page content but under the navbar, drawers, modals and
+// loaders. It takes no pointer events, so everything underneath stays
+// clickable and selectable.
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: @z-sticky - 10;
   overflow: hidden;
   pointer-events: none;
   user-select: none;
-  // Unlit-segment green: decorative only, far below text contrast on purpose.
-  color: @color-accent-muted;
-  opacity: 0.55;
-
-  // Free space outside the content column, per side.
-  --gutter: calc((100vw - @container-max) / 2 + @content-pad);
-
-  @media (max-width: (@backdrop-full-from - 1px)) {
-    opacity: 0.4;
-  }
+  color: @color-accent;
 }
 
 .glyph {
   position: absolute;
-  top: var(--glyph-top);
+  top: var(--glyph-y);
+  left: var(--glyph-x);
   display: block;
+  width: var(--glyph-size);
   line-height: 0;
-  // Capped to the gutter so even wide traces end before the content column.
-  width: min(var(--glyph-size), calc(var(--gutter) * 0.55));
+  // Clearly visible over empty canvas; turns see-through while the sensor
+  // marks it over content, so text and controls underneath stay easy to read.
+  opacity: 0.4;
+  transition: opacity @duration-slow @ease-out;
 
-  &[data-side="left"] {
-    left: calc(var(--gutter) * var(--glyph-inset));
-  }
-
-  &[data-side="right"] {
-    right: calc(var(--gutter) * var(--glyph-inset));
+  &[data-over] {
+    opacity: 0.1;
   }
 
   > svg {
@@ -50,26 +36,17 @@
     overflow: visible;
   }
 
-  // Narrow gutters: only the flagged glyphs, small and tucked half off the
-  // edge, so they peek out beside content instead of crossing it.
-  @media (max-width: (@backdrop-full-from - 1px)) {
+  // Phones get the few flagged glyphs, a little smaller.
+  @media (max-width: (@bp-md - 1px)) {
+    width: calc(var(--glyph-size) * 0.75);
+
     &:not([data-phone]) {
       display: none;
-    }
-
-    width: var(--glyph-phone-size);
-
-    &[data-side="left"] {
-      left: calc(var(--glyph-phone-size) * -0.72);
-    }
-
-    &[data-side="right"] {
-      right: calc(var(--glyph-phone-size) * -0.72);
     }
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: backdrop-drift var(--drift-duration, 18s) @ease-in-out var(--drift-delay, 0s) infinite;
+    animation: glyph-roam var(--route-duration, 60s) @ease-in-out var(--route-delay, 0s) infinite;
   }
 }
 
@@ -80,15 +57,21 @@
   line-height: 1;
   white-space: nowrap;
   letter-spacing: 0.04em;
-  color: @color-border-hover;
 }
 
-@keyframes backdrop-drift {
-  0%,
-  100% {
+// Start, two waypoints, back to start. A full spin ends on 360deg, which looks
+// identical to 0deg, so the loop has no visible jump.
+@keyframes glyph-roam {
+  0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
-  50% {
-    transform: translate3d(0, -14px, 0) rotate(var(--drift-tilt, 0deg));
+  33% {
+    transform: translate3d(var(--route-x1), var(--route-y1), 0) rotate(calc(var(--route-spin) * 0.33 + 8deg));
+  }
+  66% {
+    transform: translate3d(var(--route-x2), var(--route-y2), 0) rotate(calc(var(--route-spin) * 0.66 - 8deg));
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--route-spin));
   }
 }
