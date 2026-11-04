@@ -2,21 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
 import { siteConfig } from "@/config/site";
-import { contactNav, isActivePath, primaryNav, tabBarNav } from "@/config/navigation";
-import { Button } from "@/components/ui/Button";
-import { Icon } from "@/components/icons/Icon";
-import { springSnappy } from "@/lib/motion";
+import { contactNav, isActivePath, primaryNav } from "@/config/navigation";
+import { buttonClassName } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { Logo } from "./Logo";
-import { ThemeToggle } from "./ThemeToggle";
 import styles from "./Navbar.module.less";
 
 /**
- * Facebook-style top bar (logo, icon tabs with an underline, actions) from the
- * `md` breakpoint, and an Instagram-style bottom tab bar on phones. Both are
- * plain links: no scroll listeners or menu state, so nothing here competes
+ * HUD top bar: logo, section tabs with a neon underline, and the contact
+ * button. From `md` it is one row; on phones the tabs drop to an equal-width
+ * second row. One navigation landmark at every width, plain links only: no
+ * scroll listeners, menu state or animation library, so nothing here competes
  * with the visitor's input for the main thread (INP).
  */
 export function Navbar() {
@@ -34,10 +31,9 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Only one of the two navigation landmarks is displayed at any width. */}
         <nav className={styles.tabs} aria-label="Main navigation">
           <ul role="list">
-            {primaryNav.map(({ href, label, icon }) => {
+            {primaryNav.map(({ href, label }) => {
               const active = isActivePath(pathname, href);
               return (
                 <li key={href}>
@@ -46,16 +42,7 @@ export function Navbar() {
                     className={cn(styles.tab, active && styles.active)}
                     aria-current={active ? "page" : undefined}
                   >
-                    <Icon name={icon} size={22} />
-                    <span>{label}</span>
-                    {active && (
-                      <motion.span
-                        layoutId="nav-active-tab"
-                        className={styles.underline}
-                        transition={springSnappy}
-                        aria-hidden="true"
-                      />
-                    )}
+                    {label}
                   </Link>
                 </li>
               );
@@ -63,47 +50,15 @@ export function Navbar() {
           </ul>
         </nav>
 
-        <div className={styles.actions}>
-          <ThemeToggle />
-          <Button
-            href={contactNav.href}
-            size="sm"
-            variant={contactActive ? "secondary" : "primary"}
-            className={styles.cta}
-            aria-current={contactActive ? "page" : undefined}
-          >
-            {contactNav.label}
-          </Button>
-        </div>
+        <Link
+          href={contactNav.href}
+          className={cn(buttonClassName({ variant: contactActive ? "secondary" : "primary", size: "sm" }), styles.cta)}
+          aria-current={contactActive ? "page" : undefined}
+        >
+          <span className={styles.ctaLong}>{contactNav.label}</span>
+          <span className={styles.ctaShort}>{contactNav.shortLabel}</span>
+        </Link>
       </div>
-
-      <nav className={styles.tabBar} aria-label="Main navigation" data-tabbar="">
-        <ul role="list">
-          {tabBarNav.map(({ href, label, icon }) => {
-            const active = isActivePath(pathname, href);
-            return (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className={cn(styles.tabBarLink, active && styles.active)}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {active && (
-                    <motion.span
-                      layoutId="tabbar-active"
-                      className={styles.tabBarIndicator}
-                      transition={springSnappy}
-                      aria-hidden="true"
-                    />
-                  )}
-                  <Icon name={icon} size={22} />
-                  <span>{label}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
     </header>
   );
 }

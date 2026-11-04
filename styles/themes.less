@@ -1,109 +1,44 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Theme palettes — the runtime values behind the themed tokens in
-// variables.less.
+// The Cyber HUD palette: the runtime values behind the themed tokens in
+// variables.less. The site is dark only, so there is a single palette.
 //
-// Resolution order (see lib/theme):
-//   1. <html data-theme="light|dark">  — explicit choice, set server-side from
-//      the `theme` cookie so the first paint is already correct (no flash).
-//   2. prefers-color-scheme              — no stored choice yet: follow the OS.
+// Contrast (WCAG AA) on the panel surface #0b0e0d:
+//   text-primary   #e8eeea  16.5:1
+//   text-secondary #a9b3ae   9.0:1
+//   text-muted     #8c9691   6.4:1
+//   accent-light   #3bea62  12.1:1
 // ─────────────────────────────────────────────────────────────────────────────
 
-.theme-dark() {
+:root {
   color-scheme: dark;
 
-  // Facebook dark: charcoal canvas, raised grey cards.
-  --color-bg: #18191a;
-  --color-bg-subtle: #1c1d1f;
-  --color-bg-card: #242526;
-  --color-bg-band: #18191a; // full-width bands (profile header, footer): the canvas
-  --color-bg-elevated: #3a3b3c;
-  --color-bg-hover: #303132;
-  --color-border: #3e4042;
-  --color-border-hover: #4b4d50;
-  --color-border-strong: #5c5e62;
+  --color-bg: #050706;
+  --color-bg-subtle: #080b0a;
+  --color-bg-card: #0b0e0d;
+  --color-bg-band: #050706;
+  --color-bg-elevated: #151a18;
+  --color-bg-hover: #121715;
+  --color-border: #232826;
+  --color-border-hover: #3a403d;
+  --color-border-strong: #5b615e;
 
-  --color-text-primary: #e4e6eb;
-  --color-text-secondary: #b0b3b8;
-  --color-text-muted: #b0b3b8; // 7.3:1 on cards; FB uses one secondary grey
+  --color-text-primary: #e8eeea;
+  --color-text-secondary: #a9b3ae;
+  --color-text-muted: #8c9691;
 
-  --color-accent-light: #4ba3ff; // link/active blue, 5.8:1 on cards
-  --color-accent-lighter: #8cc2ff;
+  --color-accent-light: #3bea62;
+  --color-accent-lighter: #8af5a3;
 
-  --color-success-fg: #6bd685;
-  --color-warning-fg: #f0c060;
-  --color-error-fg: #ff8a84;
-  --color-info-fg: #79c0ff;
+  --color-success-fg: #6ff08b;
+  --color-warning-fg: #f6c85f;
+  --color-error-fg: #ff8a8d;
+  --color-info-fg: #8ad8ff;
 
   --color-tint: #ffffff;
-  --color-scrim: rgba(0, 0, 0, 0.7);
+  --color-scrim: rgba(0, 0, 0, 0.75);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.7);
   --shadow-inset-highlight: none;
-
-  // Bars and floating controls: opaque card surface, hairline border.
-  --glass-from: #242526;
-  --glass-mid: #242526;
-  --glass-to: #242526;
-  --glass-border: #3e4042;
-  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --glass-highlight: transparent;
-}
-
-.theme-light() {
-  color-scheme: light;
-
-  // Facebook light: grey canvas, white cards with a soft drop shadow.
-  --color-bg: #f0f2f5;
-  --color-bg-subtle: #e9ebee;
-  --color-bg-card: #ffffff;
-  --color-bg-band: #ffffff; // full-width bands (profile header, footer): white
-  --color-bg-elevated: #e4e6eb; // FB secondary-button grey
-  --color-bg-hover: #f2f2f2;
-  --color-border: #dadde1;
-  --color-border-hover: #ced0d4;
-  --color-border-strong: #a8abaf;
-
-  --color-text-primary: #050505;
-  --color-text-secondary: #4b4f56;
-  --color-text-muted: #65676b; // 5.0:1 on the canvas, 5.7:1 on cards
-
-  --color-accent-light: #0861d9; // link/active blue, 5.6:1 on white
-  --color-accent-lighter: #0650b5;
-
-  --color-success-fg: #176f30; // ≥ 4.5:1 on the success badge tint (WCAG AA)
-  --color-warning-fg: #8a5a00;
-  --color-error-fg: #c0282d;
-  --color-info-fg: #0b5cad;
-
-  --color-tint: #050505;
-  --color-scrim: rgba(5, 5, 5, 0.45);
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.16);
-  --shadow-inset-highlight: none;
-
-  --glass-from: #ffffff;
-  --glass-mid: #ffffff;
-  --glass-to: #ffffff;
-  --glass-border: #dadde1;
-  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --glass-highlight: transparent;
-}
-
-:root,
-:root[data-theme="dark"] {
-  .theme-dark();
-}
-
-:root[data-theme="light"] {
-  .theme-light();
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme]) {
-    .theme-light();
-  }
 }

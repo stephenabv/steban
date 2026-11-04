@@ -1,0 +1,20 @@
+@import "styles/variables.less";
+@import "styles/mixins.less";
+
+.section {
+  .container();
+  display: flex;
+  flex-direction: column;
+  gap: @space-8;
+  padding-top: @space-16;
+  scroll-margin-top: calc(@nav-height + @space-4);
+
+  @media (min-width: @bp-lg) {
+    padding-top: @space-24;
+  }
+}
+
+.heading {
+  padding-bottom: @space-5;
+  border-bottom: 1px solid @color-border;
+}

@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import type { Metadata, Viewport } from "next";
 import { connection } from "next/server";
 import { Analytics } from "@vercel/analytics/next";
@@ -7,27 +6,14 @@ import { defaultSeo } from "@/config/seo";
 import { searchVerification } from "@/lib/seo/searchVerification";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { RouteTransitions } from "@/components/layout/RouteTransitions";
-import { THEME_COLORS } from "@/lib/theme/theme";
-import { getServerTheme } from "@/lib/theme/getServerTheme";
-import { gradientStyle } from "@/lib/theme/gradient";
-import { getGradientStops } from "@/lib/content/publicContent";
+import { THEME_COLOR } from "@/lib/theme/theme";
+import { hudFont } from "@/lib/theme/fonts";
 import "@/styles/globals.less";
 
-export async function generateViewport(): Promise<Viewport> {
-  const theme = await getServerTheme();
-
-  if (theme) {
-    return { themeColor: THEME_COLORS[theme], colorScheme: theme };
-  }
-
-  return {
-    themeColor: [
-      { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
-      { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
-    ],
-    colorScheme: "dark light",
-  };
-}
+export const viewport: Viewport = {
+  themeColor: THEME_COLOR,
+  colorScheme: "dark",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -58,18 +44,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Forces dynamic rendering so Next.js applies the per-request nonce
   // (set by proxy.ts) to all inline scripts it generates — required for nonce-based CSP.
   await connection();
-  // Rendered server-side so the stored theme is painted on the first frame.
-  const [theme, gradientStops] = await Promise.all([getServerTheme(), getGradientStops()]);
-  // The admin-chosen gradient, as custom properties on <html>: in the first
-  // paint with the HTML itself, so no restyle, flash or layout shift.
-  const style = gradientStyle(gradientStops) as CSSProperties;
 
   return (
     // data-scroll-behavior: Next.js 16 no longer turns off the smooth
     // `scroll-behavior` (globals.less) while it positions a new route. Without
     // it, its scroll-into-view calls animate and stack, and a navigation could
     // glide down to the "Have a project in mind?" band instead of the top.
-    <html lang="en" data-theme={theme ?? undefined} data-scroll-behavior="smooth" style={style}>
+    <html lang="en" className={hudFont.variable} data-scroll-behavior="smooth">
       <body>
         <a href="#main-content" id="skip-nav">
           Skip to main content

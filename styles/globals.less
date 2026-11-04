@@ -12,13 +12,22 @@
 
   --ease-out: @ease-out;
   --duration-page: @duration-page;
-  --nav-height: @nav-height;
+  // Phones: logo bar plus the section-tab row. Desktop: one bar.
+  @nav-height-phone: (@nav-phone-bar + @nav-phone-tabs);
+  @nav-height-desktop: (@nav-offset + @nav-pill-height);
+  --nav-height: ~"@{nav-height-phone}";
 
-  // The platform UI face, as Facebook and Instagram use: nothing to download,
-  // so text paints on the first frame with no font swap (LCP, CLS).
+  @media (min-width: @bp-md) {
+    --nav-height: ~"@{nav-height-desktop}";
+  }
+
+  // Body copy uses the platform UI face: nothing to download, so paragraphs
+  // paint on the first frame with no font swap (LCP, CLS). Headings, labels
+  // and readouts use the HUD face from next/font (app/layout.tsx sets
+  // --font-hud), with the system face as its metric-adjusted fallback.
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  --font-display: var(--font-sans);
+  --font-display: var(--font-hud, var(--font-sans));
 }
 
 // ─── Reset ────────────────────────────────────────────────────────────────────
@@ -54,31 +63,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-// Cross-fade surfaces while the theme flips (html.theme-transition is set for
-// one frame pair by the theme service). Never applied on first paint.
-html.theme-transition,
-html.theme-transition *,
-html.theme-transition *::before,
-html.theme-transition *::after {
-  transition:
-    background-color @duration-normal @ease-in-out,
-    border-color @duration-normal @ease-in-out,
-    color @duration-normal @ease-in-out,
-    fill @duration-normal @ease-in-out,
-    stroke @duration-normal @ease-in-out !important;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none !important;
-  }
-}
-
-// Phones: keep the end of the page clear of the fixed bottom tab bar (Navbar).
-@media (max-width: (@bp-md - 1px)) {
-  body:has([data-tabbar]) {
-    padding-bottom: calc(@tabbar-height + env(safe-area-inset-bottom));
-  }
 }
 
 #main-content {
@@ -134,7 +118,7 @@ h3,
 h4 {
   font-family: @font-display;
   font-weight: @fw-semibold;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.02em;
 }
 
 h1,
@@ -183,7 +167,7 @@ code {
   z-index: @z-loader + 1;
   padding: @space-3 @space-6;
   background: @color-accent;
-  color: #fff;
+  color: @color-on-accent;
   border-radius: @radius-control;
   font-weight: @fw-semibold;
   font-size: @fs-sm;

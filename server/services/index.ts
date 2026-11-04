@@ -12,13 +12,11 @@ export { getResumeService, getProfilePhotoService } from "./fileServices.instanc
 export { AuditService } from "./AuditService";
 export type { AuditAction, AuditEntry } from "./AuditService";
 export { FooterService } from "./FooterService";
-export { AppearanceService } from "./AppearanceService";
 export {
   getHeroService,
   getAboutService,
   getSeoService,
   getFooterService,
-  getAppearanceService,
 } from "./contentServices.instance";
 export { LegalDocumentService, LegalDocumentError } from "./LegalDocumentService";
 export type { LegalDraftSource } from "./LegalDocumentService";

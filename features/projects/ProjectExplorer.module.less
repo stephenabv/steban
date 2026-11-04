@@ -6,20 +6,22 @@
   flex-direction: column;
 }
 
+// HUD panel holding the full-width search field and the filter toggles.
 .toolbar {
+  .hud-panel(@chamfer-lg);
   display: flex;
   flex-direction: column;
   gap: @space-4;
   margin-bottom: @space-5;
+  padding: @space-4;
+
+  @media (min-width: @bp-md) {
+    padding: @space-5;
+  }
 }
 
 .search {
   width: 100%;
-  max-width: 480px;
-
-  @media (max-width: (@bp-md - 1px)) {
-    max-width: none;
-  }
 }
 
 .chips {
@@ -27,8 +29,8 @@
   gap: @space-2;
   overflow-x: auto;
   padding-bottom: @space-1;
-  margin-inline: -@space-5;
-  padding-inline: @space-5;
+  margin-inline: -@space-4;
+  padding-inline: @space-4;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -45,20 +47,24 @@
 
 .chip {
   flex-shrink: 0;
-  min-height: 36px;
-  padding: 0 @space-3;
-  border-radius: @radius-control;
+  min-height: 40px;
+  padding: 0 @space-4;
   border: 1px solid @color-border-hover;
-  background: transparent;
+  background: @color-bg-card;
   color: @color-text-secondary;
-  font-size: @fs-sm;
-  font-weight: @fw-medium;
+  .hud-label(0.8125rem);
+  letter-spacing: 0.08em;
+  .chamfer(@chamfer-sm);
   cursor: pointer;
   transition:
     background @transition-fast,
     border-color @transition-fast,
     color @transition-fast;
-  .focus-ring();
+  // Inner ring: the chamfer clips anything drawn outside.
+  &:focus-visible {
+    outline: 2px solid @color-accent-light;
+    outline-offset: -4px;
+  }
 
   &:hover {
     color: @color-text-primary;
@@ -67,18 +73,22 @@
 }
 
 .chipActive {
-  background: @color-bg-elevated;
-  border-color: @color-border-strong;
-  color: @color-text-primary;
-  box-shadow: inset 0 -2px 0 @color-accent;
+  background: @color-accent;
+  border-color: @color-accent;
+  color: @color-on-accent;
 
   &:hover {
-    border-color: @color-border-strong;
-    color: @color-text-primary;
+    border-color: @color-accent;
+    color: @color-on-accent;
+  }
+
+  &:focus-visible {
+    outline-color: @color-on-accent;
   }
 }
 
 .count {
+  font-family: @font-mono;
   font-size: @fs-sm;
   color: @color-text-muted;
   margin-bottom: @space-5;

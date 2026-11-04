@@ -7,11 +7,11 @@
   align-items: center;
   justify-content: center;
   gap: @space-2;
-  border: 1px solid transparent;
-  border-radius: @radius-control;
-  font-family: @font-sans;
-  font-weight: @fw-semibold;
-  line-height: 1;
+  isolation: isolate;
+  border: 0;
+  border-radius: 0;
+  .hud-label();
+  letter-spacing: 0.08em;
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
@@ -22,11 +22,18 @@
     color @transition-normal,
     box-shadow @transition-normal,
     transform @transition-fast;
-  .focus-ring();
+  .chamfer(@chamfer-md);
 
-  // Facebook-style press: a quick, compositor-only shrink.
+  // The chamfer clips anything drawn outside the box, so the focus ring sits
+  // inside it.
+  &:focus-visible {
+    outline: 2px solid @color-accent-light;
+    outline-offset: -5px;
+  }
+
+  // A quick, compositor-only press.
   &:active:not(:disabled):not([aria-disabled="true"]) {
-    transform: scale(0.96);
+    transform: translateY(1px);
   }
 
   &:disabled,
@@ -45,21 +52,22 @@
 
 // ─── Sizes ────────────────────────────────────────────────────────────────────
 .sm {
-  min-height: 32px;
-  padding: 0 @space-3;
+  min-height: 36px;
+  padding: 0 @space-4;
   font-size: 0.8125rem;
   gap: 6px;
+  .chamfer(@chamfer-sm);
 }
 
 .md {
-  min-height: 40px;
-  padding: 0 @space-4;
+  min-height: 44px;
+  padding: 0 @space-5;
   font-size: @fs-sm;
 }
 
 .lg {
   min-height: 48px;
-  padding: 0 @space-5;
+  padding: 0 @space-6;
   font-size: 0.9375rem;
 }
 
@@ -68,11 +76,11 @@
   aspect-ratio: 1;
 
   &.sm {
-    width: 32px;
+    width: 36px;
   }
 
   &.md {
-    width: 40px;
+    width: 44px;
   }
 
   &.lg {
@@ -87,22 +95,43 @@
 // ─── Variants ─────────────────────────────────────────────────────────────────
 .primary {
   background: @color-accent;
-  border-color: @color-accent;
-  color: #fff;
+  color: @color-on-accent;
 
   &:hover {
-    background: @color-accent-dark;
-    border-color: @color-accent-dark;
+    background: @color-accent-lighter;
+  }
+
+  &:focus-visible {
+    outline-color: @color-on-accent;
   }
 }
 
-// Facebook's grey secondary button: filled, borderless.
-.secondary {
-  background: @color-bg-elevated;
-  color: @color-text-primary;
+// Outlined: a 1px frame that follows the chamfer (the host paints the frame,
+// ::before the plate inside it).
+.outlined(@frame) {
+  background: @frame;
 
-  &:hover {
-    background: color-mix(in srgb, @color-bg-elevated 88%, @color-tint);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    background: @color-bg-card;
+    .chamfer(~"calc(@{chamfer-md} - 0.6px)");
+    transition: background @transition-normal;
+  }
+
+  &.sm::before {
+    .chamfer(~"calc(@{chamfer-sm} - 0.6px)");
+  }
+}
+
+.secondary {
+  .outlined(@color-accent);
+  color: @color-accent-light;
+
+  &:hover::before {
+    background: color-mix(in srgb, @color-accent 14%, @color-bg-card);
   }
 }
 
@@ -117,31 +146,37 @@
 }
 
 .danger {
-  background: fade(@color-error, 10%);
+  .outlined(fade(@color-error, 70%));
   color: @color-error-fg;
-  border-color: fade(@color-error, 35%);
 
-  &:hover {
-    background: fade(@color-error, 16%);
-    border-color: fade(@color-error, 55%);
+  &:hover::before {
+    background: color-mix(in srgb, @color-error 14%, @color-bg-card);
   }
 }
 
 .dangerSolid {
   background: @color-error;
-  color: #fff;
+  color: #1a0405;
 
   &:hover {
-    background: darken(@color-error, 8%);
+    background: lighten(@color-error, 6%);
+  }
+
+  &:focus-visible {
+    outline-color: #1a0405;
   }
 }
 
 .link {
   min-height: 0;
   padding: 0;
-  border-radius: @radius-xs;
   background: none;
   color: @color-accent-light;
+  clip-path: none;
+
+  &:focus-visible {
+    outline-offset: 3px;
+  }
 
   svg {
     transition: transform @transition-normal;

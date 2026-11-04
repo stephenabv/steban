@@ -46,23 +46,27 @@ test.describe("home page performance guards", () => {
   });
 });
 
-test.describe("social layout", () => {
-  test("phones get the bottom tab bar and it never covers the page end", async ({ page }) => {
+test.describe("HUD layout", () => {
+  test("phones put the section tabs in an equal-width row under the bar", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
-    const tabBar = page.locator("nav[data-tabbar]");
-    await expect(tabBar).toBeVisible();
-    await expect(tabBar.locator('a[aria-current="page"]')).toHaveAttribute("href", "/");
-    await expect(tabBar.locator('a[href="/contact"]')).toBeVisible();
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    const tabs = nav.locator("a");
+    await expect(tabs).toHaveCount(3);
+    await expect(nav.locator('a[aria-current="page"]')).toHaveAttribute("href", "/");
+    await expect(page.locator('header a[href="/contact"]')).toBeVisible();
 
-    // The body reserves the bar's height, so the footer's last line stays reachable.
-    const padding = await page.evaluate(() => parseFloat(getComputedStyle(document.body).paddingBottom));
-    const barHeight = await tabBar.evaluate((el) => el.getBoundingClientRect().height);
-    expect(padding).toBeGreaterThanOrEqual(barHeight);
+    const widths = await tabs.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+    expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
+
+    // Content starts below the two-row header, never under it.
+    const headerBottom = await page.locator("body > header").evaluate((el) => el.getBoundingClientRect().bottom);
+    const heroTop = await page.locator("#hero-heading").evaluate((el) => el.getBoundingClientRect().top);
+    expect(heroTop).toBeGreaterThan(headerBottom);
   });
 
-  test("phone cards keep a side gutter and nothing scrolls sideways", async ({ page }) => {
+  test("phone panels keep a side gutter and nothing scrolls sideways", async ({ page }) => {
     const width = 390;
     const gutter = 16;
     await page.setViewportSize({ width, height: 844 });
@@ -71,23 +75,42 @@ test.describe("social layout", () => {
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     expect(scrollWidth).toBeLessThanOrEqual(width);
 
-    // The Intro card, every feed post and the closing call to action.
-    const cards = page.locator('aside[aria-labelledby="intro-heading"], #featured article, section:has(#cta-heading) > *');
-    const count = await cards.count();
+    // The hero panel, every featured project card and the closing call to action.
+    const panels = page.locator('section[aria-labelledby="hero-heading"] > *, #featured article, section:has(#cta-heading) > *');
+    const count = await panels.count();
     expect(count).toBeGreaterThanOrEqual(2);
     for (let i = 0; i < count; i++) {
-      const box = await cards.nth(i).boundingBox();
+      const box = await panels.nth(i).boundingBox();
       expect(box).not.toBeNull();
       expect(box!.x).toBeGreaterThanOrEqual(gutter);
       expect(box!.x + box!.width).toBeLessThanOrEqual(width - gutter);
     }
   });
 
-  test("desktop uses the top tabs instead", async ({ page }) => {
+  test("stacked call-to-action buttons share one width on phones", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const buttons = page.locator("section:has(#cta-heading) a");
+    const widths = await buttons.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+    expect(widths.length).toBeGreaterThanOrEqual(1);
+    expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
+  });
+
+  test("desktop shows the tabs in one row with the logo and contact button", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
-    await expect(page.locator("nav[data-tabbar]")).toBeHidden();
-    await expect(page.getByRole("navigation", { name: "Main navigation" }).locator('a[href="/projects"]')).toBeVisible();
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    const logo = page.locator('header a[href="/"]').first();
+    const navBox = await nav.boundingBox();
+    const logoBox = await logo.boundingBox();
+    expect(navBox && logoBox && Math.abs(navBox.y + navBox.height / 2 - (logoBox.y + logoBox.height / 2))).toBeLessThan(4);
+    await expect(nav.locator('a[href="/projects"]')).toBeVisible();
+  });
+
+  test("the site is dark only, with no theme toggle", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: /theme|dark mode|light mode/i })).toHaveCount(0);
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#050706");
   });
 });
 

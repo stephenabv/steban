@@ -29,7 +29,7 @@ export default defineConfig({
     { name: "setup", testMatch: /auth\.setup\.ts$/ },
     {
       name: "admin",
-      testMatch: /(coverLetters|appearance)\.spec\.ts$/,
+      testMatch: /coverLetters\.spec\.ts$/,
       dependencies: ["setup"],
       use: { storageState: STORAGE_STATE },
     },

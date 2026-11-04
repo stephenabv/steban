@@ -12,12 +12,6 @@
   }
 }
 
-// Narrower column for the profile header and feed (home).
-.social-container() {
-  .container();
-  max-width: @container-social;
-}
-
 .section-spacing() {
   padding-block: @space-16;
 
@@ -107,68 +101,86 @@
 }
 
 // ─── Surfaces ─────────────────────────────────────────────────────────────────
-// Facebook card: white (or raised grey in dark), soft shadow instead of a frame.
-.surface() {
-  background: @color-bg-card;
-  border: 1px solid transparent;
-  border-radius: @radius-lg;
-  box-shadow: @shadow-sm;
+// Cuts two opposite corners (top-left and bottom-right), as on HUD panels.
+// Clips everything the element paints, including box-shadow and outlines,
+// so chamfered controls show focus with an inner ring (see Button).
+.chamfer(@size: @chamfer-md) {
+  clip-path: polygon(
+    @size 0,
+    100% 0,
+    100% calc(100% - @size),
+    calc(100% - @size) 100%,
+    0 100%,
+    0 @size
+  );
 }
 
-.card() {
-  .surface();
-  transition:
-    border-color @transition-normal,
-    box-shadow @transition-normal,
-    transform @transition-normal;
+// HUD panel: a dark plate inside a brushed-metal bevel, chamfered corners.
+// The host paints the bevel; ::before paints the plate @frame inside it, so
+// the frame also follows the diagonal cuts (a border would stop at them).
+// Content stacks above the plate through `isolation`. Hosts that need their
+// own ::before use .hud-panel-frame() on a wrapper instead.
+.hud-panel(@size: @chamfer-lg; @frame: 2px; @plate: @color-bg-card) {
+  position: relative;
+  isolation: isolate;
+  background: @bevel-frame;
+  .chamfer(@size);
 
-  &:hover {
-    box-shadow: @shadow-md;
-  }
-}
-
-// Instagram story ring: a gradient ring around a round child. @gap is the
-// card-coloured gap between ring and content.
-.story-ring(@width: 3px, @gap: 3px) {
-  padding: @width;
-  border-radius: @radius-full;
-  background: @gradient-ig;
-
-  > * {
-    border-radius: @radius-full;
-    border: @gap solid @color-bg-card;
-  }
-}
-
-// Gradient rule along the top edge of a card or band (decorative). The host
-// needs `position: relative` (or another containing block) and `overflow:
-// hidden` to clip the rule to its rounded corners.
-.gradient-rule-top(@height: 3px) {
   &::before {
     content: "";
     position: absolute;
-    inset: 0 0 auto;
-    z-index: 2;
-    height: @height;
-    background: @gradient-rule;
-    pointer-events: none;
+    inset: @frame;
+    z-index: -1;
+    background: @plate;
+    // The inner cut sits on the same diagonal as the outer one.
+    @inner: ~"calc(@{size} - @{frame} * 0.83)";
+    clip-path: polygon(
+      @inner 0,
+      100% 0,
+      100% calc(100% - @inner),
+      calc(100% - @inner) 100%,
+      0 100%,
+      0 @inner
+    );
   }
 }
 
-// Frosted-glass surface (adapted from the reference navbar treatment).
-.glass() {
-  background: linear-gradient(
-    180deg,
-    var(--glass-from) 0%,
-    var(--glass-mid) 60%,
-    var(--glass-to) 100%
-  );
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-highlight);
+// Plain surfaces (admin cards, forms, legal pages) use the HUD panel.
+.surface() {
+  .hud-panel(@chamfer-lg);
+}
+
+// A panel that also lights its frame green on hover (clickable cards).
+.card() {
+  .hud-panel(@chamfer-lg);
+  transition: background @transition-normal;
+
+  &:hover,
+  &:focus-within {
+    background: linear-gradient(160deg, @color-accent 0%, #2c302e 34%, #171a19 62%, @color-accent-muted 100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Segmented HUD meter: `n` cells, the first `lit` in neon, the rest unlit.
+// Markup: <span class="meter"><i/> <i/> ...</span>, the lit ones `data-on`.
+.hud-meter(@cell-w: 7px; @cell-h: 14px; @gap: 3px) {
+  display: inline-flex;
+  gap: @gap;
+
+  > i {
+    display: block;
+    width: @cell-w;
+    height: @cell-h;
+    background: @color-accent-dim;
+  }
+
+  > i[data-on] {
+    background: @color-accent;
+  }
 }
 
 // ─── Typography ───────────────────────────────────────────────────────────────
@@ -184,16 +196,34 @@
   display: inline-flex;
   align-items: center;
   gap: @space-2;
-  font-size: @fs-xs;
+  font-family: @font-display;
+  font-size: 0.8125rem;
   font-weight: @fw-semibold;
+  line-height: 1;
   color: @color-accent-light;
   text-transform: uppercase;
-  letter-spacing: @tracking-wide;
+  letter-spacing: 0.2em;
 }
 
-// Graphite text is solid; these mixins keep their names for existing call sites.
-.gradient-text() {
-  color: @color-text-primary;
+// Eyebrow with the HUD "//" comment mark before it (hidden from assistive
+// tech by the empty alt text after the slash).
+.eyebrow-marked() {
+  &::before {
+    content: "//";
+    content: "//" / "";
+    color: @color-text-muted;
+    letter-spacing: 0;
+  }
+}
+
+// HUD label: uppercase display face, wide tracking (tabs, buttons, captions).
+.hud-label(@size: @fs-sm) {
+  font-family: @font-display;
+  font-size: @size;
+  font-weight: @fw-semibold;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .accent-text() {
@@ -204,9 +234,9 @@
 .control-base() {
   width: 100%;
   min-height: 40px;
-  background: @color-bg;
+  background: @color-bg-card;
   border: 1px solid @color-border-hover;
-  border-radius: @radius-control;
+  border-radius: 0;
   padding: @space-2 @space-3;
   color: @color-text-primary;
   font-size: @fs-sm;
@@ -272,7 +302,7 @@
 .btn-primary() {
   .btn-base();
   background: @color-accent;
-  color: #fff;
+  color: @color-on-accent;
 
   &:hover {
     background: @color-accent-dark;

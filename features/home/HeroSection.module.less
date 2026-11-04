@@ -1,94 +1,220 @@
 @import "styles/variables.less";
 @import "styles/mixins.less";
 
-// ─── Profile card ─────────────────────────────────────────────────────────────
 .hero {
-  // Flat band, no card shadow: the page canvas in dark mode, white in light.
-  padding-top: @nav-height;
-  background: @color-bg-band;
-}
-
-.profile {
-  max-width: @container-social;
-  margin-inline: auto;
-  padding-bottom: @space-2;
-}
-
-// Decorative cover: Facebook blue into the Instagram hues. A static gradient
-// (no image request) so it costs nothing before the first paint.
-.cover {
-  height: clamp(132px, 22vw, 300px);
-  background: @gradient-cover;
-
-  @media (min-width: @social-edge) {
-    border-radius: 0 0 @radius-lg @radius-lg;
-  }
-}
-
-// The cover meets the viewport edges until the column has room to float.
-@social-edge: @container-social;
-
-.header {
-  display: grid;
-  gap: @space-3;
-  padding-inline: @space-4;
-  margin-top: -64px;
+  .container();
+  padding-top: calc(@nav-height + @space-6);
 
   @media (min-width: @bp-md) {
-    padding-inline: @space-8;
+    padding-top: calc(@nav-height + @space-12);
+  }
+}
+
+.panel {
+  .hud-panel(@chamfer-lg);
+  padding: @space-8 @space-5 0;
+
+  @media (min-width: @bp-md) {
+    .hud-panel(@chamfer-xl);
+    padding: @space-12 @space-10 0;
   }
 
   @media (min-width: @bp-lg) {
-    // photo | name | introduction
-    grid-template-columns: auto auto minmax(0, 1fr);
-    align-items: end;
-    gap: @space-6;
-    margin-top: -84px;
+    padding: @space-16 @space-16 0;
   }
 }
 
-// ─── Avatar in an Instagram story ring ────────────────────────────────────────
-// The ring is a pseudo-element so it can turn (transform only, on the
-// compositor) without moving the photo.
-.ring {
-  position: relative;
-  justify-self: start;
-  padding: 4px;
-  border-radius: @radius-full;
+// Neon corner bracket inside the top-right of the frame (decorative).
+.bracket {
+  position: absolute;
+  top: @space-4;
+  right: @space-4;
+  width: 22px;
+  height: 22px;
+  border: 0 solid @color-accent;
+  border-top-width: 2px;
+  border-right-width: 2px;
+  pointer-events: none;
+  display: none;
 
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: @gradient-ig;
-    animation: ring-in 1.1s @ease-out 0.15s backwards;
-    .reduced-motion();
-  }
-
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    &:hover::before {
-      animation: ring-spin 2.4s linear infinite;
-    }
+  @media (min-width: @bp-md) {
+    display: block;
   }
 }
 
-.avatar {
+// Phones: gauge above the copy. From lg: copy | gauge.
+.grid {
+  display: grid;
+  gap: @space-6;
+
+  @media (min-width: @bp-lg) {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: center;
+    gap: @space-16;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: @space-4;
+
+  @media (min-width: @bp-md) {
+    gap: @space-5;
+  }
+}
+
+.status {
+  .eyebrow();
+  gap: @space-3;
+  font-size: @fs-xs;
+
+  @media (min-width: @bp-md) {
+    font-size: 0.8125rem;
+  }
+}
+
+.statusDot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: @color-accent;
+  box-shadow: 0 0 0 3px @color-accent-dim;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: blink 2.4s steps(2, jump-none) infinite;
+  }
+}
+
+.name {
+  font-size: clamp(2.5rem, 6vw + 0.5rem, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: @color-text-primary;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: @space-3;
+  font-family: @font-display;
+  font-weight: @fw-semibold;
+  font-size: clamp(1.25rem, 1vw + 1rem, 1.625rem);
+  line-height: @lh-snug;
+  color: @color-accent-light;
+}
+
+.chevrons {
+  flex: none;
+  width: 28px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+
+  @media (min-width: @bp-md) {
+    width: 34px;
+    height: 18px;
+  }
+}
+
+.intro {
+  max-width: 600px;
+  font-size: @fs-base;
+  line-height: 1.65;
+
+  @media (min-width: @bp-md) {
+    font-size: @fs-lg;
+  }
+}
+
+// Equal-width buttons that stack at full width when the row is too narrow.
+.actions {
+  .button-group(220px);
+  margin-top: @space-2;
+  max-width: 476px;
+}
+
+// ─── Ring gauge around the photo ─────────────────────────────────────────────
+.gauge {
   position: relative;
-  width: 112px;
+  justify-self: center;
+
+  @media (min-width: @bp-lg) {
+    order: 1;
+  }
+
+  width: 200px;
   aspect-ratio: 1;
-  border-radius: @radius-full;
-  border: 4px solid @color-bg-band;
-  background: @color-bg-elevated;
-  overflow: hidden;
-  box-sizing: content-box;
 
-  @media (min-width: @bp-lg) {
-    width: 152px;
+  @media (min-width: @bp-md) {
+    width: 340px;
   }
+}
+
+.rings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+// Outer segmented track: all cells unlit, then three quarters lit on top.
+.trackUnlit,
+.trackLit {
+  fill: none;
+  stroke-width: 16;
+  stroke-dasharray: 6 4;
+}
+
+.trackUnlit {
+  stroke: @color-accent-dim;
+}
+
+// The same cells, lit over three quarters of the ring by an SVG mask.
+.trackLit {
+  stroke: @color-accent;
+}
+
+.arcMask {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 20;
+  stroke-dasharray: 75 25;
+}
+
+.spinner {
+  transform-origin: 170px 170px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: spin 24s linear infinite;
+  }
+}
+
+.inner {
+  fill: none;
+  stroke: @color-accent;
+  stroke-width: 2;
+  stroke-dasharray: 180 40 60 40;
+}
+
+.ticks {
+  stroke: @color-accent;
+  stroke-width: 2;
 }
 
 .photo {
+  position: absolute;
+  inset: 15%;
+  overflow: hidden;
+  border-radius: @radius-full;
+  background: @color-bg-elevated;
+  box-shadow: 0 0 0 1px @color-border-hover;
+}
+
+.photoImage {
   object-fit: cover;
 }
 
@@ -96,184 +222,125 @@
   width: 100%;
   height: 100%;
   .flex-center();
-  font-size: clamp(@fs-3xl, 5vw, @fs-5xl);
-  font-weight: @fw-bold;
-  letter-spacing: -0.02em;
-  color: @color-text-muted;
-}
+  font-family: @font-display;
+  font-size: 2.5rem;
+  letter-spacing: 0.08em;
+  color: @color-accent-light;
 
-// ─── Name, title and introduction ─────────────────────────────────────────────
-.identity {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: @space-1;
-  min-width: 0;
-
-  // The avatar overlaps the cover; the name block starts just below it, and
-  // the row grows rather than letting the badge ride up onto the gradient.
-  @media (min-width: @bp-lg) {
-    margin-top: calc(84px + @space-3);
-    padding-bottom: @space-2;
+  @media (min-width: @bp-md) {
+    font-size: 4rem;
   }
 }
 
-.name {
-  margin-top: @space-2;
-  font-size: clamp(1.75rem, 4vw, 2rem);
-  font-weight: @fw-bold;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.title {
-  font-size: 1.0625rem;
-  font-weight: @fw-semibold;
-  line-height: @lh-snug;
-  color: @color-text-muted;
-}
-
-// Below the name on phones; beside it, after a divider, from `lg`.
-.intro {
-  max-width: 680px;
-  font-size: @fs-base;
-  line-height: @lh-normal;
-  color: @color-text-primary;
-
-  @media (min-width: @bp-lg) {
-    // Same offset as .identity, so both blocks start just below the cover.
-    margin-top: calc(84px + @space-3);
-    padding: @space-1 0 @space-2 @space-6;
-    border-left: 1px solid @color-border;
-    align-self: stretch;
-    display: flex;
-    align-items: center;
-  }
-}
-
-// ─── Story-style highlight links ──────────────────────────────────────────────
-.highlights {
-  margin: @space-4 @space-4 0;
+// ─── Readouts along the bottom edge ──────────────────────────────────────────
+.readouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
+  margin: @space-8 -@space-5 0;
   border-top: 1px solid @color-border;
 
   @media (min-width: @bp-md) {
-    margin-inline: @space-8;
+    margin: @space-12 -@space-10 0;
   }
 
-  // Wide, even spacing between the circles: 4 × 64px + 3 × 32px still fits
-  // a 390px phone without scrolling.
-  ul {
-    display: flex;
-    gap: @space-8;
-    padding-block: @space-4 @space-2;
-    overflow-x: auto;
-    scrollbar-width: none;
-
-    @media (min-width: @bp-md) {
-      gap: @space-12;
-    }
+  @media (min-width: @bp-lg) {
+    margin-inline: -@space-16;
   }
 }
 
-.highlight {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  min-width: 64px;
-  border-radius: @radius-sm;
-  font-size: @fs-xs;
+// Phones: number, label, meter stacked. From md: number | label over meter.
+.readout {
+  display: grid;
+  grid-template-areas:
+    "value"
+    "label"
+    "meter";
+  align-content: start;
+  gap: @space-2;
+  padding: @space-4 @space-3 @space-5 @space-4;
+
+  & + & {
+    border-left: 1px solid @color-border;
+  }
+
+  @media (min-width: @bp-md) {
+    grid-template-areas:
+      "value label"
+      "value meter";
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: @space-5;
+    padding: @space-6 @space-10;
+  }
+}
+
+.readoutValue {
+  grid-area: value;
+  font-family: @font-display;
   font-weight: @fw-semibold;
-  color: @color-text-primary;
-  .focus-ring();
+  font-size: 1.875rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: @color-accent-light;
 
   @media (min-width: @bp-md) {
-    font-size: 0.8125rem;
+    font-size: 2.75rem;
   }
 }
 
-.highlightRing {
-  display: block;
-  width: 64px;
-  aspect-ratio: 1;
-  .story-ring(3px, 3px);
-  transition: transform @duration-normal @ease-out;
-
-  > span {
-    width: 100%;
-    height: 100%;
-    .flex-center();
-    background: @color-bg-band;
-    color: @color-accent-light;
-  }
+.readoutLabel {
+  grid-area: label;
+  .hud-label(0.625rem);
+  letter-spacing: 0.14em;
+  color: @color-text-secondary;
 
   @media (min-width: @bp-md) {
-    width: 72px;
-  }
-
-  .highlight:hover & {
-    transform: scale(1.06);
-  }
-
-  .highlight:active & {
-    transform: scale(0.95);
-  }
-
-  .reduced-motion();
-}
-
-// ─── Entrance ─────────────────────────────────────────────────────────────────
-// Transform-only and CSS-only: everything is fully opaque from the first
-// paint, so the motion never holds back Largest Contentful Paint.
-.identity,
-.intro,
-.highlights li {
-  animation: hero-rise 0.6s @ease-out backwards;
-  .reduced-motion();
-}
-
-.intro {
-  animation-delay: 0.1s;
-}
-
-.highlights li {
-  animation-name: highlight-pop;
-  animation-duration: 0.5s;
-
-  &:nth-child(1) {
-    animation-delay: 0.2s;
-  }
-  &:nth-child(2) {
-    animation-delay: 0.26s;
-  }
-  &:nth-child(3) {
-    animation-delay: 0.32s;
-  }
-  &:nth-child(4) {
-    animation-delay: 0.38s;
+    font-size: @fs-xs;
+    align-self: end;
   }
 }
 
-@keyframes hero-rise {
-  from {
-    transform: translateY(14px);
+.meter {
+  grid-area: meter;
+  .hud-meter(5px; 10px; 2px);
+
+  @media (min-width: @bp-md) {
+    .hud-meter(7px; 14px; 3px);
+    align-self: start;
+  }
+
+  // Cells fill left to right once, transform-only.
+  @media (prefers-reduced-motion: no-preference) {
+    > i[data-on] {
+      animation: cell-in 360ms @ease-out backwards;
+    }
+
+    .delays(10);
   }
 }
 
-@keyframes highlight-pop {
-  from {
-    transform: scale(0.85);
+.delays(@n, @i: 1) when (@i =< @n) {
+  > i:nth-child(@{i}) {
+    animation-delay: (@i * 45ms);
   }
+  .delays(@n, (@i + 1));
 }
 
-@keyframes ring-in {
-  from {
-    transform: rotate(-200deg);
-  }
-}
-
-@keyframes ring-spin {
+@keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes blink {
+  50% {
+    transform: scale(0.6);
+  }
+}
+
+@keyframes cell-in {
+  from {
+    transform: scaleY(0.2);
   }
 }

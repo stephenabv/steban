@@ -28,27 +28,34 @@
   font-size: clamp(@fs-sm, 1.3vw, @fs-base);
   gap: @space-3;
 
-  &::before {
-    content: "";
-    width: 24px;
-    height: 3px;
-    border-radius: 2px;
-    background: @gradient-accent;
-  }
+  .eyebrow-marked();
 }
 
 .title {
   .display();
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .page .title {
-  font-size: clamp(@fs-4xl, 7vw, @fs-7xl);
-  font-weight: @fw-extrabold;
-  line-height: 1.05;
+  font-size: clamp(2.5rem, 5vw + 0.5rem, 3.5rem);
+  line-height: 1;
 }
 
 .section .title {
-  font-size: clamp(@fs-3xl, 4.5vw, @fs-5xl);
+  font-size: clamp(1.625rem, 2.5vw + 0.75rem, 2.25rem);
+}
+
+// Neon chevrons after a section title (decorative).
+.section .title::after {
+  content: "";
+  display: inline-block;
+  width: 46px;
+  height: 20px;
+  margin-left: @space-4;
+  vertical-align: -0.1em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 20'%3E%3Cpath d='M3 3l8 7-8 7M17 3l8 7-8 7' fill='none' stroke='%233bea62' stroke-width='3'/%3E%3Cpath d='M31 3l8 7-8 7' fill='none' stroke='%231d6b31' stroke-width='3'/%3E%3C/svg%3E")
+    no-repeat center / contain;
 }
 
 .highlight {

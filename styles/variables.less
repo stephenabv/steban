@@ -48,28 +48,24 @@
 @color-scrim: var(--color-scrim);
 
 // ─── Color Palette: theme-invariant (compile-time) ────────────────────────────
-// Facebook blue drives every action; white text on it passes 4.8:1 (AA).
-@color-accent:      #0866ff;
-@color-accent-dark: #0861d9;
-@color-accent-glow: rgba(8, 102, 255, 0.3);    // selection and focus halos only
-@color-accent-soft: rgba(8, 102, 255, 0.12);
-@color-accent-2:    #d62976;                   // Instagram magenta, decorative only
+// Cyber HUD: one neon green drives every action. Text on it is near-black
+// (@color-on-accent, 11.8:1). As a foreground on panels it reads 12.1:1.
+@color-accent:      #3bea62;
+@color-accent-dark: #2bc94f;                   // hover/pressed fill
+@color-on-accent:   #04140a;                   // text and icons on @color-accent
+@color-accent-glow: rgba(59, 234, 98, 0.28);   // selection and focus halos only
+@color-accent-soft: rgba(59, 234, 98, 0.12);
+// Unlit HUD segments and decorative strokes. Never text: below 4.5:1.
+@color-accent-dim:   #1d3a24;
+@color-accent-muted: #1d6b31;
 
-@color-success: #31a24c;
-@color-warning: #d29922;
-@color-error:   #f02849;
-@color-info:    #4ba3ff;
+@color-success: #3bea62;
+@color-warning: #f0b429;
+@color-error:   #ff5a5f;
+@color-info:    #5cc8ff;
 
-// Instagram gradient. Decorative only (rings, cover, rules): never put text on it.
-// The colours are admin-editable: lib/theme/gradient.ts renders these custom
-// properties on <html> server-side (the shipped hues are its default), so every
-// gradient surface follows one setting.
-@gradient-ig:     var(--gradient-ig);
-// Profile cover: Facebook blue sweeping into the Instagram hues by default.
-@gradient-cover:  var(--gradient-cover);
-// Horizontal rules along a card or band edge.
-@gradient-rule:   var(--gradient-rule);
-@gradient-accent: @gradient-ig;
+// HUD panel frame: a brushed-metal bevel, light top-left to dark and back.
+@bevel-frame: linear-gradient(160deg, #7a807d 0%, #2c302e 32%, #171a19 62%, #565b58 100%);
 
 // ─── Typography ───────────────────────────────────────────────────────────────
 @font-sans:    var(--font-sans);
@@ -121,11 +117,13 @@
 // ─── Layout ───────────────────────────────────────────────────────────────────
 @container-max:  1280px;
 @container-prose: 760px;
-@container-social: 1100px; // profile header + feed width (home), as on Facebook
 @nav-offset:     0px;    // the bar sits flush with the viewport top
-@nav-pill-height: 56px;
-@tabbar-height:  60px;   // phone bottom tab bar (Navbar), below @bp-md
-@nav-height:     (@nav-offset + @nav-pill-height); // total space reserved above content
+@nav-pill-height: 72px;  // desktop bar; phones add the section-tab row below
+@nav-phone-bar:   60px;
+@nav-phone-tabs:  44px;
+// Total space reserved above content. A runtime value (styles/globals.less)
+// because the phone header has two rows and the desktop header one.
+@nav-height:     var(--nav-height);
 
 @admin-topbar-height:     60px;
 @admin-sidebar-width:     248px;
@@ -139,15 +137,21 @@
 @bp-2xl: 1536px;
 
 // ─── Borders & Radii ──────────────────────────────────────────────────────────
-// Radii: 4 tags, 6 controls, 8 cards, 12 overlays. Pills are only for
-// avatars and status dots (@radius-full).
-@radius-xs:      4px;
-@radius-sm:      6px;
-@radius-md:      6px;
-@radius-lg:      8px;
-@radius-xl:      12px;
+// HUD surfaces are square with chamfered (cut) corners (.chamfer()), so
+// radii stay small. Pills are only for avatars and status dots (@radius-full).
+@radius-xs:      2px;
+@radius-sm:      2px;
+@radius-md:      2px;
+@radius-lg:      2px;
+@radius-xl:      4px;
 @radius-control: @radius-sm;
 @radius-full:    9999px;
+
+// Chamfer sizes: the cut across a corner.
+@chamfer-sm: 8px;    // chips, toggles, small buttons
+@chamfer-md: 10px;   // buttons, inputs
+@chamfer-lg: 16px;   // cards and panels
+@chamfer-xl: 28px;   // hero panel
 
 // ─── Shadows ──────────────────────────────────────────────────────────────────
 @shadow-sm:  var(--shadow-sm);

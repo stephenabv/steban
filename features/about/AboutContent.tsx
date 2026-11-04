@@ -22,6 +22,9 @@ function groupBy<T>(arr: T[], key: keyof T) {
   }, {});
 }
 
+/** Skill proficiency is rated 1–5 in the admin; one meter cell per level. */
+const PROFICIENCY_LEVELS = 5;
+
 const monthYear = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" });
 
 function formatDateRange(start: Date, end?: Date, current?: boolean) {
@@ -99,8 +102,17 @@ export function AboutContent({ about }: Props) {
                   <h3>{cat}</h3>
                   <ul className={styles.skillList} role="list">
                     {skills.map((s) => (
-                      <li key={s.id} className={styles.skillBadge}>
-                        {s.name}
+                      <li key={s.id} className={styles.skill}>
+                        <span>{s.name}</span>
+                        <span
+                          className={styles.meter}
+                          role="img"
+                          aria-label={`Proficiency ${s.proficiencyLevel} of ${PROFICIENCY_LEVELS}`}
+                        >
+                          {Array.from({ length: PROFICIENCY_LEVELS }, (_, i) => (
+                            <i key={i} data-on={i < s.proficiencyLevel ? "" : undefined} />
+                          ))}
+                        </span>
                       </li>
                     ))}
                   </ul>
