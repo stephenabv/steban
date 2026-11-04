@@ -7,7 +7,14 @@ import styles from "./ProjectGrid.module.less";
 
 const MAX_TECH = 4;
 
-export function ProjectCard({ project, priority = false }: { project: ProjectCardData; priority?: boolean }) {
+interface Props {
+  project: ProjectCardData;
+  /** 1-based position in the list, shown as a HUD code ("P-01"). */
+  index: number;
+  priority?: boolean;
+}
+
+export function ProjectCard({ project, index, priority = false }: Props) {
   const extraTech = project.technologies.length - MAX_TECH;
 
   return (
@@ -24,9 +31,12 @@ export function ProjectCard({ project, priority = false }: { project: ProjectCar
           />
         ) : (
           <div className={styles.placeholder} aria-hidden="true">
-            <Icon name="code" size={32} strokeWidth={1.5} />
+            <Icon name="code" size={36} strokeWidth={1.25} />
           </div>
         )}
+        <span className={styles.code} aria-hidden="true">
+          P-{String(index).padStart(2, "0")}
+        </span>
         {project.featured && (
           <Badge tone="accent" className={styles.featured}>
             <Icon name="star" size={12} />

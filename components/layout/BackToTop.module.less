@@ -8,15 +8,14 @@
 .button {
   position: fixed;
   right: calc(@inset-mobile + env(safe-area-inset-right));
-  // Sits above the phone tab bar (Navbar), which is hidden from `md`.
-  bottom: calc(@tabbar-height + @inset-mobile + env(safe-area-inset-bottom));
+  bottom: calc(@inset-mobile + env(safe-area-inset-bottom));
   z-index: @z-sticky;
   .flex-center();
   width: 44px;
   height: 44px;
-  border-radius: @radius-control;
-  .glass();
-  color: @color-text-primary;
+  border: 1px solid @color-accent;
+  background: @color-bg-card;
+  color: @color-accent-light;
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
@@ -40,8 +39,7 @@
   @media (hover: hover) {
     &:hover {
       background: @color-accent;
-      border-color: @color-accent-light;
-      box-shadow: @shadow-glow;
+      color: @color-on-accent;
       transform: translateY(-2px);
     }
   }

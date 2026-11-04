@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ProjectExplorer } from "@/features/projects/ProjectExplorer";
 import type { ProjectCardData } from "@/features/projects/types";
+import { toProjectCardData } from "@/features/projects/toProjectCardData";
 import { PageShell } from "@/features/shared/PageShell";
 import { CtaBand } from "@/features/shared/CtaBand";
 import { Alert } from "@/components/ui/Alert";
@@ -20,18 +21,7 @@ export function generateMetadata(): Promise<Metadata> {
 export default async function ProjectsPage() {
   // Featured projects lead the list, in the same order as the home page feed.
   const result = await getProjectService().getAll({ pageSize: 100, order: "featuredFirst" });
-  const projects: ProjectCardData[] = result.ok
-    ? result.value.items.map((p) => ({
-        id: p.id,
-        slug: p.slug,
-        title: p.title,
-        summary: p.summary,
-        coverImage: p.coverImage,
-        technologies: p.technologies,
-        featured: p.featured,
-        publishedAt: p.publishedAt.toISOString(),
-      }))
-    : [];
+  const projects: ProjectCardData[] = result.ok ? result.value.items.map(toProjectCardData) : [];
 
   return (
     <>

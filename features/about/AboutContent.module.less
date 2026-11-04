@@ -122,26 +122,35 @@
   padding: @space-5;
 
   h3 {
-    font-size: @fs-base;
+    .hud-label(@fs-xs);
+    letter-spacing: 0.2em;
+    color: @color-text-secondary;
     margin-bottom: @space-4;
   }
 }
 
 .skillList {
   display: flex;
-  flex-wrap: wrap;
-  gap: @space-2;
+  flex-direction: column;
+  gap: @space-3;
 }
 
-.skillBadge {
-  padding: 2px 8px;
-  border-radius: @radius-xs;
-  font-family: @font-mono;
-  background: @tint-4;
-  border: 1px solid @color-border;
-  font-size: @fs-xs;
-  font-weight: @fw-medium;
-  color: @color-text-secondary;
+// Name | five-cell proficiency meter.
+.skill {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: @space-3;
+  font-size: @fs-sm;
+  color: @color-text-primary;
+}
+
+.meter {
+  .hud-meter(14px; 10px; 3px);
+
+  > i {
+    transform: skewX(-20deg);
+  }
 }
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────

@@ -19,49 +19,53 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  &.compact {
+    @media (min-width: @bp-2xl) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
   > li {
     display: flex;
   }
 }
 
+// HUD panel. The 2px padding keeps the cover inside the bevel frame.
 .card {
   .card();
-  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  .gradient-rule-top();
+  padding: 2px;
 
-  &:hover {
-    transform: translateY(-4px);
-
-    .image {
-      transform: scale(1.05);
-    }
-
-    .more {
-      color: @color-accent-lighter;
-
-      svg {
-        transform: translateX(3px);
-      }
-    }
+  &:hover .image {
+    transform: scale(1.04);
   }
 
-  &:focus-within {
-    border-color: @color-accent-light;
-  }
+  &:hover .more {
+    color: @color-accent-lighter;
 
-  .reduced-motion();
+    svg {
+      transform: translateX(3px);
+    }
+  }
 }
+
+// The cover's top-left corner follows the card's inner chamfer.
+@cover-cut: ~"calc(@{chamfer-lg} - 1.66px)";
 
 .media {
   position: relative;
   aspect-ratio: 16 / 10;
-  background: @color-bg-elevated;
   overflow: hidden;
   border-bottom: 1px solid @color-border;
+  clip-path: polygon(@cover-cut 0, 100% 0, 100% 100%, 0 100%, 0 @cover-cut);
+  background-color: @color-bg-subtle;
+  // HUD grid behind a missing or loading cover (no image request).
+  background-image:
+    linear-gradient(@color-bg-hover 1px, transparent 1px),
+    linear-gradient(90deg, @color-bg-hover 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .image {
@@ -77,17 +81,27 @@
   width: 100%;
   height: 100%;
   .flex-center();
-  color: @color-border-strong;
-  background: @color-bg-elevated;
+  color: @color-accent-muted;
+}
+
+// Project index ("P-01"), top left of the cover. Decorative.
+.code {
+  position: absolute;
+  top: @space-3;
+  left: @space-5;
+  z-index: 1;
+  padding: 3px 6px;
+  font-family: @font-mono;
+  font-size: @fs-xs;
+  letter-spacing: 0.1em;
+  color: @color-accent-light;
+  background: color-mix(in srgb, @color-bg 82%, transparent);
 }
 
 .featured {
   position: absolute;
   top: @space-3;
-  left: @space-3;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background: color-mix(in srgb, @color-bg 70%, transparent);
+  right: @space-3;
 }
 
 .body {
@@ -99,9 +113,8 @@
 }
 
 .title {
-  font-size: @fs-lg;
-  font-weight: @fw-semibold;
-  letter-spacing: -0.01em;
+  font-size: 1.3125rem;
+  letter-spacing: 0.03em;
 }
 
 .link {
@@ -112,14 +125,13 @@
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 1;
-    border-radius: inherit;
+    z-index: 2;
   }
 
+  // The card's chamfer clips outer rings, so focus draws inside the frame.
   &:focus-visible::after {
     outline: 2px solid @color-accent-light;
-    outline-offset: -2px;
-    border-radius: @radius-lg;
+    outline-offset: -6px;
   }
 }
 
@@ -138,10 +150,9 @@
 }
 
 .tech {
-  padding: 2px 8px;
-  border-radius: @radius-xs;
+  padding: 4px 8px;
   font-family: @font-mono;
-  background: @tint-4;
+  background: @color-bg-elevated;
   border: 1px solid @color-border;
   font-size: @fs-xs;
   color: @color-text-secondary;
@@ -151,8 +162,9 @@
   display: inline-flex;
   align-items: center;
   gap: @space-1;
-  font-size: @fs-sm;
-  font-weight: @fw-semibold;
+  padding-top: @space-2;
+  .hud-label(0.8125rem);
+  letter-spacing: 0.1em;
   color: @color-accent-light;
   transition: color @transition-fast;
 

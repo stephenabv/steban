@@ -18,9 +18,9 @@ export default function OpengraphImage() {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
-          background: "#0b0d10",
+          background: "#050706",
           padding: "80px 96px",
-          color: "#e6eaef",
+          color: "#e8eeea",
           fontFamily: "sans-serif",
         }}
       >
@@ -28,14 +28,14 @@ export default function OpengraphImage() {
           <LogoMark size={120} />
         </div>
 
-        <div style={{ display: "flex", fontSize: 78, fontWeight: 700, lineHeight: 1.1 }}>
+        <div style={{ display: "flex", fontSize: 78, fontWeight: 700, lineHeight: 1.1, letterSpacing: 4, textTransform: "uppercase" }}>
           Stephen{" "}
-          <span style={{ color: "#79a8ff", marginLeft: 20 }}>Abueva</span>
+          <span style={{ color: "#3bea62", marginLeft: 20 }}>Abueva</span>
         </div>
-        <div style={{ display: "flex", fontSize: 36, color: "#a7b0ba", marginTop: 20 }}>
+        <div style={{ display: "flex", fontSize: 36, color: "#a9b3ae", marginTop: 20 }}>
           Computer Engineer
         </div>
-        <div style={{ display: "flex", fontSize: 26, color: "#8b949e", marginTop: 44 }}>
+        <div style={{ display: "flex", fontSize: 26, color: "#8c9691", marginTop: 44 }}>
           {siteConfig.url.replace(/^https?:\/\//, "")}
         </div>
       </div>

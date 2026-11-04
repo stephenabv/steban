@@ -36,17 +36,14 @@
   display: inline-flex;
   align-items: center;
   gap: @space-3;
-  font-family: @font-display;
-  font-size: @fs-lg;
-  font-weight: @fw-bold;
+  .hud-label(@fs-base);
+  letter-spacing: 0.12em;
   color: @color-text-primary;
-  border-radius: @radius-sm;
   .focus-ring();
 }
 
 .accent {
-  color: @color-text-secondary;
-  font-weight: @fw-medium;
+  color: @color-accent-light;
 }
 
 .tagline {
@@ -66,12 +63,8 @@
 }
 
 .columnTitle {
-  font-family: @font-sans;
+  .eyebrow();
   font-size: @fs-xs;
-  font-weight: @fw-semibold;
-  letter-spacing: @tracking-wide;
-  text-transform: uppercase;
-  color: @color-text-muted;
 }
 
 .columnLink {
@@ -114,8 +107,24 @@
 }
 
 .copyright {
+  display: flex;
+  align-items: center;
+  gap: @space-3;
   font-size: @fs-xs;
   color: @color-text-muted;
+
+  // HUD stripe marks (decorative).
+  &::before {
+    content: "";
+    flex: none;
+    width: 46px;
+    height: 8px;
+    background: repeating-linear-gradient(
+      -60deg,
+      @color-accent 0 6px,
+      transparent 6px 11px
+    );
+  }
 }
 
 .legal {

@@ -1,215 +1,163 @@
 @import "styles/variables.less";
 @import "styles/mixins.less";
 
-// Solid card-coloured bar with Facebook's hairline shadow. No backdrop-filter:
-// it would also make the bar the containing block of the fixed tab bar below.
+// Opaque canvas-coloured bar with a hairline rule. No backdrop-filter: it costs
+// paint on every scroll frame for no gain on a solid surface.
 .header {
   position: fixed;
   top: @nav-offset;
   left: 0;
   right: 0;
   z-index: @z-nav;
-  background: @color-bg-card;
-  box-shadow: @shadow-sm;
+  background: @color-bg;
+  border-bottom: 1px solid @color-border;
 }
 
+// Phones: [logo · contact] over a full-width row of equal tabs.
+// From md: [logo · tabs · contact] in one 72px row.
 .bar {
   .container();
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "logo cta"
+    "tabs tabs";
+  grid-template-rows: @nav-phone-bar @nav-phone-tabs;
   align-items: center;
-  gap: @space-4;
-  height: @nav-pill-height;
+  column-gap: @space-4;
 
   @media (min-width: @bp-md) {
     grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "logo tabs cta";
+    grid-template-rows: @nav-pill-height;
   }
 }
 
 .logo {
+  grid-area: logo;
   display: inline-flex;
   align-items: center;
-  gap: @space-2;
+  gap: @space-3;
   justify-self: start;
   min-width: 0;
-  border-radius: @radius-sm;
   .focus-ring();
 
   svg {
     flex-shrink: 0;
-    transition: transform @transition-normal;
-  }
-
-  @media (hover: hover) {
-    &:hover svg {
-      transform: rotate(-6deg) scale(1.05);
-    }
-  }
-
-  svg {
-    .reduced-motion();
   }
 }
 
 .wordmark {
-  font-size: @fs-lg;
-  font-weight: @fw-bold;
-  letter-spacing: -0.01em;
+  .hud-label(0.9375rem);
+  letter-spacing: 0.12em;
   color: @color-text-primary;
   white-space: nowrap;
 
   span {
-    color: inherit;
+    color: @color-accent-light;
+  }
+
+  @media (min-width: @bp-lg) {
+    font-size: @fs-lg;
   }
 }
 
-// ─── Desktop: icon tabs with a sliding underline ─────────────────────────────
 .tabs {
-  display: none;
-  height: 100%;
+  grid-area: tabs;
+  align-self: stretch;
+  // Phones: a hairline between the two rows, spanning the whole bar.
+  border-top: 1px solid @color-border;
+  margin-inline: -@space-5;
+  padding-inline: @space-5;
 
   @media (min-width: @bp-md) {
-    display: block;
+    border-top: 0;
+    margin-inline: 0;
+    padding-inline: 0;
   }
 
   ul {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     height: 100%;
-    gap: @space-2;
-  }
 
-  li {
-    display: flex;
+    @media (min-width: @bp-md) {
+      display: flex;
+      gap: @space-10;
+    }
   }
 }
 
 .tab {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  width: 112px;
-  margin-block: 4px;
-  border-radius: @radius-lg;
-  font-size: @fs-xs;
-  font-weight: @fw-semibold;
-  color: @color-text-muted;
-  transition:
-    background @transition-fast,
-    color @transition-fast;
-  .focus-ring-inset();
-
-  @media (hover: hover) {
-    &:hover {
-      background: @color-bg-hover;
-    }
-  }
-
-  &.active {
-    color: @color-accent-light;
-
-    &:hover {
-      background: transparent;
-    }
-  }
-
-  @media (min-width: @bp-lg) {
-    width: 128px;
-  }
-}
-
-.underline {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -4px;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-  background: @color-accent-light;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: @space-2;
-}
-
-// Doubled class beats Button's own `display` regardless of stylesheet order.
-.cta.cta {
-  display: none;
-  min-height: 36px;
-
-  @media (min-width: @bp-md) {
-    display: inline-flex;
-  }
-}
-
-// ─── Phones: Instagram-style bottom tab bar ──────────────────────────────────
-.tabBar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: @z-nav;
-  padding-bottom: env(safe-area-inset-bottom);
-  background: @color-bg-card;
-  // A shadow, not a border: the bar stays exactly @tabbar-height tall, which
-  // is what the body reserves for it (globals.less).
-  box-shadow: 0 -1px 0 @color-border;
-
-  ul {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    height: @tabbar-height;
-  }
-
-  li {
-    display: flex;
-  }
-
-  @media (min-width: @bp-md) {
-    display: none;
-  }
-}
-
-.tabBarLink {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  font-size: 0.6875rem;
-  font-weight: @fw-semibold;
-  color: @color-text-muted;
-  -webkit-tap-highlight-color: transparent;
+  height: 100%;
+  min-height: 44px;
+  padding-inline: @space-1;
+  .hud-label(0.8125rem);
+  letter-spacing: 0.14em;
+  color: @color-text-secondary;
   transition: color @transition-fast;
   .focus-ring-inset();
 
-  svg {
-    transition: transform @duration-fast @ease-out;
-    .reduced-motion();
+  @media (min-width: @bp-md) {
+    font-size: @fs-sm;
   }
 
-  &:active svg {
-    transform: scale(0.88);
+  &:hover {
+    color: @color-text-primary;
+  }
+
+  // Neon bar along the bottom edge of the current section.
+  &::after {
+    content: "";
+    position: absolute;
+    left: @space-3;
+    right: @space-3;
+    bottom: -1px;
+    height: 3px;
+    background: @color-accent;
+    transform: scaleX(0);
+    transition: transform @transition-normal;
+
+    @media (min-width: @bp-md) {
+      left: 0;
+      right: 0;
+    }
   }
 
   &.active {
     color: @color-accent-light;
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+
+  .reduced-motion();
+
+  &::after {
+    .reduced-motion();
   }
 }
 
-.tabBarIndicator {
-  position: absolute;
-  top: 0;
-  left: 22%;
-  right: 22%;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: @color-accent-light;
+.cta {
+  grid-area: cta;
+  justify-self: end;
+}
+
+.ctaLong {
+  display: none;
+
+  @media (min-width: @bp-md) {
+    display: inline;
+  }
+}
+
+.ctaShort {
+  @media (min-width: @bp-md) {
+    display: none;
+  }
 }

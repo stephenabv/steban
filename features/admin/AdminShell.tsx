@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { Logo } from "@/components/layout/Logo";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Icon } from "@/components/icons/Icon";
 import { useLocalPreference } from "@/lib/hooks/useLocalPreference";
 import { acquireScrollLock } from "@/lib/dom/scrollLock";
@@ -79,8 +78,6 @@ export function AdminShell({ basePath, children }: { basePath: string; children:
           <AdminSearch basePath={basePath} />
 
           <div className={styles.topbarSpacer} />
-
-          <ThemeToggle className={styles.themeToggle} />
 
           <a href="/" target="_blank" rel="noopener noreferrer" className={styles.topbarLink}>
             <Icon name="external" size={14} />

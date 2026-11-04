@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { contactNav, primaryNav } from "@/config/navigation";
-import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/icons/Icon";
 import { Logo } from "./Logo";
 import { getLegalLinks, getPublicContact } from "@/lib/content/publicContent";
@@ -30,9 +29,6 @@ export async function Footer() {
               </span>
             </Link>
             <p className={styles.tagline}>{siteConfig.description}</p>
-            <Badge tone="success" pulse>
-              Available for opportunities
-            </Badge>
           </div>
 
           <nav className={styles.column} aria-labelledby="footer-nav-heading">

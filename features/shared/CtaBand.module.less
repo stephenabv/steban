@@ -3,69 +3,90 @@
 
 .wrap {
   .container();
-  padding-block: @space-12 0;
+  padding-block: @space-16 0;
 
-  // Home: the feed's column, with the same 16px phone gutter as the posts above it.
-  &.social {
-    max-width: @container-social;
-
-    @media (max-width: (@bp-md - 1px)) {
-      padding-inline: @space-4;
-      padding-top: @space-3;
-    }
+  @media (min-width: @bp-lg) {
+    padding-top: @space-24;
   }
 }
 
 .band {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
+  .hud-panel(@chamfer-lg);
   display: flex;
   flex-direction: column;
   gap: @space-6;
-  padding: @space-8 @space-4;
-  background: @color-bg-card;
-  border-radius: @radius-lg;
-  box-shadow: @shadow-sm;
-
-  // Instagram gradient rule along the top edge (decorative).
-  .gradient-rule-top(4px);
+  padding: @space-8 @space-5;
 
   @media (min-width: @bp-md) {
-    padding: @space-10;
+    .hud-panel(@chamfer-xl);
+    padding: @space-10 @space-12;
   }
 
   @media (min-width: @bp-lg) {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    gap: @space-12;
   }
 }
 
-
 .text {
-  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: @space-3;
+  max-width: 620px;
+}
+
+.eyebrow {
+  .eyebrow();
+  .eyebrow-marked();
 }
 
 .title {
-  font-size: clamp(@fs-xl, 3vw, @fs-3xl);
-  font-weight: @fw-bold;
-  margin-bottom: @space-2;
+  font-size: clamp(1.625rem, 2vw + 1rem, 2.125rem);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .description {
   font-size: @fs-base;
-  line-height: @lh-normal;
-  color: @color-text-muted;
+  line-height: 1.6;
+
+  @media (min-width: @bp-md) {
+    font-size: 1.0625rem;
+  }
 }
 
 .actions {
-  .button-group(180px);
-  gap: @space-2;
+  .button-group(250px);
   width: 100%;
-  max-width: 420px;
+  max-width: 540px;
 
   @media (min-width: @bp-lg) {
-    flex: 0 1 420px;
+    flex: 0 0 540px;
+  }
+}
+
+// Equalizer bars on the bottom edge (decorative, desktop).
+.equalizer {
+  display: none;
+
+  @media (min-width: @bp-lg) {
+    position: absolute;
+    right: @space-12;
+    bottom: 2px;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 22px;
+  }
+
+  i {
+    width: 5px;
+    background: @color-accent-muted;
+
+    &:nth-child(4n + 1) {
+      background: @color-accent;
+    }
   }
 }

@@ -6,11 +6,13 @@ import type { SVGProps } from "react";
  * rendering (the in-page logo, the favicon, the Apple touch icon and the share
  * image), so they cannot drift apart. No hooks, gradients or text: it renders
  * the same in React and in `next/og` (Satori), and stays legible at 16px.
+ * HUD colours: a dark plate with a grey rim, a neon trace, grey brackets.
  */
 export const LOGO_COLORS = {
-  tile: "#0866ff",
-  trace: "#ffffff",
-  accent: "#a9c7ff",
+  tile: "#0b0e0d",
+  rim: "#3a403d",
+  trace: "#3bea62",
+  accent: "#a9b3ae",
 } as const;
 
 const VIEWBOX = 64;
@@ -32,6 +34,16 @@ export function LogoMark({ size, square = false, ...svgProps }: LogoMarkProps) {
   return (
     <svg width={size} height={size} viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`} {...svgProps}>
       <rect width={VIEWBOX} height={VIEWBOX} rx={square ? 0 : TILE_RADIUS} fill={LOGO_COLORS.tile} />
+      <rect
+        x={1.5}
+        y={1.5}
+        width={VIEWBOX - 3}
+        height={VIEWBOX - 3}
+        rx={square ? 0 : TILE_RADIUS - 1.5}
+        fill="none"
+        stroke={LOGO_COLORS.rim}
+        strokeWidth={3}
+      />
       <path
         d={BRACKETS}
         fill="none"
@@ -49,7 +61,7 @@ export function LogoMark({ size, square = false, ...svgProps }: LogoMarkProps) {
         strokeLinejoin="round"
       />
       {NODES.map(({ cx, cy }) => (
-        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={3.5} fill={LOGO_COLORS.accent} />
+        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={3.5} fill={LOGO_COLORS.trace} />
       ))}
     </svg>
   );

@@ -56,13 +56,6 @@
   }
 }
 
-// Doubled class beats ThemeToggle's own sizing regardless of stylesheet order.
-.themeToggle.themeToggle {
-  width: 36px;
-  height: 36px;
-  border-radius: @radius-md;
-}
-
 .brand {
   display: inline-flex;
   align-items: center;
@@ -77,21 +70,17 @@
 }
 
 .brandText {
-  font-family: @font-display;
-  font-size: @fs-base;
-  font-weight: @fw-bold;
+  .hud-label(@fs-sm);
+  letter-spacing: 0.12em;
   color: @color-text-primary;
 }
 
 .brandBadge {
-  padding: 1px 8px;
-  border-radius: @radius-sm;
-  border: 1px solid @color-border-hover;
-  background: @color-bg-elevated;
-  font-size: 11px;
-  font-weight: @fw-semibold;
-  letter-spacing: 0.04em;
-  color: @color-text-secondary;
+  padding: 4px 6px;
+  .hud-label(10px);
+  letter-spacing: 0.16em;
+  background: @color-accent;
+  color: @color-on-accent;
 }
 
 .topbarSpacer {
@@ -227,10 +216,8 @@
 
 .navLabel {
   padding: 0 @space-3 @space-2;
-  font-size: 11px;
-  font-weight: @fw-semibold;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  .hud-label(11px);
+  letter-spacing: 0.2em;
   color: @color-text-muted;
   white-space: nowrap;
 }
@@ -280,7 +267,7 @@
 // Accent rail on the active item (reference-dashboard pattern).
 .navActive {
   background: @color-accent-soft;
-  color: @color-accent-lighter;
+  color: @color-accent-light;
 
   svg {
     opacity: 1;
