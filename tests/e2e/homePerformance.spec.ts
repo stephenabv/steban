@@ -112,6 +112,37 @@ test.describe("HUD layout", () => {
     await expect(page.getByRole("button", { name: /theme|dark mode|light mode/i })).toHaveCount(0);
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#050706");
   });
+
+  for (const width of [390, 1024, 1440, 1920]) {
+    test(`background tech glyphs stay decorative and out of the content column at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/about");
+      await expect(page.locator("#main-content h1")).toBeVisible();
+
+      const backdrop = page.locator("[data-tech-backdrop]");
+      await expect(backdrop).toHaveAttribute("aria-hidden", "true");
+      const layer = await backdrop.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return { position: style.position, zIndex: style.zIndex, pointerEvents: style.pointerEvents };
+      });
+      expect(layer).toEqual({ position: "fixed", zIndex: "-1", pointerEvents: "none" });
+
+      // Every visible glyph must end before the page heading's column starts
+      // (left side) or begin after the content column ends (right side).
+      const overlaps = await page.evaluate(() => {
+        const heading = document.querySelector("#main-content h1");
+        if (!heading) return ["no page heading"];
+        const contentLeft = heading.getBoundingClientRect().left;
+        const contentRight = document.documentElement.clientWidth - contentLeft;
+        return [...document.querySelectorAll<HTMLElement>("[data-tech-backdrop] > *")]
+          .filter((el) => getComputedStyle(el).display !== "none")
+          .map((el) => ({ side: el.dataset.side, box: el.getBoundingClientRect() }))
+          .filter(({ side, box }) => (side === "left" ? box.right > contentLeft : box.left < contentRight))
+          .map(({ side, box }) => `${side} glyph at ${Math.round(box.left)}-${Math.round(box.right)}`);
+      });
+      expect(overlaps).toEqual([]);
+    });
+  }
 });
 
 test.describe("navigation scroll", () => {
